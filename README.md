@@ -67,17 +67,7 @@
 
 ---
 
-## 🖥️ Interactive Dashboard Overview
-
-<div align="center">
-
-![PyroSage Interactive Dashboard UI](assets/pyrosage_dashboard_preview.jpg)
-
-*Figure 2: The PyroSage unified mission dashboard showing Multimodal Ingestion, Sortable Feature Matrix, Nearest NASA PSI Twin Matching, Lunar/Martian Flammability Risk Radar, and the 3D Flame Simulation Viewport.*
-
-</div>
-
-### The 5 Core Capabilities
+## 🖥️ Interactive Dashboard: 5 Core Capabilities
 
 | Step | Module | Functionality & Engineering Value |
 |:---:|:---|:---|
@@ -299,15 +289,15 @@ tests/test_pipeline.py::test_provider_schema_and_image_payload_limits PASSED    
 
 ---
 
-## 🏆 Hackathon Alignment: NASA Space Exploration Fire Safety
+## ✨ Key Features & Benefits
 
-### Why PyroSage Wins
-1. **Solves the Exact Challenge Prompt**: Directly unlocks NASA's decades of microgravity combustion findings to protect astronauts returning to the Moon (Artemis basecamp) and venturing onward to Mars.
-2. **Mathematically Grounded**: Eliminates LLM hallucinations through technique whitelisting, computer vision feature vectors, and cosine distance matching against verified NASA PSI accessions.
-3. **Dual Digital Twin**: Combines analytical data processing with a visual 3D volumetric flame digital twin that displays physical specimen models and responds in real-time to gravity, oxygen, pressure, and fuel flow.
-4. **Hackathon-Ready & Production-Engineered**:
-   - 8/8 automated tests passing
-   - Bulletproof WebGL with 2.5D Canvas fallback
+1. **Mission-Critical Space Fire Safety**: Directly operationalizes decades of NASA microgravity combustion findings to protect astronauts returning to the Moon (Artemis basecamp) and venturing onward to Mars.
+2. **Mathematically Grounded & Hallucination-Free**: Eliminates LLM hallucinations through a strict 57-technique whitelist, local computer vision feature vectors, and cosine distance matching against verified NASA PSI accessions.
+3. **3D Volumetric Digital Twin**: Combines analytical data processing with an interactive 3D volumetric flame digital twin that displays physical specimen models and responds in real-time to gravity, oxygen, pressure, and fuel flow.
+4. **Sortable Multimodal Matrix & Risk Radar**: Audits visual flame parameters (aspect ratio, bilateral symmetry, soot index) alongside Lunar ($0.17g$) and Martian ($0.38g$) hazard scaling.
+5. **Engineered for High Reliability**:
+   - 8/8 automated tests passing (`pytest`)
+   - Bulletproof WebGL engine with automatic 2.5D Canvas fallback
    - Single-command Unix & Windows launch scripts
    - Comprehensive technical documentation PDF included in repo
 
