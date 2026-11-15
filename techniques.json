@@ -511,5 +511,185 @@
     "modalities": ["image", "video", "numeric", "spectral", "text", "thermal"],
     "supported_modalities": ["image", "video", "numeric", "spectral", "text", "thermal"],
     "prerequisites": "Decision-support only; not flight certification or operational fire-safety approval."
+  },
+  {
+    "id": "terrestrial_vs_microgravity",
+    "name": "Terrestrial (1g) vs. microgravity (0g) combustion differentiation",
+    "group": "Microgravity combustion fundamentals",
+    "description": "Differentiate 1g buoyancy-dominated teardrop plumes from 0g diffusion-dominated spherical flames using vertical symmetry delta, aspect ratio, and soot shell distribution.",
+    "modalities": ["image", "video", "numeric", "text"],
+    "supported_modalities": ["image", "video", "numeric", "text"],
+    "prerequisites": "Segmented flame geometry or multi-gravity experimental measurements."
+  },
+  {
+    "id": "multi_gravity_behavior",
+    "name": "0g, 1g, and partial-gravity flame behavior differentiation",
+    "group": "Microgravity combustion fundamentals",
+    "description": "Compare flame envelope elongation, buoyant velocity scaling, and limiting oxygen shifts across 0g, Lunar (0.16g), Martian (0.38g), and 1g regimes.",
+    "modalities": ["image", "video", "numeric", "text"],
+    "supported_modalities": ["image", "video", "numeric", "text"],
+    "prerequisites": "Gravity metadata and geometry or burn-rate measurements."
+  },
+  {
+    "id": "spherical_vs_teardrop",
+    "name": "Spherical vs. teardrop flame classification",
+    "group": "Optical diagnostics & flow",
+    "description": "Classify segmented flame masks into spherical (0g diffusion), ellipsoidal (partial-g/forced-flow), or teardrop (buoyant plume) regimes using aspect ratio, circularity, and top-bottom IoU.",
+    "modalities": ["image", "video", "thermal"],
+    "supported_modalities": ["image", "video", "thermal"],
+    "prerequisites": "Segmented foreground flame contour."
+  },
+  {
+    "id": "frame_symmetry_tracking",
+    "name": "Frame-by-frame flame symmetry tracking",
+    "group": "Optical diagnostics & flow",
+    "description": "Track bilateral and top-bottom reflection symmetry IoU across sequential frames or multi-specimen image sets to detect oscillatory instability or buoyant transition.",
+    "modalities": ["video", "image", "numeric"],
+    "supported_modalities": ["video", "image", "numeric"],
+    "prerequisites": "Multi-frame video or multi-image sequence."
+  },
+  {
+    "id": "opencv_cv_pipeline",
+    "name": "OpenCV computer-vision feature pipeline",
+    "group": "Optical diagnostics & flow",
+    "description": "Execute HSV warm-mask segmentation, morphological cleanup, contour extraction, moments calculation, and reflection/rotation IoU scoring.",
+    "modalities": ["image", "video", "thermal"],
+    "supported_modalities": ["image", "video", "thermal"],
+    "prerequisites": "Decodable RGB, grayscale, or thermal image/video frame."
+  },
+  {
+    "id": "archival_video_analysis",
+    "name": "Archival ISS/CIR and drop-tower video analysis",
+    "group": "Optical diagnostics & flow",
+    "description": "Extract multi-frame area evolution, centroid drift, and symmetry decay from archival ISS/CIR or drop-tower combustion video sequences.",
+    "modalities": ["video", "image", "text"],
+    "supported_modalities": ["video", "image", "text"],
+    "prerequisites": "Video stream or multi-frame archival imagery with platform context."
+  },
+  {
+    "id": "spectral_reanalysis",
+    "name": "Spectral data re-analysis",
+    "group": "Thermal & cool-flame diagnostics",
+    "description": "Re-analyze uploaded emission/absorption tables for candidate radical bands (OH* ~308 nm, CH* ~431 nm, C2* ~516 nm) and continuum thermal emission.",
+    "modalities": ["spectral", "numeric", "text"],
+    "supported_modalities": ["spectral", "numeric", "text"],
+    "prerequisites": "Wavelength or wavenumber spectral table."
+  },
+  {
+    "id": "low_temp_radicals",
+    "name": "Low-temperature radical detection",
+    "group": "Thermal & cool-flame diagnostics",
+    "description": "Assess blue chemiluminescent intensity ratios and UV/IR spectral peaks associated with low-temperature alkylperoxy/formaldehyde radical pathways.",
+    "modalities": ["spectral", "image", "numeric", "text"],
+    "supported_modalities": ["spectral", "image", "numeric", "text"],
+    "prerequisites": "Spectral trace or blue-to-red chemiluminescence ratio proxy."
+  },
+  {
+    "id": "low_temp_signature",
+    "name": "Low-temperature combustion signature extraction",
+    "group": "Thermal & cool-flame diagnostics",
+    "description": "Extract weak-luminosity, high blue-to-red ratio, and soot-free spherical signatures characteristic of 500–800 K cool flames.",
+    "modalities": ["image", "thermal", "spectral", "numeric", "text"],
+    "supported_modalities": ["image", "thermal", "spectral", "numeric", "text"],
+    "prerequisites": "Color/thermal imagery or spectral/temperature measurements."
+  },
+  {
+    "id": "cross_platform_compare",
+    "name": "Cross-platform flame behavior comparison",
+    "group": "Platforms & cross-platform comparison",
+    "description": "Differentiate flame steadiness and residual g-jitter effects across Drop Tower (2–10 s), Parabolic Flight (20–25 s), Sounding Rocket (3–15 min), and ISS/CIR.",
+    "modalities": ["text", "numeric", "image", "video"],
+    "supported_modalities": ["text", "numeric", "image", "video"],
+    "prerequisites": "Platform metadata or catalogue experiment records."
+  },
+  {
+    "id": "transient_vs_stable_geometry",
+    "name": "Transient vs. stable flame geometry differentiation",
+    "group": "Platforms & cross-platform comparison",
+    "description": "Distinguish quasi-steady diffusion envelopes from transient ignition/extinction or g-jitter-perturbed flame shapes using boundary roughness and area variance.",
+    "modalities": ["image", "video", "numeric"],
+    "supported_modalities": ["image", "video", "numeric"],
+    "prerequisites": "Segmented contour or temporal area/symmetry series."
+  },
+  {
+    "id": "static_vs_dynamic_shape",
+    "name": "Static vs. dynamic shape differentiation",
+    "group": "Geometry & object classification",
+    "description": "Differentiate static rigid glowing emitters from dynamic deforming flame fronts using contour complexity, convexity defects, and intensity-centroid offset.",
+    "modalities": ["image", "video", "numeric"],
+    "supported_modalities": ["image", "video", "numeric"],
+    "prerequisites": "Segmented contour mask and intensity distribution."
+  },
+  {
+    "id": "flame_regime_classification",
+    "name": "Spherical, calm, turbulent, and irregular flame classification",
+    "group": "Geometry & object classification",
+    "description": "Classify flames into spherical_0g, calm_laminar, transitional_oscillating, or turbulent_irregular using circularity, fractal dimension, and peak count.",
+    "modalities": ["image", "video", "thermal"],
+    "supported_modalities": ["image", "video", "thermal"],
+    "prerequisites": "Segmented flame contour and boundary descriptors."
+  },
+  {
+    "id": "json_geometric_features",
+    "name": "JSON-based geometric feature extraction & classification",
+    "group": "Geometry & object classification",
+    "description": "Serialize normalized geometric feature vectors and classification labels (spherical_diffusion, turbulent_fire, glowing_object) into structured JSON for sorting and comparison.",
+    "modalities": ["image", "video", "numeric", "text"],
+    "supported_modalities": ["image", "video", "numeric", "text"],
+    "prerequisites": "Extracted image, video, or JSON descriptor payload."
+  },
+  {
+    "id": "dominant_orientation",
+    "name": "Dominant flame orientation (degrees) analysis",
+    "group": "Numerical & combustion measurements",
+    "description": "Compute minimum-area bounding-box orientation angle (degrees) and elongation axis to identify buoyant plume alignment or forced-flow direction.",
+    "modalities": ["image", "video", "numeric"],
+    "supported_modalities": ["image", "video", "numeric"],
+    "prerequisites": "Segmented flame contour."
+  },
+  {
+    "id": "numerical_condition_comparison",
+    "name": "Numerical comparison across experimental conditions",
+    "group": "Numerical & combustion measurements",
+    "description": "Quantify numerical deltas (Δsymmetry, Δcircularity, Δfractal_dimension, Δsoot_index) between uploaded specimens and reference NASA PSI conditions.",
+    "modalities": ["numeric", "image", "video", "spectral"],
+    "supported_modalities": ["numeric", "image", "video", "spectral"],
+    "prerequisites": "Extracted numerical descriptors and reference dataset."
+  },
+  {
+    "id": "extinction_chemical_signatures",
+    "name": "Combustion and extinction chemical signature differentiation",
+    "group": "Chemical kinetics & spectroscopy",
+    "description": "Evaluate CO/CO2 ratios, radiative loss indicators, and radical emission drop-offs associated with radiative or diffusive flame extinction.",
+    "modalities": ["spectral", "numeric", "text", "image"],
+    "supported_modalities": ["spectral", "numeric", "text", "image"],
+    "prerequisites": "Spectral/gas telemetry or colour-channel radiative proxy."
+  },
+  {
+    "id": "partial_gravity_symmetry_variation",
+    "name": "Flame symmetry variation across gravity levels",
+    "group": "Gravity scaling & partial gravity",
+    "description": "Track how top-bottom reflection symmetry IoU and aspect ratio degrade progressively from 0g (~0.95) to Lunar 0.16g (~0.74), Martian 0.38g (~0.56), and Earth 1g (~0.42).",
+    "modalities": ["image", "video", "numeric", "text"],
+    "supported_modalities": ["image", "video", "numeric", "text"],
+    "prerequisites": "Extracted symmetry descriptors or gravity-indexed dataset."
+  },
+  {
+    "id": "cool_flame_risk_assessment",
+    "name": "Cool-flame invisible reignition risk identification",
+    "group": "SI interpretation & safety assessment",
+    "description": "Identify post-extinction low-temperature cool-flame hazard where invisible CH2O/HO2 chemistry can trigger secondary hot reignition in spacecraft enclosures.",
+    "modalities": ["image", "video", "thermal", "spectral", "numeric", "text"],
+    "supported_modalities": ["image", "video", "thermal", "spectral", "numeric", "text"],
+    "prerequisites": "Fuel type (e.g., alkanes/heptane/decane), spectral/color ratios, or thermal traces."
+  },
+  {
+    "id": "lunar_martian_predictive_safety",
+    "name": "Predictive fire safety analysis for Lunar and Martian missions",
+    "group": "SI interpretation & safety assessment",
+    "description": "Synthesize buoyant velocity scaling (v_b ∝ √g), Minimum Oxygen Concentration (MOC) shifts, and suppression protocols for Lunar (0.16g) and Martian (0.38g) habitats.",
+    "modalities": ["image", "video", "thermal", "spectral", "numeric", "text"],
+    "supported_modalities": ["image", "video", "thermal", "spectral", "numeric", "text"],
+    "prerequisites": "Extracted flame descriptors and mission atmosphere parameters."
   }
 ]

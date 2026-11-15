@@ -31,12 +31,12 @@ def client() -> TestClient:
 
 
 def test_1_technique_registry_has_57_methods_and_canonical_ids() -> None:
-    """Section 12 Test 1: Confirms 57 methods, 9 groups, and key canonical IDs."""
+    """Section 12 Test 1: Confirms 57 untouched core methods + 20 extended differentiation methods (77 total), 9 groups, and key canonical IDs."""
     techniques = server.load_techniques()
-    assert len(techniques) == 57
+    assert len(techniques) == 77
 
     ids = [t["id"] for t in techniques]
-    assert len(set(ids)) == 57
+    assert len(set(ids)) == 77
     for key_id in (
         "absence_buoyancy",
         "spherical_symmetry",
@@ -56,6 +56,11 @@ def test_1_technique_registry_has_57_methods_and_canonical_ids() -> None:
         "evidence_ranking",
         "anomaly_detection",
         "risk_interpretation",
+        "terrestrial_vs_microgravity",
+        "multi_gravity_behavior",
+        "spherical_vs_teardrop",
+        "flame_regime_classification",
+        "lunar_martian_predictive_safety",
     ):
         assert key_id in ids
 
@@ -319,12 +324,17 @@ def test_video_table_and_document_extractors(tmp_path: Path) -> None:
 def test_end_to_end_api_routes_and_nasa_psi_connector(client: TestClient) -> None:
     health = client.get("/api/health")
     assert health.status_code == 200
-    assert health.json()["technique_count"] == 57
+    assert health.json()["technique_count"] == 77
     assert health.json()["catalog_count"] == 0
 
     techs = client.get("/api/techniques", params={"group": "Geometry & object classification"})
     assert techs.status_code == 200
-    assert techs.json()["count"] == 11
+    assert techs.json()["count"] == 14
+
+    sample_spec = client.get("/api/sample-specimen/0g_spherical")
+    assert sample_spec.status_code == 200
+    assert sample_spec.json()["preset"] == "0g_spherical"
+    assert sample_spec.json()["descriptors"]["bilateral_left_right_score"] > 0.85
 
     psi_search = client.get("/api/nasa-psi/search", params={"accession": "PSI-98"})
     assert psi_search.status_code == 200
@@ -338,7 +348,7 @@ def test_end_to_end_api_routes_and_nasa_psi_connector(client: TestClient) -> Non
         "/api/analyze",
         files=[("files", ("droplet_0g.png", img_bytes, "image/png"))],
         data={
-            "technique_ids": json.dumps(["segmentation", "spherical_symmetry", "bilateral_symmetry", "piv", "risk_interpretation"]),
+            "technique_ids": json.dumps(["segmentation", "spherical_symmetry", "bilateral_symmetry", "piv", "risk_interpretation", "terrestrial_vs_microgravity"]),
             "gravity_g": "0.0",
             "fuel": "heptane",
         },
@@ -347,7 +357,13 @@ def test_end_to_end_api_routes_and_nasa_psi_connector(client: TestClient) -> Non
     rep = upload_res.json()
     statuses = {a["technique_id"]: a["status"] for a in rep["technique_assessments"]}
     assert statuses["segmentation"] == "computed_from_upload"
+    assert statuses["terrestrial_vs_microgravity"] == "computed_from_upload"
     assert statuses["piv"] == "requires_more_data"
+    assert "nearest_psi_twin" in rep and rep["nearest_psi_twin"]["accession"].startswith("PSI-")
+    assert "moon_mars_scaling" in rep and len(rep["moon_mars_scaling"]["regimes"]) == 4
+    seg_entry = next(a for a in rep["technique_assessments"] if a["technique_id"] == "segmentation")
+    assert "differentiation" in seg_entry and seg_entry["differentiation"]
+    assert isinstance(seg_entry.get("numeric_score"), (int, float))
 
     fetched = client.get(f"/api/report/{rep['report_id']}")
     assert fetched.status_code == 200
