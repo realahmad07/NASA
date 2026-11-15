@@ -136,6 +136,44 @@ footer{border-top:1px solid var(--ink);padding:1.4rem 0 2.4rem;display:flex;just
 @media(max-width:860px){.hero,.g2{grid-template-columns:1fr}.flame-stage--hero{height:330px}.flame-stage--bench{height:300px}.plates{grid-template-columns:repeat(2,1fr)}.facts{grid-template-columns:1fr}.facts li{border:0;border-bottom:1px solid var(--rule);padding-left:0!important}
 #rank li{grid-template-columns:2.4rem 1fr 3rem 2rem}.meter{display:none}.top nav{display:none}.w{grid-template-columns:1fr}.rk{font-size:2.2rem}}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+/* 60s Guided Demo Tour & Presentation Subtitles HUD */
+.btn-demo-tour{font:600 .70rem var(--fm);letter-spacing:.08em;text-transform:uppercase;background:linear-gradient(135deg,#B4411F,#E5693F);color:#fff;border:1px solid rgba(255,255,255,.25);padding:.42rem .82rem;border-radius:4px;cursor:pointer;display:inline-flex;align-items:center;gap:.42rem;box-shadow:0 2px 10px rgba(180,65,31,.35);transition:transform .15s,box-shadow .15s,filter .15s;white-space:nowrap}
+:root[data-theme="dark"] .btn-demo-tour{background:linear-gradient(135deg,#E5693F,#F59E0B);color:#120E0A}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]) .btn-demo-tour{background:linear-gradient(135deg,#E5693F,#F59E0B);color:#120E0A}}
+.btn-demo-tour:hover{transform:translateY(-1px);box-shadow:0 4px 14px rgba(229,105,63,.5);filter:brightness(1.08)}
+.btn-demo-tour.is-running{background:#DC2626!important;color:#fff!important;animation:pulseDemoActive 1.6s infinite}
+@keyframes pulseDemoActive{0%,100%{box-shadow:0 0 0 0 rgba(220,38,38,.5)}50%{box-shadow:0 0 0 8px rgba(220,38,38,0)}}
+
+.btn-demo-hero{background:linear-gradient(135deg,rgba(180,65,31,.12),rgba(229,105,63,.2));color:var(--ink);border:1.5px solid var(--acc);padding:1.05rem 1.4rem;font:600 .76rem var(--fm);letter-spacing:.09em;text-transform:uppercase;cursor:pointer;transition:all .2s;border-radius:2px;display:inline-flex;align-items:center;gap:.5rem}
+.btn-demo-hero:hover{background:var(--acc);color:#fff;box-shadow:0 4px 18px rgba(180,65,31,.35)}
+.btn-demo-hero.is-running{background:#DC2626!important;color:#fff!important;border-color:#DC2626!important;animation:pulseDemoActive 1.6s infinite}
+
+.demo-hud{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);width:min(760px,calc(100vw - 32px));background:rgba(21,18,15,.95);color:#EDE6D6;border:1px solid rgba(229,105,63,.55);border-radius:10px;box-shadow:0 16px 48px rgba(0,0,0,.68),0 0 0 1px rgba(255,255,255,.08);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);z-index:9999;padding:12px 16px;display:flex;flex-direction:column;gap:8px;animation:hudSlideUp .25s ease-out;transition:opacity .2s,transform .2s}
+.demo-hud[hidden]{display:none!important}
+@keyframes hudSlideUp{from{opacity:0;transform:translate(-50%,16px)}to{opacity:1;transform:translate(-50%,0)}}
+.demo-hud-header{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.demo-hud-title-box{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.demo-voice-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(229,105,63,.22);border:1px solid rgba(229,105,63,.5);color:#FBBF24;font:600 .68rem var(--fm);letter-spacing:.06em;text-transform:uppercase;padding:3px 7px;border-radius:4px}
+.demo-audio-waves{display:inline-flex;align-items:flex-end;gap:2.5px;height:12px}
+.demo-audio-waves i{width:2.5px;height:100%;background:#F59E0B;border-radius:1px;animation:waveBar .85s ease-in-out infinite alternate}
+.demo-audio-waves i:nth-child(2){animation-delay:.22s;height:60%}
+.demo-audio-waves i:nth-child(3){animation-delay:.44s;height:85%}
+.demo-audio-waves i:nth-child(4){animation-delay:.12s;height:40%}
+.demo-audio-waves.paused i{animation-play-state:paused;height:3px!important}
+@keyframes waveBar{0%{height:20%}100%{height:100%}}
+.demo-act-badge{font:500 .70rem var(--fm);color:rgba(237,230,214,.82);letter-spacing:.05em;text-transform:uppercase}
+.demo-hud-controls{display:flex;align-items:center;gap:7px}
+.demo-timer{font:500 .75rem var(--fm);color:#38BDF8;letter-spacing:.05em;background:rgba(56,189,248,.12);border:1px solid rgba(56,189,248,.35);padding:2px 7px;border-radius:3px}
+.btn-demo-ctrl{font:600 .64rem var(--fm);letter-spacing:.06em;text-transform:uppercase;background:rgba(255,255,255,.1);color:#EDE6D6;border:1px solid rgba(255,255,255,.2);padding:4px 9px;border-radius:3px;cursor:pointer;transition:all .15s}
+.btn-demo-ctrl:hover{background:rgba(255,255,255,.2);color:#fff}
+.btn-demo-stop{border-color:rgba(239,68,68,.5);color:#F87171}
+.btn-demo-stop:hover{background:#EF4444;color:#fff}
+.demo-progress-track{width:100%;height:3px;background:rgba(255,255,255,.12);border-radius:2px;overflow:hidden}
+.demo-progress-bar{height:100%;background:linear-gradient(90deg,#F59E0B,#E5693F,#38BDF8);transition:width .25s ease-out}
+.demo-caption-body{background:rgba(0,0,0,.38);border-left:3px solid var(--acc);padding:8px 12px;border-radius:3px}
+.demo-caption-body p{margin:0;font:400 .94rem/1.45 var(--fb);color:#FFF;letter-spacing:.01em}
+.demo-caption-body p em{color:#FBBF24;font-style:normal;font-weight:600}
 </style>
 </head>
 <body>
@@ -148,6 +186,7 @@ footer{border-top:1px solid var(--ink);padding:1.4rem 0 2.4rem;display:flex;just
   <button data-go="3">04 Analyze (77)</button>
   <button data-go="4">05 Ranking</button>
 </nav>
+<button class="btn-demo-tour" id="btnNavDemo" title="Start 60-Second AI Guided Hackathon Demo"><span class="demo-play-icon">▶</span> 60s Demo</button>
 <button class="ghost" id="th" aria-label="Switch light and dark theme">◐</button>
 </div></header>
 
@@ -157,7 +196,7 @@ footer{border-top:1px solid var(--ink);padding:1.4rem 0 2.4rem;display:flex;just
 <p class="k">NASA PSI · microgravity combustion · fire safety</p>
 <h1>Read the <em>flame</em> that doesn't rise.</h1>
 <p class="lede">Input mission parameters, search official NASA Physical Sciences Informatics (PSI) investigations, import experiment catalogues, or upload multimodal flame evidence — PyroSage ranks fire hazards for lunar and Martian missions using a 77-technique scientific registry.</p>
-<div class="cta"><button class="btn" data-go="0" data-scroll>Open the bench →</button><p class="k" id="apiStatus">Decision support, not flight certification · 77 techniques ready</p></div>
+<div class="cta"><button class="btn" data-go="0" data-scroll>Open the bench →</button><button class="btn btn-demo-hero" id="btnHeroDemo">🎙️ Play Guided Demo (&lt;60s)</button><p class="k" id="apiStatus">Decision support, not flight certification · 77 techniques ready</p></div>
 </div>
 <figure class="core">
   <div class="flame-stage flame-stage--hero">
@@ -333,7 +372,7 @@ footer{border-top:1px solid var(--ink);padding:1.4rem 0 2.4rem;display:flex;just
 
 <div class="plates" id="plates"></div>
 
-<details open style="margin-top:1.6rem">
+<details id="specMatrixDetails" open style="margin-top:1.6rem">
   <summary>Sortable Specimen Image &amp; Numerical Value Matrix (Compare Uploaded Flame Images vs. NASA Dataset)</summary>
   <div class="cta" style="margin:.6rem 0 .8rem;gap:.7rem">
     <label class="k">Sort images by:
@@ -632,6 +671,31 @@ footer{border-top:1px solid var(--ink);padding:1.4rem 0 2.4rem;display:flex;just
 </section>
 </main>
 <footer class="wrap"><p class="k">PyroSage · prepared for NASA Space Apps · Official NASA PSI Connector</p><p class="k">Decision support, not a flight-safety certificate</p></footer>
+
+<aside id="hackathonDemoHud" class="demo-hud" hidden aria-live="polite">
+  <div class="demo-hud-header">
+    <div class="demo-hud-title-box">
+      <span class="demo-voice-badge">
+        <span class="demo-audio-waves" aria-hidden="true">
+          <i></i><i></i><i></i><i></i>
+        </span>
+        AI Tour Guide (Female)
+      </span>
+      <span class="demo-act-badge" id="demoActBadge">Act 1/5 · 3D Combustion</span>
+    </div>
+    <div class="demo-hud-controls">
+      <span class="demo-timer" id="demoTimer">00:00 / 00:50</span>
+      <button class="btn-demo-ctrl" id="btnDemoPause" title="Pause or Resume Demo">⏸ Pause</button>
+      <button class="btn-demo-ctrl btn-demo-stop" id="btnDemoStop" title="Stop Demo">⏹ Exit</button>
+    </div>
+  </div>
+  <div class="demo-progress-track">
+    <div class="demo-progress-bar" id="demoProgressBar" style="width:0%"></div>
+  </div>
+  <div class="demo-caption-body">
+    <p id="demoCaptionText">Initializing 60-second guided hackathon demo...</p>
+  </div>
+</aside>
 
 <script>
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
@@ -1637,6 +1701,324 @@ function rank(){
     lastReport=initRep;
     populateReportDetails(initRep);
   }
+})();
+
+// ============================================================================
+// 60-SECOND AUTOMATED HACKATHON DEMO TOUR
+// WITH FEMALE AI VOICE NARRATION & CLOSED-CAPTION PRESENTATION HUD
+// ============================================================================
+(function initHackathonDemoTour(){
+  const TOTAL_DURATION_SEC = 50; // Guaranteed < 60 seconds
+  let isRunning = false;
+  let isPaused = false;
+  let elapsedSec = 0;
+  let timerInterval = null;
+  let currentActIndex = -1;
+
+  const synth = 'speechSynthesis' in window ? window.speechSynthesis : null;
+  let cachedVoices = [];
+  function loadVoices(){
+    if (!synth) return;
+    try {
+      cachedVoices = synth.getVoices() || [];
+    } catch (_) {}
+  }
+  loadVoices();
+  if (synth && synth.onvoiceschanged !== undefined) {
+    synth.onvoiceschanged = loadVoices;
+  }
+
+  function getFemaleVoice(){
+    if (!cachedVoices.length) loadVoices();
+    const femaleKeywords = [
+      'female', 'woman', 'girl', 'samantha', 'victoria', 'karen', 'zira',
+      'jenny', 'aria', 'fiona', 'moira', 'tessa', 'ava', 'allison', 'kate', 'serena'
+    ];
+    let match = cachedVoices.find(v => {
+      const name = (v.name || '').toLowerCase();
+      const lang = (v.lang || '').toLowerCase();
+      return lang.startsWith('en') && femaleKeywords.some(kw => name.includes(kw));
+    });
+    if (!match) {
+      match = cachedVoices.find(v => (v.lang || '').toLowerCase().startsWith('en-us') || (v.lang || '').toLowerCase().startsWith('en-gb'));
+    }
+    if (!match) {
+      match = cachedVoices.find(v => (v.lang || '').toLowerCase().startsWith('en'));
+    }
+    return match || (cachedVoices.length ? cachedVoices[0] : null);
+  }
+
+  function speakNarration(text, onEnd){
+    if (!synth) {
+      if (onEnd) setTimeout(onEnd, 3500);
+      return;
+    }
+    try {
+      synth.cancel();
+      const utterance = new SpeechSynthesisUtterance(text);
+      const voice = getFemaleVoice();
+      if (voice) utterance.voice = voice;
+      // Pitch 1.12 creates a clear, upbeat female tone; rate 1.15 keeps speech brisk for hackathons
+      utterance.pitch = 1.12;
+      utterance.rate = 1.15;
+      utterance.lang = (voice && voice.lang) || 'en-US';
+      utterance.onend = () => { if (onEnd) onEnd(); };
+      utterance.onerror = () => { if (onEnd) onEnd(); };
+      synth.speak(utterance);
+    } catch (e) {
+      console.warn('SpeechSynthesis error:', e);
+      if (onEnd) setTimeout(onEnd, 3500);
+    }
+  }
+
+  const ACTS = [
+    {
+      act: 1,
+      title: "Act 1/5 · 3D Combustion Chamber",
+      startSec: 0,
+      endSec: 10,
+      captionHtml: "Welcome to <em>PyroSage</em>. In microgravity, flames don't rise—they form spherical diffusion mantles. Watch our volumetric chamber sweep from <em>zero-g</em> to Moon, Mars, and Earth.",
+      speechText: "Welcome to PyroSage. In microgravity, flames do not rise; they form spherical diffusion mantles. Watch our volumetric chamber sweep from zero g to Moon, Mars, and Earth.",
+      setup: () => {
+        go(0, true);
+        if (typeof updateTechOverlayToggle === 'function') updateTechOverlayToggle(true);
+        // At 0s: 0g spherical
+        if ($('#grRange')) $('#grRange').value = 0;
+        if ($('#gr')) $('#gr').value = 0;
+        if ($('#mat')) $('#mat').value = 'heptane';
+        drawFlame('gr');
+        setTimeout(() => {
+          if (!isRunning || currentActIndex !== 0) return;
+          // 3.2s: Lunar 0.17g & PMMA
+          if ($('#grRange')) $('#grRange').value = 0.17;
+          if ($('#gr')) $('#gr').value = 0.17;
+          if ($('#mat')) $('#mat').value = 'pmma';
+          drawFlame('gr');
+        }, 3200);
+        setTimeout(() => {
+          if (!isRunning || currentActIndex !== 0) return;
+          // 6.2s: Martian 0.38g
+          if ($('#grRange')) $('#grRange').value = 0.38;
+          if ($('#gr')) $('#gr').value = 0.38;
+          drawFlame('gr');
+        }, 6200);
+        setTimeout(() => {
+          if (!isRunning || currentActIndex !== 0) return;
+          // 8.5s: Earth 1.0g buoyant teardrop
+          if ($('#grRange')) $('#grRange').value = 1.0;
+          if ($('#gr')) $('#gr').value = 1.0;
+          drawFlame('gr');
+        }, 8500);
+      }
+    },
+    {
+      act: 2,
+      title: "Act 2/5 · NASA PSI Flight Repository",
+      startSec: 10,
+      endSec: 19,
+      captionHtml: "Next, explore the official <em>NASA PSI repository</em>. We query flight investigations and synchronize them directly into our local <em>SQLite database</em>.",
+      speechText: "Next, explore the official NASA Physical Sciences Informatics repository. We query flight investigations and synchronize them directly into our local SQLite database.",
+      setup: () => {
+        go(1, true);
+        if ($('#psiQ')) $('#psiQ').value = 'droplet';
+        if ($('#btnPsiSearch')) $('#btnPsiSearch').click();
+        setTimeout(() => {
+          if (!isRunning || currentActIndex !== 1) return;
+          selectedPsi = 'PSI-98';
+          const rec = psiRecords.find(x => (x.accession || x.experiment_id) === 'PSI-98');
+          if ($('#psiSelectedText')) {
+            $('#psiSelectedText').textContent = `Selected PSI investigation: PSI-98 · ${rec ? (rec.title || rec.name) : 'Flame Extinguishment Experiment (FLEX)'}`;
+          }
+          renderPsiGrid();
+        }, 4200);
+      }
+    },
+    {
+      act: 3,
+      title: "Act 3/5 · Multimodal Specimen Matrix",
+      startSec: 19,
+      endSec: 28,
+      captionHtml: "PyroSage ingests multimodal imagery. Our <em>computer vision matrix</em> extracts spherical symmetry, bilateral IoU, and soot luminosity across <em>multi-gravity specimens</em>.",
+      speechText: "PyroSage ingests multimodal imagery. Our computer vision matrix extracts spherical symmetry, bilateral IoU, and soot luminosity across multi-gravity specimens.",
+      setup: () => {
+        go(2, true);
+        if ($('#demo')) $('#demo').click();
+        setTimeout(() => {
+          if (!isRunning || currentActIndex !== 2) return;
+          const details = $('#specMatrixDetails') || document.querySelector('#p2 details');
+          if (details) details.open = true;
+          if ($('#specSortCol')) {
+            $('#specSortCol').value = 'spherical_symmetry_score';
+            renderSpecimenSortableMatrix();
+          }
+          const tbl = $('#specimenMatrixTable');
+          if (tbl) tbl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }, 4000);
+      }
+    },
+    {
+      act: 4,
+      title: "Act 4/5 · 77-Technique Registry Screening",
+      startSec: 28,
+      endSec: 38,
+      captionHtml: "We screen across <em>77 scientific techniques</em>. Watch the automated pipeline execute preprocessing, geometric analysis, and <em>NASA flight matching</em> in parallel.",
+      speechText: "We screen across seventy-seven scientific techniques. Watch the automated pipeline execute preprocessing, geometric analysis, and NASA flight matching in parallel.",
+      setup: () => {
+        go(3, true);
+        if ($('#btnTechCore')) $('#btnTechCore').click();
+        setTimeout(() => {
+          if (!isRunning || currentActIndex !== 3) return;
+          if ($('#go')) $('#go').click();
+        }, 1500);
+      }
+    },
+    {
+      act: 5,
+      title: "Act 5/5 · Mission Fire Hazard Engine",
+      startSec: 38,
+      endSec: 50,
+      captionHtml: "Finally, our hazard engine ranks flight materials. It matches nearest <em>NASA flight twins</em> and projects fire behavior onto <em>Lunar and Martian habitats</em>. PyroSage is mission-ready!",
+      speechText: "Finally, our hazard engine ranks flight materials. It matches nearest NASA flight twins and projects fire behavior onto Lunar and Martian habitats. PyroSage is mission ready!",
+      setup: () => {
+        go(4, true);
+        if ($('#w0')) $('#w0').value = 5;
+        if ($('#w1')) $('#w1').value = 3;
+        if ($('#w2')) $('#w2').value = 4;
+        rank();
+        setTimeout(() => {
+          if (!isRunning || currentActIndex !== 4) return;
+          const twinSec = $('#psiTwinDeltaTable');
+          if (twinSec) twinSec.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, 4200);
+      }
+    }
+  ];
+
+  function updateHudUI(){
+    const min = Math.floor(elapsedSec / 60);
+    const sec = elapsedSec % 60;
+    const tMin = Math.floor(TOTAL_DURATION_SEC / 60);
+    const tSec = TOTAL_DURATION_SEC % 60;
+    if ($('#demoTimer')) {
+      $('#demoTimer').textContent = `${String(min).padStart(2,'0')}:${String(sec).padStart(2,'0')} / ${String(tMin).padStart(2,'0')}:${String(tSec).padStart(2,'0')}`;
+    }
+    const pct = Math.min(100, Math.round((elapsedSec / TOTAL_DURATION_SEC) * 100));
+    if ($('#demoProgressBar')) $('#demoProgressBar').style.width = pct + '%';
+  }
+
+  function triggerAct(index){
+    if (index < 0 || index >= ACTS.length) return;
+    currentActIndex = index;
+    const act = ACTS[index];
+    if ($('#demoActBadge')) $('#demoActBadge').textContent = act.title;
+    if ($('#demoCaptionText')) $('#demoCaptionText').innerHTML = act.captionHtml;
+    const waveEl = document.querySelector('.demo-audio-waves');
+    if (waveEl) waveEl.classList.remove('paused');
+
+    act.setup();
+    speakNarration(act.speechText);
+  }
+
+  function startDemo(){
+    if (isRunning) {
+      stopDemo();
+      return;
+    }
+    isRunning = true;
+    isPaused = false;
+    elapsedSec = 0;
+    currentActIndex = -1;
+
+    const hud = $('#hackathonDemoHud');
+    if (hud) hud.removeAttribute('hidden');
+    $$('#btnNavDemo, #btnHeroDemo').forEach(btn => {
+      btn.classList.add('is-running');
+      btn.innerHTML = '⏹ Stop Demo';
+    });
+    if ($('#btnDemoPause')) $('#btnDemoPause').textContent = '⏸ Pause';
+
+    updateHudUI();
+    triggerAct(0);
+
+    timerInterval = setInterval(() => {
+      if (isPaused) return;
+      elapsedSec++;
+      updateHudUI();
+
+      const nextActIdx = ACTS.findIndex(a => elapsedSec >= a.startSec && elapsedSec < a.endSec);
+      if (nextActIdx !== -1 && nextActIdx !== currentActIndex) {
+        triggerAct(nextActIdx);
+      }
+
+      if (elapsedSec >= TOTAL_DURATION_SEC) {
+        finishDemo();
+      }
+    }, 1000);
+  }
+
+  function finishDemo(){
+    clearInterval(timerInterval);
+    if ($('#demoActBadge')) $('#demoActBadge').textContent = '🎉 Tour Complete (50s)';
+    if ($('#demoCaptionText')) {
+      $('#demoCaptionText').innerHTML = '🏆 <em>Hackathon Demo Complete!</em> All 5 workflow modules demonstrated with quantitative NASA PSI alignment in under 50 seconds.';
+    }
+    const waveEl = document.querySelector('.demo-audio-waves');
+    if (waveEl) waveEl.classList.add('paused');
+    if ($('#demoProgressBar')) $('#demoProgressBar').style.width = '100%';
+    setTimeout(() => {
+      stopDemo();
+    }, 5500);
+  }
+
+  function stopDemo(){
+    isRunning = false;
+    isPaused = false;
+    clearInterval(timerInterval);
+    if (synth) {
+      try { synth.cancel(); } catch (_) {}
+    }
+
+    const hud = $('#hackathonDemoHud');
+    if (hud) hud.setAttribute('hidden', '');
+
+    $$('#btnNavDemo').forEach(btn => {
+      btn.classList.remove('is-running');
+      btn.innerHTML = '<span class="demo-play-icon">▶</span> 60s Demo';
+    });
+    $$('#btnHeroDemo').forEach(btn => {
+      btn.classList.remove('is-running');
+      btn.innerHTML = '🎙️ Play Guided Demo (&lt;60s)';
+    });
+  }
+
+  function togglePause(){
+    if (!isRunning) return;
+    isPaused = !isPaused;
+    const pauseBtn = $('#btnDemoPause');
+    const waveEl = document.querySelector('.demo-audio-waves');
+    if (isPaused) {
+      if (pauseBtn) pauseBtn.textContent = '▶ Resume';
+      if (waveEl) waveEl.classList.add('paused');
+      if (synth) { try { synth.pause(); } catch (_) {} }
+    } else {
+      if (pauseBtn) pauseBtn.textContent = '⏸ Pause';
+      if (waveEl) waveEl.classList.remove('paused');
+      if (synth) { try { synth.resume(); } catch (_) {} }
+    }
+  }
+
+  const navDemo = $('#btnNavDemo');
+  if (navDemo) navDemo.addEventListener('click', startDemo);
+  const heroDemo = $('#btnHeroDemo');
+  if (heroDemo) heroDemo.addEventListener('click', startDemo);
+
+  const btnPause = $('#btnDemoPause');
+  if (btnPause) btnPause.addEventListener('click', togglePause);
+  const btnStop = $('#btnDemoStop');
+  if (btnStop) btnStop.addEventListener('click', stopDemo);
+
+  window.__pyroStartDemo = startDemo;
+  window.__pyroStopDemo = stopDemo;
 })();
 </script>
 
