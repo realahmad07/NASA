@@ -45,13 +45,15 @@ h1 em{color:var(--acc);font-weight:300}
 .flame-hud-right{display:flex;flex-direction:column;align-items:flex-end;gap:2px;color:rgba(236,230,216,.72)}
 .flame-hud--bench{display:flex;justify-content:space-between;align-items:flex-start}
 .flame-fallback{position:absolute;inset:0;display:grid;place-items:center;background:#1B1713;color:#ECE6D8;font:400 .75rem var(--fm);padding:1rem;text-align:center}
-.flame-tech-overlay{position:absolute;inset:0;pointer-events:none;padding:44px 14px 28px 14px;display:flex;flex-direction:column;justify-content:space-between;align-items:flex-start;gap:8px;transition:opacity .2s;z-index:4}
+.flame-tech-overlay{position:absolute;inset:0;pointer-events:none;padding:42px 14px 26px 14px;display:flex;flex-direction:column;justify-content:space-between;align-items:flex-start;gap:6px;transition:opacity .2s;z-index:4}
 .flame-tech-overlay[hidden]{display:none!important}
-.tech-callout{background:rgba(20,16,13,.82);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);border:1px solid rgba(245,158,11,.35);padding:3px 7px;display:inline-flex;align-items:center;gap:6px;max-width:fit-content;border-radius:2px;box-shadow:0 2px 6px rgba(0,0,0,.45);pointer-events:auto;cursor:pointer;user-select:none;transition:border-color .15s,transform .15s}
-.tech-callout:hover{border-color:var(--acc);transform:translateX(2px)}
-.tech-badge{background:var(--acc);color:#120e0a;font:700 8.5px var(--fm);padding:1px 4px;letter-spacing:.04em;border-radius:1px;text-transform:uppercase;white-space:nowrap}
-.tech-desc{font:500 9.5px var(--fm);color:rgba(245,240,230,.92);letter-spacing:.02em}
-@media (max-width:640px){.tech-desc{max-width:210px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}}
+.geom-tag-group{display:flex;flex-direction:column;gap:5px;align-items:flex-start}
+.geom-badge-card{background:rgba(18,14,11,.88);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1px solid rgba(245,158,11,.35);border-left:3px solid var(--acc);padding:4px 8px;display:inline-flex;align-items:center;gap:7px;border-radius:2px;box-shadow:0 2px 8px rgba(0,0,0,.5);pointer-events:auto;cursor:pointer;user-select:none;transition:border-color .15s,transform .15s}
+.geom-badge-card:hover{border-color:var(--acc);transform:translateX(2px)}
+.geom-id-badge{background:var(--acc);color:#120e0a;font:700 8.5px var(--fm);padding:1.5px 4.5px;letter-spacing:.04em;border-radius:1px;text-transform:uppercase;white-space:nowrap}
+.geom-tech-name{font:700 9px var(--fm);color:#FBBF24;letter-spacing:.02em;white-space:nowrap}
+.geom-val-metric{font:500 9.5px var(--fm);color:rgba(245,240,230,.95);letter-spacing:.02em;border-left:1px solid rgba(245,158,11,.35);padding-left:6px;white-space:nowrap}
+@media (max-width:640px){.geom-tech-name{display:none}.geom-val-metric{max-width:210px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}}
 .tech-overlay-toggle-btn{font:600 .62rem var(--fm);letter-spacing:.06em;text-transform:uppercase;background:none;border:1px solid var(--acc);color:var(--acc);padding:.35rem .6rem;cursor:pointer;white-space:nowrap;transition:all .15s}
 .tech-overlay-toggle-btn[aria-pressed="true"]{background:var(--acc);color:#120e0a}
 .chart-controls{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:.5rem;margin-top:.75rem;padding-top:.65rem;border-top:1px solid var(--rule)}
@@ -97,6 +99,20 @@ select{background:var(--card);border:1px solid var(--rule);font:500 .9rem var(--
 .gate{display:flex;gap:1rem;align-items:center;background:var(--card);border:1px solid var(--rule);border-left:4px solid var(--c3);padding:.9rem 1.1rem;margin-top:1.6rem;flex-wrap:wrap}
 .gate.ok{border-left-color:var(--c2)}
 .gate b{font:500 .8rem var(--fm);letter-spacing:.08em;text-transform:uppercase}
+.rank-card-box{background:var(--card);border:1px solid var(--rule);padding:1.4rem 1.6rem;margin-top:1.6rem;border-radius:3px;box-shadow:0 4px 18px rgba(0,0,0,0.03);transition:border-color .15s ease}
+.rank-card-box:hover{border-color:var(--ink)}
+.rank-block-header{margin-bottom:1.1rem;padding-bottom:.8rem;border-bottom:1px solid var(--rule)}
+.rank-block-title-row{display:flex;align-items:center;gap:.75rem;flex-wrap:wrap}
+.rank-block-badge{background:var(--ink);color:var(--paper);font:700 .62rem var(--fm);padding:.22rem .55rem;letter-spacing:.08em;text-transform:uppercase;border-radius:2px}
+.rank-block-title{font:400 1.3rem/1.2 var(--fd);margin:0;letter-spacing:-.015em;color:var(--ink)}
+.rank-block-desc{font:400 .86rem/1.5 var(--fb);color:var(--mute);margin:.45rem 0 0}
+.rank-block-desc b{color:var(--ink);font-weight:600}
+.w-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.2rem;margin:1.2rem 0}
+.w-card{background:var(--paper);border:1px solid var(--rule);padding:.9rem 1.1rem;border-radius:3px;display:flex;flex-direction:column;gap:.55rem;box-shadow:0 2px 8px rgba(0,0,0,0.02)}
+.w-card-header{display:flex;justify-content:space-between;align-items:baseline}
+.w-card label{font:600 .68rem var(--fm);letter-spacing:.08em;text-transform:uppercase;color:var(--ink)}
+.w-card output{font:600 .92rem var(--fm);color:var(--acc)}
+.w-card input[type="range"]{width:100%;accent-color:var(--acc)}
 .w{display:grid;grid-template-columns:repeat(3,1fr);gap:1.6rem;margin:1.6rem 0 .6rem}.w label{font:400 .68rem var(--fm);letter-spacing:.08em;text-transform:uppercase;color:var(--mute);display:block}.w input{width:100%;accent-color:var(--acc)}
 #rank{list-style:none;margin:0;padding:0;border-top:1px solid var(--ink)}
 #rank li{display:grid;grid-template-columns:3.2rem minmax(0,1.3fr) minmax(0,1fr) 3.4rem 2.4rem;gap:1rem;align-items:center;padding:1.2rem 0;border-bottom:1px solid var(--rule)}
@@ -147,13 +163,19 @@ footer{border-top:1px solid var(--ink);padding:1.4rem 0 2.4rem;display:flex;just
   <div class="flame-stage flame-stage--hero">
     <div id="heroFlameMount" class="flame-canvas-mount" role="img" aria-label="Interactive 3D microgravity flame cycling through spherical, ellipsoidal, and buoyant combustion regimes"></div>
     <div class="flame-tech-overlay" id="heroTechOverlay" aria-hidden="true">
-      <div class="tech-callout" style="align-self:flex-start">
-        <span class="tech-badge" id="heroBadgeGeom">TECH-01 · TECH-04</span>
-        <span class="tech-desc" id="heroTechGeom">0g Microgravity Spherical Diffusion Mantle</span>
+      <div class="geom-tag-group">
+        <div class="geom-badge-card" title="Spherical diffusion mantle geometry">
+          <span class="geom-id-badge" id="heroBadgeGeomH">TECH-01</span>
+          <span class="geom-tech-name" id="heroNameGeomH">Absence of Buoyancy</span>
+          <span class="geom-val-metric" id="heroValGeomH">0g Microgravity Spherical Diffusion Mantle</span>
+        </div>
       </div>
-      <div class="tech-callout" style="align-self:flex-start">
-        <span class="tech-badge" id="heroBadgeTwin">TECH-02 · TECH-48</span>
-        <span class="tech-desc" id="heroTechTwin">NASA Flight Twin Baseline · 57 Techniques Bounded</span>
+      <div class="geom-tag-group" style="margin-top:auto">
+        <div class="geom-badge-card" title="NASA PSI flight twin reference baseline">
+          <span class="geom-id-badge" id="heroBadgeGeomTwin">TECH-48</span>
+          <span class="geom-tech-name" id="heroNameGeomTwin">NASA Flight Twin Baseline</span>
+          <span class="geom-val-metric" id="heroValGeomTwin">57 Scientific Techniques Bounded</span>
+        </div>
       </div>
     </div>
     <div class="flame-hud flame-hud--hero" aria-hidden="true">
@@ -197,17 +219,34 @@ footer{border-top:1px solid var(--ink);padding:1.4rem 0 2.4rem;display:flex;just
   <div class="flame-stage flame-stage--bench">
     <div id="benchFlameMount" class="flame-canvas-mount" role="img" aria-label="Interactive 3D flame geometry and thermal color simulation"></div>
     <div class="flame-tech-overlay" id="benchTechOverlay" aria-hidden="true">
-      <div class="tech-callout" style="align-self:flex-start">
-        <span class="tech-badge" id="benchBadgeGeom">TECH-01 · TECH-04</span>
-        <span class="tech-desc" id="benchTechGeom">0g Spherical Diffusion (Gr → 0 · Symmetry 98.6%)</span>
+      <div class="geom-tag-group">
+        <div class="geom-badge-card" id="cardGeomH" title="Apex Height dimension determined by Froude/Grashof buoyant scaling">
+          <span class="geom-id-badge" id="benchBadgeGeomH">TECH-01</span>
+          <span class="geom-tech-name" id="benchNameGeomH">Absence of Buoyancy</span>
+          <span class="geom-val-metric" id="benchValGeomH">Height H: 18.2 mm</span>
+        </div>
+        <div class="geom-badge-card" id="cardGeomW" title="Equatorial standoff diameter determined by spherical diffusion symmetry">
+          <span class="geom-id-badge" id="benchBadgeGeomW">TECH-04</span>
+          <span class="geom-tech-name" id="benchNameGeomW">Spherical Flame Symmetry</span>
+          <span class="geom-val-metric" id="benchValGeomW">Diameter 2Rf: 18.0 mm (Rf: 9.0 mm)</span>
+        </div>
+        <div class="geom-badge-card" id="cardGeomShell" title="Reaction sheet standoff thickness determined by species diffusion">
+          <span class="geom-id-badge" id="benchBadgeGeomShell">TECH-02</span>
+          <span class="geom-tech-name" id="benchNameGeomShell">Standoff Diffusion Root</span>
+          <span class="geom-val-metric" id="benchValGeomShell">Reaction Shell δf: 2.4 mm</span>
+        </div>
       </div>
-      <div class="tech-callout" style="align-self:flex-start;margin-top:auto;margin-bottom:auto">
-        <span class="tech-badge" id="benchBadgeChem">TECH-02 · TECH-05</span>
-        <span class="tech-desc" id="benchTechChem">Stoichiometric Diffusion Root &amp; Radical Chemiluminescence</span>
-      </div>
-      <div class="tech-callout" style="align-self:flex-start">
-        <span class="tech-badge" id="benchBadgeTwin">TECH-48 · TECH-33</span>
-        <span class="tech-desc" id="benchTechTwin">Baseline: PSI-25 BASS Solid Spread · 57 Techniques Bounded</span>
+      <div class="geom-tag-group" style="margin-top:auto">
+        <div class="geom-badge-card" id="cardGeomFlow" title="Convective velocity & flow regime determined by transport physics">
+          <span class="geom-id-badge" id="benchBadgeGeomFlow">TECH-12</span>
+          <span class="geom-tech-name" id="benchNameGeomFlow">Molecular Diffusion Transport</span>
+          <span class="geom-val-metric" id="benchValGeomFlow">Flow: Marangoni (ub: 0.0 cm/s · Pe: 0.42)</span>
+        </div>
+        <div class="geom-badge-card" id="cardGeomTwin" title="Nearest NASA physical sciences informatics flight twin baseline">
+          <span class="geom-id-badge" id="benchBadgeGeomTwin">TECH-48</span>
+          <span class="geom-tech-name" id="benchNameGeomTwin">NASA Flight Twin Baseline</span>
+          <span class="geom-val-metric" id="benchValGeomTwin">PSI-25 SoFIE Polymer · 57 Techniques Bounded</span>
+        </div>
       </div>
     </div>
     <div class="flame-hud flame-hud--bench" aria-hidden="true" style="flex-direction:column;justify-content:space-between">
@@ -236,7 +275,7 @@ footer{border-top:1px solid var(--ink);padding:1.4rem 0 2.4rem;display:flex;just
       <button type="button" class="preset-btn grav-preset-btn" data-g="1" aria-pressed="false">1.0g Earth</button>
       <button type="button" class="preset-btn" id="btnBenchCycle" aria-pressed="false">Cycle all</button>
       <button type="button" class="preset-btn" id="btnBenchReset">Reset view</button>
-      <button type="button" class="preset-btn tech-overlay-toggle-btn" id="btnBenchTechOverlay" aria-pressed="true" title="Toggle 57-technique determination overlay">🔬 57 Techniques: ON</button>
+      <button type="button" class="preset-btn tech-overlay-toggle-btn" id="btnBenchTechOverlay" aria-pressed="true" title="Toggle geometry and techniques overlay">📐 Geometry &amp; Techniques: ON</button>
     </div>
     <div class="preset-row" style="width:100%;justify-content:space-between;align-items:center;border-top:1px dashed var(--rule);padding-top:.45rem;margin-top:.15rem">
       <span class="k" style="font-size:.6rem">Style Modifier:</span>
@@ -412,109 +451,183 @@ footer{border-top:1px solid var(--ink);padding:1.4rem 0 2.4rem;display:flex;just
 <!-- STEP 4: RANKING & FULL EVIDENCE REPORT -->
 <div class="panel" id="p4" hidden>
 <h2><small>05</small>The <span>ranking</span></h2>
+
+<!-- TOP PROVENANCE GATE & EXPORT CONTROLS -->
 <div class="gate ok" id="rankGate">
   <b id="gateBadge">Gate: NASA PSI Provenance Verified</b>
   <span class="note" style="margin:0" id="gateNote">Multi-criteria hazard and evidence ranking stamped with local descriptors and verified NASA PSI candidate records.</span>
-  <div style="margin-left:auto;display:flex;gap:.6rem">
+  <div style="margin-left:auto;display:flex;gap:.6rem;flex-wrap:wrap">
     <button class="btn btn-ghost" id="btnPrintReport" style="padding:.65rem 1rem">Print View</button>
     <button class="btn btn-ghost" id="btnExportReport" style="padding:.65rem 1.1rem">Export pyrosage-si-report.json</button>
   </div>
 </div>
-<div class="w">
-  <div><label for="w0">Flammability severity</label><input id="w0" type="range" min="0" max="100" value="50"></div>
-  <div><label for="w1">Evidence completeness</label><input id="w1" type="range" min="0" max="100" value="30"></div>
-  <div><label for="w2">Lunar / Martian relevance</label><input id="w2" type="range" min="0" max="100" value="20"></div>
-</div>
-<ol id="rank"></ol>
 
-<details open>
-  <summary>Nearest NASA PSI Twin Matching &amp; Uploaded Specimen Delta Matrix</summary>
-  <div class="gate ok" id="psiTwinBanner" style="margin-top:.8rem">
-    <b id="psiTwinBadge">Nearest NASA PSI Twin: PSI-98 (96.4% Match)</b>
-    <span class="note" id="psiTwinSub" style="margin:0">Quantitative feature-vector match comparing uploaded flame symmetry, convexity, and fractal dimension against official NASA PSI baselines.</span>
+<!-- SECTION 1: MULTI-CRITERIA HAZARD RANKING ENGINE -->
+<section class="rank-card-box">
+  <div class="rank-block-header">
+    <div class="rank-block-title-row">
+      <span class="rank-block-badge">01 · HAZARD ENGINE</span>
+      <h3 class="rank-block-title">Multi-Criteria Mission Hazard Ranking &amp; Sensitivity Weighting</h3>
+    </div>
+    <p class="rank-block-desc"><b>What this section does:</b> Dynamically calculates weighted composite fire hazard scores by balancing material flammability severity, multimodal evidence completeness, and lunar/Martian mission relevance. Drag the sliders to re-rank candidate fire risks in real time.</p>
   </div>
-  <div class="g2" style="margin-top:.9rem">
-    <div>
-      <p class="k">Uploaded Specimen vs. Nearest NASA PSI Twin Baseline</p>
-      <table id="psiTwinDeltaTable">
-        <thead><tr><th>Metric / Feature</th><th>Uploaded Specimen</th><th>NASA PSI Baseline</th><th>Δ Difference</th></tr></thead>
+  <div class="w w-grid">
+    <div class="w-card">
+      <div class="w-card-header">
+        <label for="w0">Flammability severity</label>
+        <output id="w0Val">50%</output>
+      </div>
+      <input id="w0" type="range" min="0" max="100" value="50">
+    </div>
+    <div class="w-card">
+      <div class="w-card-header">
+        <label for="w1">Evidence completeness</label>
+        <output id="w1Val">30%</output>
+      </div>
+      <input id="w1" type="range" min="0" max="100" value="30">
+    </div>
+    <div class="w-card">
+      <div class="w-card-header">
+        <label for="w2">Lunar / Martian relevance</label>
+        <output id="w2Val">20%</output>
+      </div>
+      <input id="w2" type="range" min="0" max="100" value="20">
+    </div>
+  </div>
+  <ol id="rank"></ol>
+</section>
+
+<!-- SECTION 2: NEAREST NASA PSI FLIGHT TWIN MATCHING & DELTA MATRIX -->
+<section class="rank-card-box">
+  <details open style="border-top:0;margin-top:0">
+    <summary class="rank-block-header" style="list-style:none">
+      <div class="rank-block-title-row">
+        <span class="rank-block-badge">02 · PSI TWIN MATCHING</span>
+        <h3 class="rank-block-title">Nearest NASA PSI Flight Twin Matching &amp; Metric Delta Matrix</h3>
+      </div>
+      <p class="rank-block-desc"><b>What this section does:</b> Compares uploaded flame contour, symmetry, convexity, and fractal descriptors against verified historical NASA microgravity flight datasets (PSI-98 FLEX, PSI-25 BASS-II, PSI-112 SoFIE, PSI-64 Saffire) and quantifies feature-by-feature deviation deltas.</p>
+    </summary>
+    <div class="gate ok" id="psiTwinBanner" style="margin-top:.8rem">
+      <b id="psiTwinBadge">Nearest NASA PSI Twin: PSI-98 (96.4% Match)</b>
+      <span class="note" id="psiTwinSub" style="margin:0">Quantitative feature-vector match comparing uploaded flame symmetry, convexity, and fractal dimension against official NASA PSI baselines.</span>
+    </div>
+    <div class="g2" style="margin-top:.9rem">
+      <div style="background:var(--paper);border:1px solid var(--rule);padding:1rem;border-radius:3px">
+        <p class="k" style="font-weight:600;margin-bottom:.5rem">Uploaded Specimen vs. Nearest NASA PSI Twin Baseline</p>
+        <div style="overflow-x:auto">
+          <table id="psiTwinDeltaTable">
+            <thead><tr><th>Metric / Feature</th><th>Uploaded Specimen</th><th>NASA PSI Baseline</th><th>Δ Difference</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+      <div style="background:var(--paper);border:1px solid var(--rule);padding:1rem;border-radius:3px">
+        <p class="k" style="font-weight:600;margin-bottom:.5rem">All Ranked NASA PSI &amp; Catalogue Candidate Twins</p>
+        <div style="overflow-x:auto;max-height:290px;overflow-y:auto">
+          <table id="psiMatchTable">
+            <thead><tr><th>ID</th><th>Investigation &amp; Delta Summary</th><th>Similarity</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </details>
+</section>
+
+<!-- SECTION 3: PARTIAL-GRAVITY FIRE SAFETY SCALING TRANSLATOR -->
+<section class="rank-card-box">
+  <details open style="border-top:0;margin-top:0">
+    <summary class="rank-block-header" style="list-style:none">
+      <div class="rank-block-title-row">
+        <span class="rank-block-badge">03 · GRAVITY TRANSLATION</span>
+        <h3 class="rank-block-title">Moon (0.16g) &amp; Mars (0.38g) Partial-Gravity Fire Safety Scaling Translator</h3>
+      </div>
+      <p class="rank-block-desc"><b>What this section does:</b> Translates microgravity flame measurements to lunar (0.16g), Martian (0.38g), and Earth (1.00g) exploration environments using Froude buoyant scaling (v_b ∝ √g), predicted Limiting Oxygen Concentration (LOC) shifts, and tactical suppression protocols.</p>
+    </summary>
+    <div style="overflow-x:auto;background:var(--paper);border:1px solid var(--rule);padding:1rem;border-radius:3px;margin-top:.8rem">
+      <table id="moonMarsScalingTable">
+        <thead>
+          <tr>
+            <th>Exploration Regime</th>
+            <th>Buoyant Draft v_b</th>
+            <th>Expected Top-Bottom IoU</th>
+            <th>Est. LOC (% O₂)</th>
+            <th>Spread Factor</th>
+            <th>Hazard Priority</th>
+            <th>Combustion Behavior &amp; Suppression Action</th>
+          </tr>
+        </thead>
         <tbody></tbody>
       </table>
     </div>
-    <div>
-      <p class="k">All Ranked NASA PSI &amp; Catalogue Candidate Twins</p>
-      <table id="psiMatchTable">
-        <thead><tr><th>ID</th><th>Investigation &amp; Delta Summary</th><th>Similarity</th></tr></thead>
-        <tbody></tbody>
+  </details>
+</section>
+
+<!-- SECTION 4: 57-TECHNIQUE SCIENTIFIC AUDIT MATRIX -->
+<section class="rank-card-box">
+  <details open style="border-top:0;margin-top:0">
+    <summary class="rank-block-header" style="list-style:none">
+      <div class="rank-block-title-row">
+        <span class="rank-block-badge">04 · TECHNIQUE AUDIT</span>
+        <h3 class="rank-block-title">Sortable 57-Technique Scientific Audit Matrix &amp; Bounded SI Findings</h3>
+      </div>
+      <p class="rank-block-desc"><b>What this section does:</b> Audits all 57 canonical core + 20 extended combustion techniques across all 9 scientific groups. Sort and filter measured metrics, solver lock states, and data-backed differentiation findings against official NASA criteria.</p>
+    </summary>
+    <div id="stateSummaryRow" style="margin:.8rem 0"></div>
+    <div class="cta" style="margin:.6rem 0;gap:.7rem;align-items:center;flex-wrap:wrap">
+      <label class="k">Sort techniques by:
+        <select id="techSortCol" style="width:auto;margin-left:.4rem;font-size:.74rem">
+          <option value="numeric_score">Measured Score / Metric (DESC)</option>
+          <option value="status">Verification Status (computed_from_upload first)</option>
+          <option value="id">Technique ID (A–Z)</option>
+          <option value="group">Scientific Group</option>
+        </select>
+      </label>
+      <input id="techSearchInput" type="text" placeholder="Filter technique or finding..." style="width:14rem;text-align:left;font-size:.78rem">
+      <span class="k" id="techAuditCountLabel">Showing all evaluated techniques</span>
+    </div>
+    <div class="g2" style="margin-top:.8rem">
+      <div style="background:var(--paper);border:1px solid var(--rule);padding:1rem;border-radius:3px;max-height:420px;overflow-y:auto">
+        <table id="techAuditTable">
+          <thead><tr><th>Technique</th><th>Score</th><th>Status</th><th>Data-Driven Differentiation Finding</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <div style="background:var(--paper);border:1px solid var(--rule);padding:1rem;border-radius:3px">
+        <p class="k" style="font-weight:600;margin-bottom:.5rem">Primary Specimen Descriptors &amp; SI Synthesis</p>
+        <div style="overflow-x:auto;max-height:180px;overflow-y:auto;margin-bottom:1rem">
+          <table id="descTable">
+            <thead><tr><th>Descriptor</th><th>Measured Value</th><th>Units / Method</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <div id="siFindingsBox"></div>
+      </div>
+    </div>
+  </details>
+</section>
+
+<!-- SECTION 5: SPACECRAFT MISSION SAFETY PROTOCOL -->
+<section class="rank-card-box">
+  <details style="border-top:0;margin-top:0">
+    <summary class="rank-block-header" style="list-style:none">
+      <div class="rank-block-title-row">
+        <span class="rank-block-badge">05 · MISSION PROTOCOL</span>
+        <h3 class="rank-block-title">Spacecraft Fire Safety Protocol &amp; Operational Mitigation Guidelines</h3>
+      </div>
+      <p class="rank-block-desc"><b>What this section does:</b> Prescribes mission-critical mitigation strategies, atmospheric shutoffs, dual-band UV/IR sensor rules, and suppressant delivery protocols for space habitats.</p>
+    </summary>
+    <div style="overflow-x:auto;background:var(--paper);border:1px solid var(--rule);padding:1rem;border-radius:3px;margin-top:.8rem">
+      <table>
+        <tr><th>Suppression</th><td>Ventilation shutoff · N₂ purge · fine water mist · CO₂ (gravity-regime dependent)</td></tr>
+        <tr><th>Detection</th><td>Dual-band UV/IR flame sensors · IR thermography · ventilation-return CO &amp; smoke opacity</td></tr>
+        <tr><th>Replicates</th><td>3 per oxygen/pressure condition, plus 0g baseline and 1g upward reference controls</td></tr>
+        <tr><th>Prediction</th><td>Limiting oxygen concentration (LOC) and spread velocity follow the ranked hazard order across 0g, 0.16g (Lunar), and 0.38g (Martian) regimes.</td></tr>
       </table>
     </div>
-  </div>
-</details>
-
-<details open>
-  <summary>Moon (0.16g) &amp; Mars (0.38g) Partial-Gravity Fire Safety Scaling Translator</summary>
-  <p class="note" style="margin:.6rem 0">Translates the uploaded specimen's measured symmetry and soot descriptors across ISS ($0.00g$), Lunar ($0.16g$), Martian ($0.38g$), and Earth ($1.00g$) gravity regimes using buoyant velocity scaling ($v_b \propto \sqrt{g}$) and Minimum Oxygen Concentration (LOC) shifts.</p>
-  <div style="overflow-x:auto">
-    <table id="moonMarsScalingTable">
-      <thead>
-        <tr>
-          <th>Exploration Regime</th>
-          <th>Buoyant Draft v_b</th>
-          <th>Expected Top-Bottom IoU</th>
-          <th>Est. LOC (% O₂)</th>
-          <th>Spread Factor</th>
-          <th>Hazard Priority</th>
-          <th>Combustion Behavior &amp; Suppression Action</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-  </div>
-</details>
-
-<details open>
-  <summary>Sortable Technique Differentiation Matrix &amp; Bounded SI Findings</summary>
-  <div id="stateSummaryRow" style="margin:.8rem 0"></div>
-  <div class="cta" style="margin:.6rem 0;gap:.7rem">
-    <label class="k">Sort techniques by:
-      <select id="techSortCol" style="width:auto;margin-left:.4rem;font-size:.74rem">
-        <option value="numeric_score">Measured Score / Metric (DESC)</option>
-        <option value="status">Verification Status (computed_from_upload first)</option>
-        <option value="id">Technique ID (A–Z)</option>
-        <option value="group">Scientific Group</option>
-      </select>
-    </label>
-    <input id="techSearchInput" type="text" placeholder="Filter technique or finding..." style="width:14rem;text-align:left;font-size:.78rem">
-    <span class="k" id="techAuditCountLabel">Showing all evaluated techniques</span>
-  </div>
-  <div class="g2" style="margin-top:.6rem">
-    <div style="max-height:380px;overflow-y:auto">
-      <table id="techAuditTable">
-        <thead><tr><th>Technique</th><th>Score</th><th>Status</th><th>Data-Driven Differentiation Finding</th></tr></thead>
-        <tbody></tbody>
-      </table>
-    </div>
-    <div>
-      <p class="k" style="margin-bottom:.4rem">Primary Specimen Descriptors &amp; SI Synthesis</p>
-      <table id="descTable" style="margin-bottom:1rem">
-        <thead><tr><th>Descriptor</th><th>Measured Value</th><th>Units / Method</th></tr></thead>
-        <tbody></tbody>
-      </table>
-      <div id="siFindingsBox"></div>
-    </div>
-  </div>
-</details>
-
-<details>
-  <summary>Mission safety protocol for top three</summary>
-  <table>
-    <tr><th>Suppression</th><td>Ventilation shutoff · N₂ purge · fine water mist · CO₂ (gravity-regime dependent)</td></tr>
-    <tr><th>Detection</th><td>Dual-band UV/IR flame sensors · IR thermography · ventilation-return CO &amp; smoke opacity</td></tr>
-    <tr><th>Replicates</th><td>3 per oxygen/pressure condition, plus 0g baseline and 1g upward reference controls</td></tr>
-    <tr><th>Prediction</th><td>Limiting oxygen concentration (LOC) and spread velocity follow the ranked hazard order across 0g, 0.16g (Lunar), and 0.38g (Martian) regimes.</td></tr>
-  </table>
-  <p class="note">PyroSage provides research decision support linked to NASA PSI accessions (PSI-98, PSI-107, PSI-25, PSI-112, PSI-64, PSI-41); do not use as a standalone flight-safety certification without spacecraft qualification testing.</p>
-</details>
+    <p class="note" style="margin-top:.8rem">PyroSage provides research decision support linked to NASA PSI accessions (PSI-98, PSI-107, PSI-25, PSI-112, PSI-64, PSI-41); do not use as a standalone flight-safety certification without spacecraft qualification testing.</p>
+  </details>
+</section>
 </div>
 </section>
 </main>
@@ -734,43 +847,74 @@ function drawFlame(sourceId){
     $('#physicsFootnote').textContent=`Physics: ${tel.flowMode} · Flame H/W=${(tel.heightMm/Math.max(1,tel.widthMm)).toFixed(2)} · Reaction sheet δf=${tel.shellThicknessMm}mm · Soot fv=${tel.sootPpm}ppm`;
   }
 
-  const bBadgeGeom = $('#benchBadgeGeom');
-  const bTechGeom = $('#benchTechGeom');
-  const bBadgeChem = $('#benchBadgeChem');
-  const bTechChem = $('#benchTechChem');
-  const bBadgeTwin = $('#benchBadgeTwin');
-  const bTechTwin = $('#benchTechTwin');
+  const bBadgeH = $('#benchBadgeGeomH'), bNameH = $('#benchNameGeomH'), bValH = $('#benchValGeomH');
+  const bBadgeW = $('#benchBadgeGeomW'), bNameW = $('#benchNameGeomW'), bValW = $('#benchValGeomW');
+  const bBadgeShell = $('#benchBadgeGeomShell'), bNameShell = $('#benchNameGeomShell'), bValShell = $('#benchValGeomShell');
+  const bBadgeFlow = $('#benchBadgeGeomFlow'), bNameFlow = $('#benchNameGeomFlow'), bValFlow = $('#benchValGeomFlow');
+  const bBadgeTwin = $('#benchBadgeGeomTwin'), bNameTwin = $('#benchNameGeomTwin'), bValTwin = $('#benchValGeomTwin');
 
   if (g < 0.08) {
-    if (bBadgeGeom) bBadgeGeom.textContent = 'TECH-01 · TECH-04';
-    if (bTechGeom) bTechGeom.textContent = `0g Spherical Diffusion (Gr→0 · Pe ${tel.peclet} · Absence of Buoyancy)`;
+    if (bBadgeH) bBadgeH.textContent = 'TECH-01';
+    if (bNameH) bNameH.textContent = 'Absence of Buoyancy';
+    if (bValH) bValH.textContent = `Height H: ${tel.heightMm} mm (Gr < 10⁻⁴)`;
+
+    if (bBadgeW) bBadgeW.textContent = 'TECH-04';
+    if (bNameW) bNameW.textContent = 'Spherical Flame Symmetry';
+    if (bValW) bValW.textContent = `Diameter 2Rf: ${tel.widthMm} mm (Rf ${(tel.widthMm/2).toFixed(1)} mm)`;
+
+    if (bBadgeFlow) bBadgeFlow.textContent = 'TECH-12';
+    if (bNameFlow) bNameFlow.textContent = 'Molecular Diffusion Transport';
+    if (bValFlow) bValFlow.textContent = `Flow: ${tel.flowMode} (ub: ${tel.buoyantVelCmS} cm/s · Pe: ${tel.peclet})`;
   } else if (g < 0.38) {
     const regName = g < 0.25 ? 'Lunar' : 'Martian';
-    if (bBadgeGeom) bBadgeGeom.textContent = 'TECH-33 · TECH-07';
-    if (bTechGeom) bTechGeom.textContent = `Partial-${regName} Plume (Fr/Gr Scaling · ub ${tel.buoyantVelCmS} cm/s)`;
+    if (bBadgeH) bBadgeH.textContent = 'TECH-33';
+    if (bNameH) bNameH.textContent = `Partial-${regName} Plume Froude Scaling`;
+    if (bValH) bValH.textContent = `Height H: ${tel.heightMm} mm (ub: ${tel.buoyantVelCmS} cm/s)`;
+
+    if (bBadgeW) bBadgeW.textContent = 'TECH-31';
+    if (bNameW) bNameW.textContent = 'Aspect Ratio Elongation';
+    if (bValW) bValW.textContent = `Width W: ${tel.widthMm} mm (H/W: ${(tel.heightMm/Math.max(1,tel.widthMm)).toFixed(2)})`;
+
+    if (bBadgeFlow) bBadgeFlow.textContent = 'TECH-07';
+    if (bNameFlow) bNameFlow.textContent = 'Convective / Diffusive Flow Vectors';
+    if (bValFlow) bValFlow.textContent = `Flow: ${tel.flowMode} (ub: ${tel.buoyantVelCmS} cm/s · Pe: ${tel.peclet})`;
   } else {
-    if (bBadgeGeom) bBadgeGeom.textContent = 'TECH-33 · TECH-15';
-    if (bTechGeom) bTechGeom.textContent = `Buoyant Teardrop Plume (Kelvin-Helmholtz Waist · ub ${tel.buoyantVelCmS} cm/s)`;
+    if (bBadgeH) bBadgeH.textContent = 'TECH-33';
+    if (bNameH) bNameH.textContent = 'Buoyancy-Driven Plume Apex';
+    if (bValH) bValH.textContent = `Height H: ${tel.heightMm} mm (ub: ${tel.buoyantVelCmS} cm/s)`;
+
+    if (bBadgeW) bBadgeW.textContent = 'TECH-15';
+    if (bNameW) bNameW.textContent = 'Kelvin-Helmholtz Vortex Waist';
+    if (bValW) bValW.textContent = `Width W: ${tel.widthMm} mm (H/W: ${(tel.heightMm/Math.max(1,tel.widthMm)).toFixed(2)})`;
+
+    if (bBadgeFlow) bBadgeFlow.textContent = 'TECH-07';
+    if (bNameFlow) bNameFlow.textContent = 'Convective Flow Vector Field';
+    if (bValFlow) bValFlow.textContent = `Flow: ${tel.flowMode} (ub: ${tel.buoyantVelCmS} cm/s · Pe: ${tel.peclet})`;
   }
 
   if (tel.coolFlame === 'Likely') {
-    if (bBadgeChem) bBadgeChem.textContent = 'TECH-05 · TECH-18';
-    if (bTechChem) bTechChem.textContent = `Low-Temp Cool Flame (CH₂O* 400-500nm · T∞ ${tel.temperatureK}K)`;
+    if (bBadgeShell) bBadgeShell.textContent = 'TECH-05';
+    if (bNameShell) bNameShell.textContent = 'Cool-Flame Low-Temperature Chemistry';
+    if (bValShell) bValShell.textContent = `CH₂O* Band Standoff δf: ${tel.shellThicknessMm} mm (T∞ ${tel.temperatureK}K)`;
   } else if (mat === 'cotton') {
-    if (bBadgeChem) bBadgeChem.textContent = 'TECH-28 · TECH-54';
-    if (bTechChem) bTechChem.textContent = `Fibrous Char Smolder & Soot fv ${tel.sootPpm} PPM (P^1.65 Scaling)`;
+    if (bBadgeShell) bBadgeShell.textContent = 'TECH-28';
+    if (bNameShell) bNameShell.textContent = 'Soot Volume Fraction & Char Shell';
+    if (bValShell) bValShell.textContent = `Reaction δf: ${tel.shellThicknessMm} mm (fv: ${tel.sootPpm} PPM)`;
   } else if (mat === 'heptane') {
-    if (bBadgeChem) bBadgeChem.textContent = 'TECH-03 · TECH-49';
-    if (bTechChem) bTechChem.textContent = `Droplet d² Evaporation & Blue Chemiluminescent Standoff`;
+    if (bBadgeShell) bBadgeShell.textContent = 'TECH-03';
+    if (bNameShell) bNameShell.textContent = 'Droplet D² Law & Evaporation Standoff';
+    if (bValShell) bValShell.textContent = `Reaction Standoff δf: ${tel.shellThicknessMm} mm`;
   } else {
-    if (bBadgeChem) bBadgeChem.textContent = 'TECH-02 · TECH-26';
-    if (bTechChem) bTechChem.textContent = `PMMA Solid Boundary Layer & Radical Standoff (δf ${tel.shellThicknessMm}mm)`;
+    if (bBadgeShell) bBadgeShell.textContent = 'TECH-02';
+    if (bNameShell) bNameShell.textContent = 'Standoff Diffusion Root & Radical Sheet';
+    if (bValShell) bValShell.textContent = `Pyrolysis Standoff δf: ${tel.shellThicknessMm} mm`;
   }
 
-  if (bBadgeTwin) bBadgeTwin.textContent = 'TECH-48 · TECH-57';
-  if (bTechTwin) {
+  if (bBadgeTwin) bBadgeTwin.textContent = 'TECH-48';
+  if (bNameTwin) bNameTwin.textContent = 'NASA Flight Twin Baseline';
+  if (bValTwin) {
     const twinRef = mat === 'pmma' ? 'PSI-25 SoFIE/BASS Polymer' : mat === 'cotton' ? 'PSI-64 Saffire Flow Tunnel' : 'PSI-98 FLEX Droplet';
-    bTechTwin.textContent = `Flight Twin: ${twinRef} · 57 Techniques Bounded`;
+    bValTwin.textContent = `${twinRef} · 57 Techniques Bounded`;
   }
 
   $$('.grav-preset-btn').forEach(btn=>{
@@ -819,14 +963,14 @@ function updateTechOverlayToggle(active) {
   techOverlayActive = active;
   if($('#btnBenchTechOverlay')){
     $('#btnBenchTechOverlay').setAttribute('aria-pressed', techOverlayActive ? 'true' : 'false');
-    $('#btnBenchTechOverlay').textContent = techOverlayActive ? '🔬 57 Techniques: ON' : '🔬 57 Techniques: OFF';
+    $('#btnBenchTechOverlay').textContent = techOverlayActive ? '📐 Geometry & Techniques: ON' : '📐 Geometry & Techniques: OFF';
   }
   if(window.__pyroToggleTechOverlay)window.__pyroToggleTechOverlay(techOverlayActive);
 }
 if($('#btnBenchTechOverlay'))$('#btnBenchTechOverlay').addEventListener('click',()=>{
   updateTechOverlayToggle(!techOverlayActive);
 });
-$$('.tech-callout').forEach(card=>card.addEventListener('click',()=>{
+$$('.geom-badge-card, .tech-callout').forEach(card=>card.addEventListener('click',()=>{
   updateTechOverlayToggle(!techOverlayActive);
 }));
 
@@ -1434,6 +1578,9 @@ const base=[
 ];
 function rank(){
   const w=[0,1,2].map(i=>+$('#w'+i).value),t=w.reduce((a,b)=>a+b,0)||1;
+  if($('#w0Val')) $('#w0Val').textContent = `${Math.round(100*w[0]/t)}%`;
+  if($('#w1Val')) $('#w1Val').textContent = `${Math.round(100*w[1]/t)}%`;
+  if($('#w2Val')) $('#w2Val').textContent = `${Math.round(100*w[2]/t)}%`;
   const rf=lastReport?.ranked_findings;
   const items=(rf&&rf.length?rf.map((r,i)=>({
     nm:($('#nm'+i)&&$('#nm'+i).value.trim())||`${r.accession} · ${r.title}`,
@@ -3076,21 +3223,31 @@ function rank(){
         ctx.fillStyle = 'rgba(245, 158, 11, 0.85)';
         ctx.lineWidth = 1;
         ctx.setLineDash([3, 3]);
-        ctx.font = '500 10px system-ui, -apple-system, sans-serif';
+        ctx.font = '500 9.5px system-ui, -apple-system, sans-serif';
 
-        // Outer caliper for flame radius
+        // Outer caliper for flame radius & symmetry
         const calR = Math.max(rx, ry);
         ctx.beginPath();
         ctx.arc(cx, flameCy, calR * 1.06, -Math.PI * 0.35, -Math.PI * 0.05);
         ctx.stroke();
-        ctx.fillText('TECH-04: Rf Standoff', cx + calR * 0.85, flameCy - calR * 0.55);
+        ctx.fillText('TECH-04 Spherical Symmetry · Rf', cx + calR * 0.72, flameCy - calR * 0.55);
+
+        // Flame height & buoyant apex
+        ctx.beginPath();
+        ctx.moveTo(cx + rx * 0.95 + 6, burnerTopY);
+        ctx.lineTo(cx + rx * 0.95 + 18, burnerTopY);
+        ctx.moveTo(cx + rx * 0.95 + 12, burnerTopY);
+        ctx.lineTo(cx + rx * 0.95 + 12, flameCy - ry * 1.05);
+        ctx.lineTo(cx + rx * 0.95 + 18, flameCy - ry * 1.05);
+        ctx.stroke();
+        ctx.fillText('TECH-33 Buoyant Plume · H', cx + rx * 0.95 + 22, (burnerTopY + flameCy - ry * 1.05) * 0.5);
 
         // Base reaction zone caliper
         ctx.beginPath();
         ctx.moveTo(cx - rx * 0.88, burnerTopY);
         ctx.lineTo(cx - rx * 0.88 - 14, burnerTopY);
         ctx.stroke();
-        ctx.fillText('TECH-02: Root', cx - rx * 0.88 - 85, burnerTopY + 3);
+        ctx.fillText('TECH-02 Standoff Root · δf', cx - rx * 0.88 - 142, burnerTopY + 3);
 
         ctx.restore();
       }
@@ -3124,25 +3281,31 @@ function rank(){
         if (f) f.textContent = tel.flowLabel;
         if (k) k.textContent = `${tel.temperatureK}K`;
 
-        const hBadgeGeom = document.getElementById('heroBadgeGeom');
-        const hGeom = document.getElementById('heroTechGeom');
-        const hBadgeTwin = document.getElementById('heroBadgeTwin');
-        const hTwin = document.getElementById('heroTechTwin');
+        const hBadgeH = document.getElementById('heroBadgeGeomH');
+        const hNameH = document.getElementById('heroNameGeomH');
+        const hValH = document.getElementById('heroValGeomH');
+        const hBadgeTwin = document.getElementById('heroBadgeGeomTwin');
+        const hNameTwin = document.getElementById('heroNameGeomTwin');
+        const hValTwin = document.getElementById('heroValGeomTwin');
 
         if (tel.modeLabel.includes('0g')) {
-          if (hBadgeGeom) hBadgeGeom.textContent = 'TECH-01 · TECH-04';
-          if (hGeom) hGeom.textContent = '0g Microgravity Spherical Diffusion Mantle (Absence of Buoyancy)';
+          if (hBadgeH) hBadgeH.textContent = 'TECH-01';
+          if (hNameH) hNameH.textContent = 'Absence of Buoyancy';
+          if (hValH) hValH.textContent = '0g Microgravity Spherical Diffusion Mantle (Gr < 10⁻⁴)';
         } else {
-          if (hBadgeGeom) hBadgeGeom.textContent = 'TECH-33 · TECH-07';
-          if (hGeom) hGeom.textContent = `${tel.modeLabel} Plume · Froude/Grashof Buoyant Scaling`;
+          if (hBadgeH) hBadgeH.textContent = 'TECH-33';
+          if (hNameH) hNameH.textContent = 'Buoyant Plume Froude Scaling';
+          if (hValH) hValH.textContent = `${tel.modeLabel} Plume Regime`;
         }
 
         if (tel.coolFlame === 'Likely') {
-          if (hBadgeTwin) hBadgeTwin.textContent = 'TECH-05 · TECH-18';
-          if (hTwin) hTwin.textContent = 'Cool Flame Radical Regime · Formaldehyde CH₂O* Band';
+          if (hBadgeTwin) hBadgeTwin.textContent = 'TECH-05';
+          if (hNameTwin) hNameTwin.textContent = 'Cool-Flame Low-Temperature Chemistry';
+          if (hValTwin) hValTwin.textContent = 'Formaldehyde CH₂O* Emission Band (~400-500 nm)';
         } else {
-          if (hBadgeTwin) hBadgeTwin.textContent = 'TECH-48 · TECH-57';
-          if (hTwin) hTwin.textContent = 'NASA Flight Twin Baseline · 57 Techniques Bounded';
+          if (hBadgeTwin) hBadgeTwin.textContent = 'TECH-48';
+          if (hNameTwin) hNameTwin.textContent = 'NASA Flight Twin Baseline';
+          if (hValTwin) hValTwin.textContent = 'NASA PSI Flight Dataset · 57 Techniques Bounded';
         }
       }
     });
