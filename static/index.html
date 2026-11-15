@@ -196,10 +196,12 @@ footer{border-top:1px solid var(--ink);padding:1.4rem 0 2.4rem;display:flex;just
   <div class="ledger">
     <label><span>SI Reasoning Provider<i>bounded API</i></span>
       <select id="provSelect" style="width:14rem">
-        <option value="gemini">Gemini (gemini-3.8-flash)</option>
+        <option value="gemini">Gemini Interactions API</option>
         <option value="openai">OpenAI Responses API</option>
       </select>
     </label>
+    <label><span>Model ID<i>default gemini-3.8-flash</i></span><input id="modelInput" type="text" value="gemini-3.8-flash" style="width:12rem;text-align:right"></label>
+    <label><span>API Key<i>request-only, not stored</i></span><input id="apiKeyInput" type="password" placeholder="Optional API key" style="background:none;border:0;border-bottom:1px solid var(--ink);font:500 .85rem var(--fm);color:var(--ink);padding:.3rem 0;width:12rem;text-align:right"></label>
   </div>
 </div>
 <div class="row">
@@ -257,7 +259,10 @@ footer{border-top:1px solid var(--ink);padding:1.4rem 0 2.4rem;display:flex;just
 <div class="gate ok" id="rankGate">
   <b id="gateBadge">Gate: NASA PSI Provenance Verified</b>
   <span class="note" style="margin:0" id="gateNote">Multi-criteria hazard and evidence ranking stamped with local descriptors and verified NASA PSI candidate records.</span>
-  <button class="btn btn-ghost" id="btnExportReport" style="margin-left:auto;padding:.65rem 1.1rem">Export Report JSON</button>
+  <div style="margin-left:auto;display:flex;gap:.6rem">
+    <button class="btn btn-ghost" id="btnPrintReport" style="padding:.65rem 1rem">Print View</button>
+    <button class="btn btn-ghost" id="btnExportReport" style="padding:.65rem 1.1rem">Export pyrosage-si-report.json</button>
+  </div>
 </div>
 <div class="w">
   <div><label for="w0">Flammability severity</label><input id="w0" type="range" min="0" max="100" value="50"></div>
@@ -619,6 +624,10 @@ $('#go').onclick=async function(){
   },45);
 };
 
+$('#provSelect').onchange=()=>{
+  $('#modelInput').value=$('#provSelect').value==='openai'?'gpt-4.1-mini':'gemini-3.8-flash';
+};
+
 async function executeBackendAnalysis(techIds){
   const fd=new FormData();
   $$('.plate input').forEach(inp=>{if(inp.files&&inp.files[0])fd.append('files',inp.files[0]);});
@@ -629,6 +638,8 @@ async function executeBackendAnalysis(techIds){
   fd.append('pressure_kpa',$('#pr').value||'101');
   fd.append('fuel',$('#mat').value||'pmma');
   fd.append('provider',$('#provSelect').value||'gemini');
+  fd.append('model',$('#modelInput').value||'gemini-3.8-flash');
+  if($('#apiKeyInput')&&$('#apiKeyInput').value.trim())fd.append('api_key',$('#apiKeyInput').value.trim());
   const gVal=+$('#gr').value;
   fd.append('sample_preset',gVal<0.05?'0g_spherical':(gVal<0.25?'lunar_017g':'martian_038g'));
 
@@ -683,7 +694,7 @@ async function executeBackendAnalysis(techIds){
       similarity_score:+(0.94-i*0.04).toFixed(2),match_confidence:+(0.94-i*0.04).toFixed(2),match_rationale:p.summary
     })),
     si_interpretation:{
-      provider:$('#provSelect').value,model:'gemini-3.8-flash',
+      provider:$('#provSelect').value,model:$('#modelInput').value||'gemini-3.8-flash',
       summary:`Bounded PyroSage synthesis across ${techIds.length} techniques. Top NASA PSI match: ${selectedPsi}.`,
       findings:[{
         title:'Spherical Flame Envelope & Symmetry Verification',
@@ -758,15 +769,12 @@ function populateReportDetails(rep){
   rank();
 }
 
+$('#btnPrintReport').onclick=()=>window.print();
 $('#btnExportReport').onclick=()=>{
-  if(lastReport&&lastReport.report_id&&!lastReport.report_id.startsWith('rep-local-')){
-    window.open(`/api/report/${lastReport.report_id}`,'_blank');
-    return;
-  }
   const blob=new Blob([JSON.stringify(lastReport||{service:'PyroSage',techniques:techniques.length},null,2)],{type:'application/json'});
   const a=document.createElement('a');
   a.href=URL.createObjectURL(blob);
-  a.download=`${(lastReport&&lastReport.report_id)||'pyrosage_report'}.json`;
+  a.download='pyrosage-si-report.json';
   a.click();
 };
 

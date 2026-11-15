@@ -859,6 +859,13 @@ def extract_image_descriptors(image_bytes: bytes, filename: str = "image.png") -
             "orientation_deg": "degrees",
         },
         "caveat": "Heuristic warm-color segmentation; pixels are not physical length (m) or temperature (K) without calibration.",
+        "_image_payloads": [
+            {
+                "label": filename,
+                "mime_type": "image/png",
+                "base64": base64.b64encode(cv2.imencode(".png", bgr)[1].tobytes()).decode("ascii"),
+            }
+        ],
     }
 
 
@@ -885,6 +892,7 @@ def extract_video_descriptors(video_bytes: bytes, filename: str = "video.mp4") -
             positions = [0, 1, 2, 3]
 
         sampled_features: list[dict[str, Any]] = []
+        frame_payloads: list[dict[str, str]] = []
         for pos in positions:
             cap.set(cv2.CAP_PROP_POS_FRAMES, pos)
             ret, frame = cap.read()
@@ -892,9 +900,18 @@ def extract_video_descriptors(video_bytes: bytes, filename: str = "video.mp4") -
                 continue
             ok, buf = cv2.imencode(".png", frame)
             if ok:
-                f_desc = extract_image_descriptors(buf.tobytes(), f"{filename}#frame{pos}")
+                png_bytes = buf.tobytes()
+                f_desc = extract_image_descriptors(png_bytes, f"{filename}#frame{pos}")
+                f_desc.pop("_image_payloads", None)
                 f_desc["frame_index"] = pos
                 sampled_features.append(f_desc)
+                frame_payloads.append(
+                    {
+                        "label": f"{filename}#frame{pos}",
+                        "mime_type": "image/png",
+                        "base64": base64.b64encode(png_bytes).decode("ascii"),
+                    }
+                )
         cap.release()
     finally:
         try:
@@ -935,6 +952,7 @@ def extract_video_descriptors(video_bytes: bytes, filename: str = "video.mp4") -
             "flicker_frequency_computed": False,
             "piv_computed": False,
             "piv_note": "PIV was not computed; requires seeded tracer particle pairs, frame timing, and calibration.",
+            "_image_payloads": frame_payloads[:MAX_IMAGE_PAYLOADS],
         }
     )
     return base
@@ -1040,11 +1058,24 @@ def extract_document_descriptors(file_bytes: bytes, filename: str) -> dict[str, 
             extra["top_level_keys"] = list(parsed.keys())[:30]
     elif ext == ".pdf":
         pages_text: list[str] = []
+        rendered_pages: list[dict[str, str]] = []
         try:
             with fitz.open(stream=file_bytes, filetype="pdf") as doc:
                 extra["page_count"] = len(doc)
                 for idx in range(min(len(doc), 25)):
                     pages_text.append(doc[idx].get_text("text"))
+                for p_idx in range(min(len(doc), 3)):
+                    pix = doc[p_idx].get_pixmap(matrix=fitz.Matrix(1.2, 1.2), alpha=False)
+                    png_bytes = pix.tobytes("png")
+                    rendered_pages.append(
+                        {
+                            "label": f"{filename}#page{p_idx + 1}",
+                            "mime_type": "image/png",
+                            "base64": base64.b64encode(png_bytes).decode("ascii"),
+                        }
+                    )
+                extra["rendered_page_count"] = len(rendered_pages)
+                extra["_image_payloads"] = rendered_pages
         except Exception:
             reader = PdfReader(io.BytesIO(file_bytes))
             extra["page_count"] = len(reader.pages)
@@ -1561,6 +1592,285 @@ def validate_si_output(
     }
 
 
+SI_RESPONSE_JSON_SCHEMA: dict[str, Any] = {
+    "type": "object",
+    "additionalProperties": False,
+    "required": [
+        "executive_summary",
+        "technique_assessments",
+        "experiment_matches",
+        "key_findings",
+        "safety_implications",
+        "data_gaps",
+        "overall_confidence",
+    ],
+    "properties": {
+        "executive_summary": {"type": "string"},
+        "technique_assessments": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "additionalProperties": False,
+                "required": ["technique_id", "status", "observations", "evidence_refs", "limitations"],
+                "properties": {
+                    "technique_id": {"type": "string"},
+                    "status": {"type": "string", "enum": sorted(ALLOWED_STATUSES)},
+                    "observations": {"type": "string"},
+                    "evidence_refs": {"type": "array", "items": {"type": "string"}},
+                    "limitations": {"type": "string"},
+                },
+            },
+        },
+        "experiment_matches": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "additionalProperties": False,
+                "required": ["experiment_id", "match_confidence", "reason"],
+                "properties": {
+                    "experiment_id": {"type": "string"},
+                    "match_confidence": {"type": "number"},
+                    "reason": {"type": "string"},
+                },
+            },
+        },
+        "key_findings": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "additionalProperties": False,
+                "required": ["rank", "relevance_score", "confidence", "evidence_type", "finding", "evidence"],
+                "properties": {
+                    "rank": {"type": "integer"},
+                    "relevance_score": {"type": "number"},
+                    "confidence": {"type": "number"},
+                    "evidence_type": {"type": "string"},
+                    "finding": {"type": "string"},
+                    "evidence": {"type": "string"},
+                },
+            },
+        },
+        "safety_implications": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "additionalProperties": False,
+                "required": ["implication", "priority", "supporting_evidence", "uncertainty"],
+                "properties": {
+                    "implication": {"type": "string"},
+                    "priority": {"type": "string"},
+                    "supporting_evidence": {"type": "string"},
+                    "uncertainty": {"type": "string"},
+                },
+            },
+        },
+        "data_gaps": {"type": "array", "items": {"type": "string"}},
+        "overall_confidence": {"type": "number"},
+    },
+}
+
+
+def collect_image_payloads(extractions: list[dict[str, Any]]) -> list[dict[str, str]]:
+    """Collect up to MAX_IMAGE_PAYLOADS (5) image payloads across images, video sample frames, and rendered PDF pages."""
+    payloads: list[dict[str, str]] = []
+    for ext in extractions:
+        items = ext.get("_image_payloads", [])
+        if isinstance(items, list):
+            for p in items:
+                if isinstance(p, dict) and p.get("base64"):
+                    payloads.append(p)
+                    if len(payloads) >= MAX_IMAGE_PAYLOADS:
+                        return payloads
+    return payloads
+
+
+def strip_internal_payloads(extractions: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    cleaned: list[dict[str, Any]] = []
+    for ext in extractions:
+        copy_ext = {k: v for k, v in ext.items() if not k.startswith("_")}
+        cleaned.append(copy_ext)
+    return cleaned
+
+
+def build_si_system_instruction(
+    selected_techniques: list[dict[str, Any]],
+    candidate_experiments: list[dict[str, Any]],
+) -> str:
+    """Build the bounded SI system instruction enforcing the 9 mandatory rules from Section 08 (Slide 14)."""
+    tech_lines = "\n".join(
+        f"- {t['id']} ({t['name']}): modalities={t.get('modalities', [])}; prerequisites={t.get('prerequisites', '')}"
+        for t in selected_techniques
+    )
+    cand_lines = (
+        "\n".join(
+            f"- {c['experiment_id']}: {c['name']} | platform={c.get('platform', '')} | g={c.get('gravity_g')} | pre_match={c.get('pre_match_score')}"
+            for c in candidate_experiments
+        )
+        if candidate_experiments
+        else "NONE (Catalogue is empty or no candidate records matched)."
+    )
+    return (
+        "You are PyroSage SI, a technique-bounded microgravity combustion evidence analysis assistant.\n"
+        "MANDATORY ANALYSIS RULES (Section 08):\n"
+        "1. Use ONLY methods in the supplied allowed-technique whitelist below. Never invent a diagnostic method, model, metric, or technique.\n"
+        "2. Assign one of the 5 allowed statuses (computed_from_upload, visually_assessed, interpreted_from_metadata, requires_more_data, not_applicable) to each method.\n"
+        "3. Do NOT claim PIV without seeded tracer particles, paired frames, frame timing, and spatial calibration. Optical flow is not PIV.\n"
+        "4. Do NOT infer absolute temperature (K or °C) from ordinary RGB or uncalibrated false-color images.\n"
+        "5. Do NOT identify chemical species from an uncalibrated peak alone.\n"
+        "6. Do NOT infer the experiment, mission, or platform from flame shape. Experiment identification MUST be confined to supplied candidate records.\n"
+        "7. Do NOT invent NASA experiments, citations, measurement values, frame rates, instrument metadata, or physical units.\n"
+        "8. State uncertainty in heuristic segmentation and distinguish measured, locally computed, visually assessed, inferred, and unknown values.\n"
+        "9. Do NOT call model interpretation a validated combustion simulation, kinetics solver, mission-safety determination, or certification.\n\n"
+        f"ALLOWED TECHNIQUE WHITELIST ({len(selected_techniques)}):\n{tech_lines}\n\n"
+        f"SUPPLIED CATALOGUE CANDIDATES:\n{cand_lines}\n"
+    )
+
+
+def call_gemini_interactions_api(
+    api_key: str,
+    model: str,
+    system_instruction: str,
+    context_text: str,
+    image_payloads: list[dict[str, str]],
+) -> dict[str, Any]:
+    """Invoke Google Gemini Interactions API (v1beta/interactions) with store=false and JSON schema per Slide 14."""
+    parts: list[dict[str, Any]] = [{"text": context_text}]
+    for img in image_payloads[:MAX_IMAGE_PAYLOADS]:
+        parts.append(
+            {
+                "inline_data": {
+                    "mime_type": img.get("mime_type", "image/png"),
+                    "data": img["base64"],
+                }
+            }
+        )
+
+    payload = {
+        "model": model,
+        "system_instruction": {"parts": [{"text": system_instruction}]},
+        "contents": [{"role": "user", "parts": parts}],
+        "generation_config": {
+            "temperature": 0.1,
+            "response_mime_type": "application/json",
+            "response_schema": SI_RESPONSE_JSON_SCHEMA,
+        },
+        "store": False,
+    }
+    url = "https://generativelanguage.googleapis.com/v1beta/interactions"
+    with httpx.Client(timeout=30.0) as http_client:
+        resp = http_client.post(url, headers={"x-goog-api-key": api_key, "Content-Type": "application/json"}, json=payload)
+        if resp.status_code >= 400:
+            alt_url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent"
+            alt_payload = {k: v for k, v in payload.items() if k not in ("model", "store")}
+            resp = http_client.post(alt_url, headers={"x-goog-api-key": api_key, "Content-Type": "application/json"}, json=alt_payload)
+        resp.raise_for_status()
+        data = resp.json()
+
+    text_out = ""
+    if "outputs" in data and isinstance(data["outputs"], list) and data["outputs"]:
+        text_out = data["outputs"][0].get("text", "")
+    elif "candidates" in data and data["candidates"]:
+        c_parts = data["candidates"][0].get("content", {}).get("parts", [])
+        text_out = "".join(p.get("text", "") for p in c_parts)
+    return json.loads(text_out) if text_out else {}
+
+
+def call_openai_responses_api(
+    api_key: str,
+    model: str,
+    system_instruction: str,
+    context_text: str,
+    image_payloads: list[dict[str, str]],
+) -> dict[str, Any]:
+    """Invoke OpenAI Responses API (v1/responses) with high-detail images and strict JSON schema per Slide 14."""
+    user_content: list[dict[str, Any]] = [{"type": "input_text", "text": context_text}]
+    for img in image_payloads[:MAX_IMAGE_PAYLOADS]:
+        mime = img.get("mime_type", "image/png")
+        user_content.append(
+            {
+                "type": "input_image",
+                "image_url": f"data:{mime};base64,{img['base64']}",
+                "detail": "high",
+            }
+        )
+
+    payload = {
+        "model": model,
+        "store": False,
+        "input": [
+            {"role": "system", "content": [{"type": "input_text", "text": system_instruction}]},
+            {"role": "user", "content": user_content},
+        ],
+        "text": {
+            "format": {
+                "type": "json_schema",
+                "name": "pyrosage_si_report",
+                "strict": True,
+                "schema": SI_RESPONSE_JSON_SCHEMA,
+            }
+        },
+    }
+    with httpx.Client(timeout=30.0) as http_client:
+        resp = http_client.post(
+            "https://api.openai.com/v1/responses",
+            headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
+            json=payload,
+        )
+        resp.raise_for_status()
+        data = resp.json()
+
+    text_out = data.get("output_text", "")
+    if not text_out and "output" in data:
+        for item in data["output"]:
+            for c in item.get("content", []):
+                if c.get("type") in ("output_text", "text"):
+                    text_out += c.get("text", "")
+    return json.loads(text_out) if text_out else {}
+
+
+def invoke_si_provider(
+    provider: str,
+    model: str,
+    request_api_key: str | None,
+    selected_tech_ids: list[str],
+    extractions: list[dict[str, Any]],
+    metadata: dict[str, Any],
+    candidates: list[dict[str, Any]],
+    fallback_report: dict[str, Any],
+) -> tuple[dict[str, Any], str]:
+    """Invoke the selected external LLM provider if an API key is available, else return deterministic local synthesis."""
+    tech_map = get_technique_map()
+    selected_objs = [tech_map[tid] for tid in selected_tech_ids if tid in tech_map]
+    sys_prompt = build_si_system_instruction(selected_objs, candidates)
+    img_payloads = collect_image_payloads(extractions)
+    clean_ext = strip_internal_payloads(extractions)
+    context_text = json.dumps(
+        {
+            "metadata": metadata,
+            "local_extractions": clean_ext,
+            "candidate_experiments": candidates,
+        },
+        indent=2,
+    )
+
+    prov = (provider or DEFAULT_PROVIDER).strip().lower()
+    key = (request_api_key or "").strip()
+    if not key:
+        key = os.getenv("OPENAI_API_KEY" if prov == "openai" else "GEMINI_API_KEY", "").strip()
+
+    if not key:
+        return fallback_report, "local_deterministic_synthesis"
+
+    try:
+        if prov == "openai":
+            raw = call_openai_responses_api(key, model or "gpt-4.1-mini", sys_prompt, context_text, img_payloads)
+            return raw or fallback_report, "openai_responses_api"
+        raw = call_gemini_interactions_api(key, model or DEFAULT_MODEL, sys_prompt, context_text, img_payloads)
+        return raw or fallback_report, "gemini_interactions_api"
+    except Exception:
+        return fallback_report, "local_deterministic_fallback"
+
+
 def create_synthetic_sample_image(kind: str = "0g_spherical") -> bytes:
     """Create a synthetic warm-color HSV flame test image for verification and demo use."""
     canvas = np.zeros((240, 240, 3), dtype=np.uint8)
@@ -1649,6 +1959,7 @@ def api_health() -> dict[str, Any]:
             "max_file_bytes": MAX_FILE_BYTES,
             "max_total_bytes": MAX_TOTAL_BYTES,
             "max_files": MAX_UPLOAD_FILES,
+            "max_image_payloads": MAX_IMAGE_PAYLOADS,
         },
     }
 
@@ -1891,6 +2202,7 @@ async def api_nasa_psi_analyze(request: Request) -> dict[str, Any]:
         "overall_confidence": 0.84,
     }
     validated = validate_analysis_response(raw_report, [a["id"] for a in assessments], candidates)
+    clean_ext = strip_internal_payloads([img_desc])
     report_id = f"rep-{uuid.uuid4().hex[:12]}"
     full_report = {
         "report_id": report_id,
@@ -1903,8 +2215,8 @@ async def api_nasa_psi_analyze(request: Request) -> dict[str, Any]:
             "source_url": psi_rec["source_url"],
             "fiction_simulator_used": False,
         },
-        "local_extractions": [img_desc],
-        "evidence_inventory": [img_desc],
+        "local_extractions": clean_ext,
+        "evidence_inventory": clean_ext,
         "selected_technique_ids": [a["id"] for a in validated["technique_assessments"]],
         "technique_assessments": validated["technique_assessments"],
         "experiment_matches": validated["experiment_matches"],
@@ -1981,10 +2293,13 @@ async def api_analyze(
     mission: str | None = Form(default=None),
     provider: str | None = Form(default=None),
     model: str | None = Form(default=None),
+    api_key: str | None = Form(default=None),
     sample_preset: str | None = Form(default=None),
     notes: str = Form(default=""),
 ) -> dict[str, Any]:
-    """Multipart or JSON analysis endpoint per Section 06, 08, 10, and 11."""
+    """Multipart or JSON analysis endpoint per Section 06, 08, 10, and 11.
+    Request-scoped api_key is never persisted into SQLite or .env.
+    """
     init_db()
     ct_header = (request.headers.get("content-type") or "").lower()
     selected_techs: list[str] = []
@@ -2005,6 +2320,7 @@ async def api_analyze(
         mission = str(body.get("mission") or mission or "")
         provider = body.get("provider", provider)
         model = body.get("model", model)
+        api_key = body.get("api_key", api_key)
         sample_preset = body.get("sample_preset", sample_preset)
         notes = str(body.get("notes", notes))
     else:
@@ -2058,7 +2374,7 @@ async def api_analyze(
     candidates = match_catalog_candidates(extractions, metadata, active_catalog)
 
     first_ext = extractions[0]
-    raw_report = {
+    fallback_raw_report = {
         "executive_summary": (
             f"Processed {len(extractions)} evidence file(s) across {len(assessments)} selected scientific techniques. "
             f"Primary modality: {first_ext.get('modality')} ({first_ext.get('filename')})."
@@ -2098,10 +2414,24 @@ async def api_analyze(
         "overall_confidence": 0.78,
     }
 
-    validated = validate_analysis_response(raw_report, [a["id"] for a in assessments], candidates)
-    report_id = f"rep-{uuid.uuid4().hex[:12]}"
     chosen_provider = str(provider or DEFAULT_PROVIDER).strip().lower()
     chosen_model = str(model or DEFAULT_MODEL).strip()
+    selected_ids_canonical = [a["id"] for a in assessments]
+
+    provider_report, execution_path = invoke_si_provider(
+        provider=chosen_provider,
+        model=chosen_model,
+        request_api_key=api_key,
+        selected_tech_ids=selected_ids_canonical,
+        extractions=extractions,
+        metadata=metadata,
+        candidates=candidates,
+        fallback_report=fallback_raw_report,
+    )
+
+    validated = validate_analysis_response(provider_report, selected_ids_canonical, candidates)
+    clean_extractions = strip_internal_payloads(extractions)
+    report_id = f"rep-{uuid.uuid4().hex[:12]}"
 
     ranked_list = [
         {
@@ -2124,15 +2454,17 @@ async def api_analyze(
         "report_id": report_id,
         "created_at": datetime.now(timezone.utc).isoformat(),
         "workflow_mode": "uploaded_evidence_analysis",
+        "execution_path": execution_path,
+        "catalog_total": cat_data["total"],
         "provenance": {
             "data_source": "Operator Uploaded Evidence",
-            "uploaded_files": [e.get("filename", "") for e in extractions],
+            "uploaded_files": [e.get("filename", "") for e in clean_extractions],
             "relabelled_as_nasa_data": False,
             "fiction_simulator_used": False,
         },
         "metadata": metadata,
-        "local_extractions": extractions,
-        "evidence_inventory": extractions,
+        "local_extractions": clean_extractions,
+        "evidence_inventory": clean_extractions,
         "selected_technique_ids": [a["id"] for a in validated["technique_assessments"]],
         "technique_assessments": validated["technique_assessments"],
         "experiment_matches": validated["experiment_matches"],

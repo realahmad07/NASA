@@ -367,3 +367,41 @@ def test_end_to_end_api_routes_and_nasa_psi_connector(client: TestClient) -> Non
     assert tech_pdf.exists() and tech_pdf.stat().st_size > 100000
     with fitz.open(str(tech_pdf)) as pdf_doc:
         assert len(pdf_doc) == 21
+
+
+def test_provider_schema_and_image_payload_limits() -> None:
+    """Section 06 & 08: Verify PDF 3-page rendering, 5-image payload cap, and 9 mandatory SI system prompt rules."""
+    pdf_doc = fitz.open()
+    for p_num in range(4):
+        page = pdf_doc.new_page()
+        page.insert_text((72, 72), f"Page {p_num + 1} PSI-98 FLEX droplet data.")
+    pdf_bytes = pdf_doc.tobytes()
+    pdf_doc.close()
+
+    pdf_desc = server.extract_document_descriptors(pdf_bytes, "four_pages.pdf")
+    assert pdf_desc["page_count"] == 4
+    assert pdf_desc["rendered_page_count"] == 3
+
+    img_desc = server.extract_image_descriptors(server.create_synthetic_sample_image("0g_spherical"), "flame.png")
+    payloads = server.collect_image_payloads([pdf_desc, img_desc, img_desc, img_desc])
+    assert len(payloads) == server.MAX_IMAGE_PAYLOADS == 5
+
+    tech_map = server.get_technique_map()
+    sys_prompt = server.build_si_system_instruction(
+        [tech_map["segmentation"], tech_map["piv"]],
+        [{"experiment_id": "PSI-98", "name": "FLEX", "platform": "ISS / CIR", "gravity_g": 0.0, "pre_match_score": 0.92}],
+    )
+    assert "MANDATORY ANALYSIS RULES" in sys_prompt
+    assert "Optical flow is not PIV" in sys_prompt
+    assert "segmentation" in sys_prompt
+    assert "PSI-98" in sys_prompt
+    assert set(server.SI_RESPONSE_JSON_SCHEMA["required"]) == {
+        "executive_summary",
+        "technique_assessments",
+        "experiment_matches",
+        "key_findings",
+        "safety_implications",
+        "data_gaps",
+        "overall_confidence",
+    }
+
