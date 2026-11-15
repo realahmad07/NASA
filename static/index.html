@@ -147,36 +147,64 @@ footer{border-top:1px solid var(--ink);padding:1.4rem 0 2.4rem;display:flex;just
 
 .btn-demo-hero{background:linear-gradient(135deg,rgba(180,65,31,.12),rgba(229,105,63,.2));color:var(--ink);border:1.5px solid var(--acc);padding:1.05rem 1.4rem;font:600 .76rem var(--fm);letter-spacing:.09em;text-transform:uppercase;cursor:pointer;transition:all .2s;border-radius:2px;display:inline-flex;align-items:center;gap:.5rem}
 .btn-demo-hero:hover{background:var(--acc);color:#fff;box-shadow:0 4px 18px rgba(180,65,31,.35)}
-.btn-demo-hero.is-running{background:#DC2626!important;color:#fff!important;border-color:#DC2626!important;animation:pulseDemoActive 1.6s infinite}
+.btn-demo-hero.is-running{background:#DC2626!important;color:#fff!important;border-color:#DC2626!important}
+
+/* 3-Button Demo Control Cluster */
+.demo-control-cluster{display:inline-flex;align-items:center;gap:5px}
+.btn-demo-action{font:600 .68rem var(--fm);letter-spacing:.06em;text-transform:uppercase;background:var(--card);color:var(--ink);border:1px solid var(--rule);padding:.42rem .75rem;border-radius:4px;cursor:pointer;display:inline-flex;align-items:center;gap:.35rem;transition:all .15s;white-space:nowrap}
+.btn-demo-action:hover{border-color:var(--ink);background:rgba(229,105,63,.12)}
+.btn-demo-action.btn-demo-stop{border-color:rgba(239,68,68,.4);color:#EF4444}
+.btn-demo-action.btn-demo-stop:hover{background:#EF4444;color:#fff}
+.btn-hero-action{padding:1.05rem 1.15rem!important;font-size:.74rem!important;border-radius:2px!important}
+.btn-hero-stop{border-color:rgba(239,68,68,.5)!important;color:#EF4444!important}
+.btn-hero-stop:hover{background:#EF4444!important;color:#fff!important}
 
 /* Cinematic Zoom & Spotlight Tour Features */
-.tour-dimmer{position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:900;pointer-events:none;opacity:0;transition:opacity .35s ease}
+.tour-dimmer{position:fixed;inset:0;background:radial-gradient(circle at center,rgba(0,0,0,.15) 0%,rgba(0,0,0,.68) 100%),rgba(0,0,0,.45);z-index:900;pointer-events:none;opacity:0;transition:opacity .35s ease}
 body.tour-active .tour-dimmer{opacity:1}
 
 .tour-zoom-focus{
   position:relative!important;
   z-index:950!important;
-  transform:scale(var(--tour-zoom,1.03))!important;
-  transition:transform .45s cubic-bezier(.16,1,.3,1),box-shadow .4s ease!important;
-  box-shadow:0 0 0 3px var(--acc),0 0 32px rgba(229,105,63,.45)!important;
-  border-radius:4px;
+  transform:scale(var(--tour-zoom,1.07))!important;
+  transition:transform .5s cubic-bezier(.16,1,.3,1),box-shadow .4s ease,filter .4s ease!important;
+  box-shadow:0 0 0 4px var(--acc),0 0 45px rgba(229,105,63,.75),0 20px 48px rgba(0,0,0,.75)!important;
+  outline:2px solid rgba(255,255,255,.5)!important;
+  border-radius:6px!important;
+  filter:brightness(1.04) contrast(1.02);
+  animation:tourFocusPulse 2.4s infinite alternate;
+}
+@keyframes tourFocusPulse{
+  0%{box-shadow:0 0 0 4px var(--acc),0 0 32px rgba(229,105,63,.6),0 16px 40px rgba(0,0,0,.7)}
+  100%{box-shadow:0 0 0 5px #FBBF24,0 0 55px rgba(245,158,11,.85),0 22px 52px rgba(0,0,0,.8)}
 }
 .tour-spotlight-callout{
   position:absolute;
-  top:-34px;
-  left:12px;
+  top:-38px;
+  left:14px;
   background:linear-gradient(135deg,#B4411F,#E5693F);
   color:#fff;
-  font:600 .70rem var(--fm);
+  font:700 .74rem var(--fm);
   letter-spacing:.06em;
   text-transform:uppercase;
-  padding:4px 10px;
+  padding:5px 12px;
   border-radius:4px;
-  box-shadow:0 4px 14px rgba(0,0,0,.45);
+  box-shadow:0 6px 20px rgba(0,0,0,.65),0 0 0 1px rgba(255,255,255,.35);
   z-index:1000;
   white-space:nowrap;
   pointer-events:none;
   animation:calloutBounce .4s ease-out;
+}
+.tour-spotlight-callout::after{
+  content:"";
+  position:absolute;
+  bottom:-6px;
+  left:18px;
+  width:0;
+  height:0;
+  border-left:6px solid transparent;
+  border-right:6px solid transparent;
+  border-top:6px solid #E5693F;
 }
 @keyframes calloutBounce{
   from{opacity:0;transform:translateY(6px)}
@@ -206,7 +234,8 @@ nav button.tour-nav-active{
 .phase-num{font:700 .68rem var(--fm);color:var(--acc);letter-spacing:.08em;background:rgba(229,105,63,.18);padding:3px 7px;border-radius:3px;border:1px solid rgba(229,105,63,.4)}
 .phase-title{margin:0;font:500 .95rem/1.2 var(--fd);color:#fff}
 
-.demo-hud{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);width:min(760px,calc(100vw - 32px));background:rgba(21,18,15,.95);color:#EDE6D6;border:1px solid rgba(229,105,63,.55);border-radius:10px;box-shadow:0 16px 48px rgba(0,0,0,.68),0 0 0 1px rgba(255,255,255,.08);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);z-index:9999;padding:12px 16px;display:flex;flex-direction:column;gap:8px;animation:hudSlideUp .25s ease-out;transition:opacity .2s,transform .2s}
+/* Clean Floating Subtitles HUD (No Buttons) */
+.demo-hud{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);width:min(780px,calc(100vw - 32px));background:rgba(21,18,15,.96);color:#EDE6D6;border:1px solid rgba(229,105,63,.55);border-radius:10px;box-shadow:0 16px 48px rgba(0,0,0,.75),0 0 0 1px rgba(255,255,255,.08);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);z-index:9999;padding:12px 18px;display:flex;flex-direction:column;gap:8px;animation:hudSlideUp .25s ease-out;transition:opacity .2s,transform .2s}
 .demo-hud[hidden]{display:none!important}
 @keyframes hudSlideUp{from{opacity:0;transform:translate(-50%,16px)}to{opacity:1;transform:translate(-50%,0)}}
 .demo-hud-header{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
@@ -220,16 +249,11 @@ nav button.tour-nav-active{
 .demo-audio-waves.paused i{animation-play-state:paused;height:3px!important}
 @keyframes waveBar{0%{height:20%}100%{height:100%}}
 .demo-act-badge{font:500 .70rem var(--fm);color:rgba(237,230,214,.82);letter-spacing:.05em;text-transform:uppercase}
-.demo-hud-controls{display:flex;align-items:center;gap:7px}
-.demo-timer{font:500 .75rem var(--fm);color:#38BDF8;letter-spacing:.05em;background:rgba(56,189,248,.12);border:1px solid rgba(56,189,248,.35);padding:2px 7px;border-radius:3px}
-.btn-demo-ctrl{font:600 .64rem var(--fm);letter-spacing:.06em;text-transform:uppercase;background:rgba(255,255,255,.1);color:#EDE6D6;border:1px solid rgba(255,255,255,.2);padding:4px 9px;border-radius:3px;cursor:pointer;transition:all .15s}
-.btn-demo-ctrl:hover{background:rgba(255,255,255,.2);color:#fff}
-.btn-demo-stop{border-color:rgba(239,68,68,.5);color:#F87171}
-.btn-demo-stop:hover{background:#EF4444;color:#fff}
+.demo-timer{font:600 .75rem var(--fm);color:#38BDF8;letter-spacing:.05em;background:rgba(56,189,248,.14);border:1px solid rgba(56,189,248,.4);padding:3px 8px;border-radius:3px}
 .demo-progress-track{width:100%;height:3px;background:rgba(255,255,255,.12);border-radius:2px;overflow:hidden}
 .demo-progress-bar{height:100%;background:linear-gradient(90deg,#F59E0B,#E5693F,#38BDF8);transition:width .25s ease-out}
-.demo-caption-body{background:rgba(0,0,0,.38);border-left:3px solid var(--acc);padding:8px 12px;border-radius:3px}
-.demo-caption-body p{margin:0;font:400 .94rem/1.45 var(--fb);color:#FFF;letter-spacing:.01em}
+.demo-caption-body{background:rgba(0,0,0,.45);border-left:3px solid var(--acc);padding:9px 14px;border-radius:3px}
+.demo-caption-body p{margin:0;font:400 .98rem/1.48 var(--fb);color:#FFF;letter-spacing:.01em}
 .demo-caption-body p em{color:#FBBF24;font-style:normal;font-weight:600}
 </style>
 </head>
@@ -243,7 +267,11 @@ nav button.tour-nav-active{
   <button data-go="3">04 Analyze (77)</button>
   <button data-go="4">05 Ranking</button>
 </nav>
-<button class="btn-demo-tour" id="btnNavDemo" title="Start 60-Second AI Guided Hackathon Demo"><span class="demo-play-icon">▶</span> 60s Demo</button>
+<div class="demo-control-cluster" id="navDemoCluster">
+  <button class="btn-demo-tour" id="btnNavDemo" title="Start 70-Second Guided Demo"><span class="demo-play-icon">▶</span> 70s Demo</button>
+  <button class="btn-demo-action" id="btnNavPause" title="Pause or Resume Demo" style="display:none"><span class="demo-action-icon">⏸</span> Pause</button>
+  <button class="btn-demo-action btn-demo-stop" id="btnNavStop" title="Stop Demo" style="display:none"><span class="demo-action-icon">⏹</span> Stop</button>
+</div>
 <button class="ghost" id="th" aria-label="Switch light and dark theme">◐</button>
 </div></header>
 
@@ -253,7 +281,15 @@ nav button.tour-nav-active{
 <p class="k">NASA PSI · microgravity combustion · fire safety</p>
 <h1>Read the <em>flame</em> that doesn't rise.</h1>
 <p class="lede">Input mission parameters, search official NASA Physical Sciences Informatics (PSI) investigations, import experiment catalogues, or upload multimodal flame evidence — PyroSage ranks fire hazards for lunar and Martian missions using a 77-technique scientific registry.</p>
-<div class="cta"><button class="btn" data-go="0" data-scroll>Open the bench →</button><button class="btn btn-demo-hero" id="btnHeroDemo">🎙️ Play Guided Demo (&lt;60s)</button><p class="k" id="apiStatus">Decision support, not flight certification · 77 techniques ready</p></div>
+<div class="cta">
+  <button class="btn" data-go="0" data-scroll>Open the bench →</button>
+  <div class="demo-control-cluster" id="heroDemoCluster">
+    <button class="btn btn-demo-hero" id="btnHeroDemo">🎙️ Play Guided Demo (70s)</button>
+    <button class="btn btn-demo-hero btn-hero-action btn-hero-pause" id="btnHeroPause" style="display:none">⏸ Pause</button>
+    <button class="btn btn-demo-hero btn-hero-action btn-hero-stop" id="btnHeroStop" style="display:none">⏹ Stop</button>
+  </div>
+  <p class="k" id="apiStatus">Decision support, not flight certification · 77 techniques ready</p>
+</div>
 </div>
 <figure class="core">
   <div class="flame-stage flame-stage--hero">
@@ -753,11 +789,7 @@ nav button.tour-nav-active{
         <span class="phase-pill" data-p="5">5</span>
       </div>
     </div>
-    <div class="demo-hud-controls">
-      <span class="demo-timer" id="demoTimer">00:00 / 01:00</span>
-      <button class="btn-demo-ctrl" id="btnDemoPause" title="Pause or Resume Demo">⏸ Pause</button>
-      <button class="btn-demo-ctrl btn-demo-stop" id="btnDemoStop" title="Stop Demo">⏹ Exit</button>
-    </div>
+    <span class="demo-timer" id="demoTimer">00:00 / 01:10</span>
   </div>
   <div class="demo-progress-track">
     <div class="demo-progress-bar" id="demoProgressBar" style="width:0%"></div>
@@ -1774,11 +1806,11 @@ function rank(){
 })();
 
 // ============================================================================
-// 60-SECOND AUTOMATED HACKATHON DEMO TOUR
+// 70-SECOND AUTOMATED HACKATHON DEMO TOUR
 // WITH FEMALE AI VOICE NARRATION, CINEMATIC ZOOM & SPOTLIGHT FOCUS
 // ============================================================================
 (function initHackathonDemoTour(){
-  const TOTAL_DURATION_SEC = 60; // Exact 60 seconds
+  const TOTAL_DURATION_SEC = 70; // Exact 70 seconds
   let isRunning = false;
   let isPaused = false;
   let elapsedSec = 0;
@@ -1802,7 +1834,7 @@ function rank(){
     activeTimeouts = [];
   }
 
-  // Cinematic Zoom & Spotlight Focus Helpers
+  // Clear, High-Contrast Cinematic Zoom & Spotlight Focus
   function clearFocus(){
     if (currentCalloutEl && currentCalloutEl.parentNode) {
       currentCalloutEl.parentNode.removeChild(currentCalloutEl);
@@ -1814,7 +1846,7 @@ function rank(){
     }
   }
 
-  function focusElement(target, calloutText, zoomScale = 1.03){
+  function focusElement(target, calloutText, zoomScale = 1.07){
     clearFocus();
     const el = typeof target === 'string' ? document.querySelector(target) : target;
     if (!el) return;
@@ -1929,7 +1961,7 @@ function rank(){
       title: "Phase 1/5 · 3D Volumetric Flame Chamber",
       bannerTitle: "3D Volumetric Flame & Zero-G Physics",
       startSec: 0,
-      endSec: 12,
+      endSec: 14,
       captionHtml: "Welcome to <em>PyroSage</em>. In microgravity, the absence of buoyancy prevents flames from rising, forming a <em>spherical diffusion mantle</em>. Watch our volumetric physics engine sweep seamlessly across lunar, martian, and terrestrial gravity regimes.",
       speechText: "Welcome to PyroSage. In microgravity, the absence of buoyancy prevents flames from rising, forming a spherical diffusion mantle. Watch our volumetric physics engine sweep seamlessly across lunar, martian, and terrestrial gravity regimes.",
       setup: () => {
@@ -1939,33 +1971,33 @@ function rank(){
         if (typeof updateTechOverlayToggle === 'function') updateTechOverlayToggle(true);
 
         // 0s: Focus & Zoom on 3D Chamber
-        focusElement('#benchFlameMount', '🔥 3D Microgravity Chamber · 0g Spherical Mantle (TECH-01)', 1.03);
+        focusElement('#benchFlameMount', '🔥 3D Microgravity Chamber · 0g Spherical Mantle (TECH-01)', 1.07);
         if ($('#grRange')) $('#grRange').value = 0;
         if ($('#gr')) $('#gr').value = 0;
         if ($('#mat')) $('#mat').value = 'heptane';
         drawFlame('gr');
 
-        // 3.8s: Pan & Zoom to Gravity Slider -> Lunar 0.17g
+        // 4.2s: Pan & Zoom to Gravity Slider -> Lunar 0.17g
         scheduleTask(() => {
-          focusElement('.ledger label:first-child', '🌙 Transitioning to Lunar Gravity (0.17g) · PMMA Polymer', 1.04);
+          focusElement('.ledger label:first-child', '🌙 Transitioning to Lunar Gravity (0.17g) · PMMA Polymer', 1.08);
           if ($('#grRange')) $('#grRange').value = 0.17;
           if ($('#gr')) $('#gr').value = 0.17;
           if ($('#mat')) $('#mat').value = 'pmma';
           drawFlame('gr');
-        }, 3800);
+        }, 4200);
 
-        // 7.2s: Focus on Geometry Overlay Calipers
+        // 8.5s: Focus on Geometry Overlay Calipers
         scheduleTask(() => {
-          focusElement('.flame-tech-overlay', '📐 Scientific Calipers · TECH-01 & TECH-33 Froude Scaling', 1.02);
-        }, 7200);
+          focusElement('.flame-tech-overlay', '📐 Scientific Calipers · TECH-01 & TECH-33 Froude Scaling', 1.06);
+        }, 8500);
 
-        // 9.8s: Sweep to Martian 0.38g then Earth 1.0g Teardrop Plume
+        // 11.5s: Sweep to Martian 0.38g then Earth 1.0g Teardrop Plume
         scheduleTask(() => {
-          focusElement('#benchFlameMount', '🌍 Terrestrial 1.0g Buoyant Teardrop Plume (Gr > 10⁴)', 1.03);
+          focusElement('#benchFlameMount', '🌍 Terrestrial 1.0g Buoyant Teardrop Plume (Gr > 10⁴)', 1.07);
           if ($('#grRange')) $('#grRange').value = 1.0;
           if ($('#gr')) $('#gr').value = 1.0;
           drawFlame('gr');
-        }, 9800);
+        }, 11500);
       }
     },
     {
@@ -1973,8 +2005,8 @@ function rank(){
       phaseNum: 2,
       title: "Phase 2/5 · NASA PSI Flight Repository",
       bannerTitle: "NASA PSI Repository & SQLite Database",
-      startSec: 12,
-      endSec: 24,
+      startSec: 14,
+      endSec: 28,
       captionHtml: "Phase two connects to the official <em>NASA Physical Sciences Informatics repository</em>. We query flight experiments directly, synchronizing microgravity combustion datasets into our local <em>SQLite database</em>.",
       speechText: "Phase two connects to the official NASA Physical Sciences Informatics repository. We query spaceflight experiments directly, synchronizing microgravity combustion datasets into our local SQLite catalog for rapid flight-twin matching.",
       setup: () => {
@@ -1982,12 +2014,12 @@ function rank(){
         showPhaseBanner(2, "NASA PSI Repository & SQLite Database");
         updatePhaseIndicators(1);
 
-        // 12.0s: Focus & Zoom on Search field
-        focusElement('#psiQ', '🔍 Querying NASA Physical Sciences Informatics (PSI)', 1.04);
+        // 14.0s: Focus & Zoom on Search field
+        focusElement('#psiQ', '🔍 Querying NASA Physical Sciences Informatics (PSI)', 1.08);
         if ($('#psiQ')) $('#psiQ').value = 'droplet';
         if ($('#btnPsiSearch')) $('#btnPsiSearch').click();
 
-        // 16.5s: Pan & Zoom onto Investigation Card PSI-98
+        // 19.0s: Pan & Zoom onto Investigation Card PSI-98
         scheduleTask(() => {
           selectedPsi = 'PSI-98';
           const rec = psiRecords.find(x => (x.accession || x.experiment_id) === 'PSI-98');
@@ -1995,13 +2027,13 @@ function rank(){
             $('#psiSelectedText').textContent = `Selected PSI investigation: PSI-98 · ${rec ? (rec.title || rec.name) : 'Flame Extinguishment Experiment (FLEX)'}`;
           }
           renderPsiGrid();
-          focusElement('#psiGrid article:first-child', '🛰️ Selected NASA Flight Dataset: PSI-98 (FLEX Droplet)', 1.03);
-        }, 4500);
+          focusElement('#psiGrid article:first-child', '🛰️ Selected NASA Flight Dataset: PSI-98 (FLEX Droplet)', 1.07);
+        }, 5000);
 
-        // 20.8s: Focus on SQLite sync status note
+        // 23.8s: Focus on SQLite sync status note
         scheduleTask(() => {
-          focusElement('#psiMetaNote', '💾 Synchronized into Local SQLite Flight Catalogue', 1.03);
-        }, 8800);
+          focusElement('#psiMetaNote', '💾 Synchronized into Local SQLite Flight Catalogue', 1.06);
+        }, 9800);
       }
     },
     {
@@ -2009,8 +2041,8 @@ function rank(){
       phaseNum: 3,
       title: "Phase 3/5 · Multimodal Specimen Matrix",
       bannerTitle: "Multimodal Specimen Matrix & Computer Vision",
-      startSec: 24,
-      endSec: 36,
+      startSec: 28,
+      endSec: 42,
       captionHtml: "Phase three ingests multimodal mission evidence. Our <em>computer vision pipeline</em> extracts ten morphological features, sorting spherical symmetry IoU and soot luminescence across <em>multi-gravity specimens</em>.",
       speechText: "Phase three ingests multimodal mission evidence. Our computer vision pipeline extracts ten morphological features, sorting spherical symmetry IoU and soot luminescence across multi-gravity experimental specimens.",
       setup: () => {
@@ -2018,16 +2050,16 @@ function rank(){
         showPhaseBanner(3, "Multimodal Specimen Matrix & Computer Vision");
         updatePhaseIndicators(2);
 
-        // 24.0s: Focus on one-click sample loader
-        focusElement('#demo', '📥 Ingesting 4 Multi-Gravity Synthetic Specimens (0g / 0.16g / 0.38g / 1g)', 1.04);
+        // 28.0s: Focus on one-click sample loader
+        focusElement('#demo', '📥 Ingesting 4 Multi-Gravity Synthetic Specimens (0g / 0.16g / 0.38g / 1g)', 1.08);
         if ($('#demo')) $('#demo').click();
 
-        // 27.5s: Focus on Specimen Plates
+        // 32.0s: Focus on Specimen Plates
         scheduleTask(() => {
-          focusElement('#plates', '🔬 Multi-Gravity Flame Evidence Plates (S1–S4 Loaded)', 1.02);
-        }, 3500);
+          focusElement('#plates', '🔬 Multi-Gravity Flame Evidence Plates (S1–S4 Loaded)', 1.06);
+        }, 4000);
 
-        // 30.2s: Focus & Zoom on Sortable Matrix Table
+        // 35.5s: Focus & Zoom on Sortable Matrix Table
         scheduleTask(() => {
           const details = $('#specMatrixDetails') || document.querySelector('#p2 details');
           if (details) details.open = true;
@@ -2035,8 +2067,8 @@ function rank(){
             $('#specSortCol').value = 'spherical_symmetry_score';
             renderSpecimenSortableMatrix();
           }
-          focusElement('#specimenMatrixTable', '📊 10-Feature Matrix: 0g (0.96 IoU) vs 1g (0.46 IoU)', 1.02);
-        }, 6200);
+          focusElement('#specimenMatrixTable', '📊 10-Feature Matrix: 0g (0.96 IoU) vs 1g (0.46 IoU)', 1.05);
+        }, 7500);
       }
     },
     {
@@ -2044,8 +2076,8 @@ function rank(){
       phaseNum: 4,
       title: "Phase 4/5 · 77-Technique Registry Screening",
       bannerTitle: "77-Technique Scientific Screening Pipeline",
-      startSec: 36,
-      endSec: 48,
+      startSec: 42,
+      endSec: 56,
       captionHtml: "Phase four runs the scientific screening engine across all <em>77 combustion techniques</em>. Watch the automated pipeline execute preprocessing, symmetry validation, and <em>NASA flight matching</em> in parallel.",
       speechText: "Phase four runs the scientific screening engine across all seventy-seven combustion techniques. Watch the automated pipeline execute preprocessing, symmetry validation, and NASA flight-twin matching in parallel.",
       setup: () => {
@@ -2053,15 +2085,20 @@ function rank(){
         showPhaseBanner(4, "77-Technique Scientific Screening Pipeline");
         updatePhaseIndicators(3);
 
-        // 36.0s: Focus on Core Techniques Filter
-        focusElement('#btnTechCore', '🔬 77 Registered Combustion Techniques (57 Canonical Core)', 1.04);
+        // 42.0s: Focus on Core Techniques Filter
+        focusElement('#btnTechCore', '🔬 77 Registered Combustion Techniques (57 Canonical Core)', 1.08);
         if ($('#btnTechCore')) $('#btnTechCore').click();
 
-        // 39.5s: Pan & Zoom to 5-Stage Screening Pipeline Block
+        // 46.0s: Pan & Zoom to 5-Stage Screening Pipeline Block
         scheduleTask(() => {
-          focusElement('.g2:has(#bar)', '⚡ Executing 5-Stage Scientific Screening Pipeline', 1.03);
+          focusElement('.g2:has(#bar)', '⚡ Executing 5-Stage Scientific Screening Pipeline', 1.07);
           if ($('#go')) $('#go').click();
-        }, 3500);
+        }, 4000);
+
+        // 52.0s: Focus on Streaming Science Execution Log
+        scheduleTask(() => {
+          focusElement('#log', '📝 Streaming Automated Science Log & Provenance Verification', 1.05);
+        }, 10000);
       }
     },
     {
@@ -2069,8 +2106,8 @@ function rank(){
       phaseNum: 5,
       title: "Phase 5/5 · Mission Fire Hazard Engine",
       bannerTitle: "Mission Fire Hazard & Flight Twin Scaling",
-      startSec: 48,
-      endSec: 60,
+      startSec: 56,
+      endSec: 70,
       captionHtml: "Finally, our multi-criteria engine ranks flight fire hazards. Sensitivity weights dynamically adjust scores, comparing nearest <em>NASA flight twins</em> and projecting safe atmospheric protocols onto <em>Lunar and Martian habitats</em>.",
       speechText: "Finally, our multi-criteria engine ranks flight fire hazards. Sensitivity weights dynamically adjust scores, comparing nearest NASA flight twins and projecting safe atmospheric protocols onto Lunar and Martian habitats.",
       setup: () => {
@@ -2078,22 +2115,22 @@ function rank(){
         showPhaseBanner(5, "Mission Fire Hazard & Flight Twin Scaling");
         updatePhaseIndicators(4);
 
-        // 48.0s: Focus on Sensitivity Weights
-        focusElement('.rank-card-box:first-of-type', '⚖️ Dynamic Multi-Criteria Sensitivity Sliders (w0=5, w1=3, w2=4)', 1.03);
+        // 56.0s: Focus on Sensitivity Weights
+        focusElement('.rank-card-box:first-of-type', '⚖️ Dynamic Multi-Criteria Sensitivity Sliders (w0=5, w1=3, w2=4)', 1.07);
         if ($('#w0')) $('#w0').value = 5;
         if ($('#w1')) $('#w1').value = 3;
         if ($('#w2')) $('#w2').value = 4;
         rank();
 
-        // 52.5s: Pan & Zoom onto Nearest NASA PSI Twin Delta table
+        // 60.5s: Pan & Zoom onto Nearest NASA PSI Twin Delta table
         scheduleTask(() => {
-          focusElement('#psiTwinDeltaTable', '🛰️ Nearest NASA Twin: PSI-98 FLEX (97.4% Match · ΔIoU < 0.012)', 1.03);
+          focusElement('#psiTwinDeltaTable', '🛰️ Nearest NASA Twin: PSI-98 FLEX (97.4% Match · ΔIoU < 0.012)', 1.05);
         }, 4500);
 
-        // 56.2s: Pan & Zoom onto Moon/Mars Scaling Table
+        // 65.5s: Pan & Zoom onto Moon/Mars Scaling Table
         scheduleTask(() => {
-          focusElement('#moonMarsScalingTable', '🌕 Lunar (0.16g) & 🔴 Martian (0.38g) Atmosphere Protocols', 1.02);
-        }, 8200);
+          focusElement('#moonMarsScalingTable', '🌕 Lunar (0.16g) & 🔴 Martian (0.38g) Atmosphere Protocols', 1.05);
+        }, 9500);
       }
     }
   ];
@@ -2126,7 +2163,6 @@ function rank(){
   function startDemo(){
     if (isRunning) {
       stopDemo();
-      return;
     }
     isRunning = true;
     isPaused = false;
@@ -2138,11 +2174,33 @@ function rank(){
 
     const hud = $('#hackathonDemoHud');
     if (hud) hud.removeAttribute('hidden');
-    $$('#btnNavDemo, #btnHeroDemo').forEach(btn => {
-      btn.classList.add('is-running');
-      btn.innerHTML = '⏹ Stop Demo';
-    });
-    if ($('#btnDemoPause')) $('#btnDemoPause').textContent = '⏸ Pause';
+
+    const navDemo = $('#btnNavDemo');
+    if (navDemo) {
+      navDemo.classList.add('is-running');
+      navDemo.innerHTML = '<span class="demo-action-icon">🔄</span> Restart';
+    }
+    const heroDemo = $('#btnHeroDemo');
+    if (heroDemo) {
+      heroDemo.classList.add('is-running');
+      heroDemo.innerHTML = '🔄 Restart Demo';
+    }
+
+    const navPause = $('#btnNavPause');
+    if (navPause) {
+      navPause.style.display = 'inline-flex';
+      navPause.innerHTML = '<span class="demo-action-icon">⏸</span> Pause';
+    }
+    const navStop = $('#btnNavStop');
+    if (navStop) navStop.style.display = 'inline-flex';
+
+    const heroPause = $('#btnHeroPause');
+    if (heroPause) {
+      heroPause.style.display = 'inline-flex';
+      heroPause.innerHTML = '⏸ Pause';
+    }
+    const heroStop = $('#btnHeroStop');
+    if (heroStop) heroStop.style.display = 'inline-flex';
 
     updateHudUI();
     triggerAct(0);
@@ -2173,9 +2231,9 @@ function rank(){
 
     $$('#demoPhasePills .phase-pill').forEach(p => p.className = 'phase-pill done');
 
-    if ($('#demoActBadge')) $('#demoActBadge').textContent = '🎉 Tour Complete (60s)';
+    if ($('#demoActBadge')) $('#demoActBadge').textContent = '🎉 Tour Complete (70s)';
     if ($('#demoCaptionText')) {
-      $('#demoCaptionText').innerHTML = '🏆 <em>60-Second Hackathon Demo Complete!</em> All 5 workflow modules demonstrated with quantitative NASA PSI alignment in exactly 60 seconds.';
+      $('#demoCaptionText').innerHTML = '🏆 <em>70-Second Hackathon Demo Complete!</em> All 5 workflow modules demonstrated with quantitative NASA PSI alignment in exactly 70 seconds.';
     }
     const waveEl = document.querySelector('.demo-audio-waves');
     if (waveEl) waveEl.classList.add('paused');
@@ -2206,27 +2264,48 @@ function rank(){
 
     $$('nav button').forEach(b => b.classList.remove('tour-nav-active'));
 
-    $$('#btnNavDemo').forEach(btn => {
-      btn.classList.remove('is-running');
-      btn.innerHTML = '<span class="demo-play-icon">▶</span> 60s Demo';
-    });
-    $$('#btnHeroDemo').forEach(btn => {
-      btn.classList.remove('is-running');
-      btn.innerHTML = '🎙️ Play Guided Demo (&lt;60s)';
-    });
+    const navDemo = $('#btnNavDemo');
+    if (navDemo) {
+      navDemo.classList.remove('is-running');
+      navDemo.innerHTML = '<span class="demo-play-icon">▶</span> 70s Demo';
+    }
+    const heroDemo = $('#btnHeroDemo');
+    if (heroDemo) {
+      heroDemo.classList.remove('is-running');
+      heroDemo.innerHTML = '🎙️ Play Guided Demo (70s)';
+    }
+
+    const navPause = $('#btnNavPause');
+    if (navPause) {
+      navPause.style.display = 'none';
+      navPause.innerHTML = '<span class="demo-action-icon">⏸</span> Pause';
+    }
+    const navStop = $('#btnNavStop');
+    if (navStop) navStop.style.display = 'none';
+
+    const heroPause = $('#btnHeroPause');
+    if (heroPause) {
+      heroPause.style.display = 'none';
+      heroPause.innerHTML = '⏸ Pause';
+    }
+    const heroStop = $('#btnHeroStop');
+    if (heroStop) heroStop.style.display = 'none';
   }
 
   function togglePause(){
     if (!isRunning) return;
     isPaused = !isPaused;
-    const pauseBtn = $('#btnDemoPause');
+    const navPause = $('#btnNavPause');
+    const heroPause = $('#btnHeroPause');
     const waveEl = document.querySelector('.demo-audio-waves');
     if (isPaused) {
-      if (pauseBtn) pauseBtn.textContent = '▶ Resume';
+      if (navPause) navPause.innerHTML = '<span class="demo-action-icon">▶</span> Resume';
+      if (heroPause) heroPause.innerHTML = '▶ Resume';
       if (waveEl) waveEl.classList.add('paused');
       if (synth) { try { synth.pause(); } catch (_) {} }
     } else {
-      if (pauseBtn) pauseBtn.textContent = '⏸ Pause';
+      if (navPause) navPause.innerHTML = '<span class="demo-action-icon">⏸</span> Pause';
+      if (heroPause) heroPause.innerHTML = '⏸ Pause';
       if (waveEl) waveEl.classList.remove('paused');
       if (synth) { try { synth.resume(); } catch (_) {} }
     }
@@ -2237,10 +2316,15 @@ function rank(){
   const heroDemo = $('#btnHeroDemo');
   if (heroDemo) heroDemo.addEventListener('click', startDemo);
 
-  const btnPause = $('#btnDemoPause');
-  if (btnPause) btnPause.addEventListener('click', togglePause);
-  const btnStop = $('#btnDemoStop');
-  if (btnStop) btnStop.addEventListener('click', stopDemo);
+  const navPause = $('#btnNavPause');
+  if (navPause) navPause.addEventListener('click', togglePause);
+  const heroPause = $('#btnHeroPause');
+  if (heroPause) heroPause.addEventListener('click', togglePause);
+
+  const navStop = $('#btnNavStop');
+  if (navStop) navStop.addEventListener('click', stopDemo);
+  const heroStop = $('#btnHeroStop');
+  if (heroStop) heroStop.addEventListener('click', stopDemo);
 
   window.__pyroStartDemo = startDemo;
   window.__pyroStopDemo = stopDemo;
