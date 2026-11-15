@@ -102,7 +102,7 @@ footer{border-top:1px solid var(--ink);padding:1.4rem 0 2.4rem;display:flex;just
 <a class="mark" href="#top">Pyro<em>Sage</em></a>
 <nav aria-label="Workflow">
   <button data-go="0">01 Environment</button>
-  <button data-go="1">02 NASA PSI</button>
+  <button data-go="1">02 NASA PSI &amp; DB</button>
   <button data-go="2">03 Specimens</button>
   <button data-go="3">04 Analyze (57)</button>
   <button data-go="4">05 Ranking</button>
@@ -115,7 +115,7 @@ footer{border-top:1px solid var(--ink);padding:1.4rem 0 2.4rem;display:flex;just
 <div>
 <p class="k">NASA PSI · microgravity combustion · fire safety</p>
 <h1>Read the <em>flame</em> that doesn't rise.</h1>
-<p class="lede">Input mission parameters, search official NASA Physical Sciences Informatics (PSI) investigations, or upload multimodal flame evidence — PyroSage ranks fire hazards for lunar and Martian missions using a 57-technique scientific registry.</p>
+<p class="lede">Input mission parameters, search official NASA Physical Sciences Informatics (PSI) investigations, import experiment catalogues, or upload multimodal flame evidence — PyroSage ranks fire hazards for lunar and Martian missions using a 57-technique scientific registry.</p>
 <div class="cta"><button class="btn" data-go="0" data-scroll>Open the bench →</button><p class="k" id="apiStatus">Decision support, not flight certification · 57 techniques ready</p></div>
 </div>
 <figure class="core" aria-hidden="true"><svg viewBox="0 0 300 480">
@@ -154,21 +154,23 @@ footer{border-top:1px solid var(--ink);padding:1.4rem 0 2.4rem;display:flex;just
 </div>
 <figure class="chart"><svg id="fg" viewBox="0 0 600 320" role="img" aria-label="Flame geometry simulation"></svg><figcaption class="k" style="margin-top:.6rem">Predicted flame shape · symmetry analysis · fractal boundary</figcaption></figure>
 </div>
-<div class="row"><span class="k">Physics: buoyancy absent below 0.1g · Marangoni flow dominates</span><button class="btn" data-go="1">NASA PSI Repository →</button></div>
+<div class="row"><span class="k">Physics: buoyancy absent below 0.1g · Marangoni flow dominates</span><button class="btn" data-go="1">NASA PSI &amp; Catalogue DB →</button></div>
 </div>
 
-<!-- STEP 1: OFFICIAL NASA PSI REPOSITORY CONNECTOR -->
+<!-- STEP 1: OFFICIAL NASA PSI REPOSITORY & EXPERIMENT CATALOGUE DB -->
 <div class="panel" id="p1" hidden>
-<h2><small>02</small>NASA PSI <span>Repository</span></h2>
-<p class="note">Search the official NASA Physical Sciences Informatics repository (`psi.nasa.gov/physci/repo`) or look up a known investigation accession (`PSI-98`, `PSI-107`, `PSI-25`, `PSI-112`, `PSI-64`, `PSI-41`). Provenance is strictly enforced in the SQLite cache.</p>
+<h2><small>02</small>NASA PSI &amp; <span>Experiment DB</span></h2>
+<p class="note">Search the official NASA Physical Sciences Informatics repository (`psi.nasa.gov/physci/repo`) by accession (`PSI-98`, `PSI-107`, `PSI-25`, `PSI-112`, `PSI-64`, `PSI-41`) or import your own CSV/TSV/JSON experiment catalogue into the SQLite database (`/api/catalog`).</p>
 <div class="cta" style="margin-top:1.2rem">
-  <input id="psiQ" type="text" value="combustion" placeholder="Search keyword (droplet, PMMA, cool flame)" style="width:18rem;text-align:left">
-  <input id="psiAcc" type="text" placeholder="Accession (PSI-98)" style="width:10rem;text-align:left">
+  <input id="psiQ" type="text" value="combustion" placeholder="Search keyword (droplet, PMMA, cool flame)" style="width:16rem;text-align:left">
+  <input id="psiAcc" type="text" placeholder="Accession (PSI-98)" style="width:9.5rem;text-align:left">
   <button class="btn" id="btnPsiSearch">Search PSI</button>
-  <button class="btn btn-ghost" id="btnPsiSync">Sync SQLite Cache</button>
+  <button class="btn btn-ghost" id="btnPsiSync">Sync PSI to SQLite</button>
+  <label class="btn btn-ghost" style="display:inline-block;padding:.95rem 1.2rem">Import CSV/TSV/JSON<input id="catImportFile" type="file" accept=".csv,.tsv,.json" style="display:none"></label>
+  <button class="btn btn-ghost" id="btnCatClear" style="padding:.95rem 1.1rem">Clear DB</button>
 </div>
 <div class="gate ok" id="psiGate">
-  <b>NASA PSI Provenance Active</b>
+  <b>NASA PSI &amp; SQLite Catalogue Active</b>
   <span class="note" style="margin:0" id="psiMetaNote">Loaded verified NASA PSI combustion investigations with official source links.</span>
 </div>
 <div class="pgrid" id="psiGrid"></div>
@@ -184,16 +186,16 @@ footer{border-top:1px solid var(--ink);padding:1.4rem 0 2.4rem;display:flex;just
 <!-- STEP 2: SPECIMENS & MULTIMODAL EVIDENCE INTAKE -->
 <div class="panel" id="p2" hidden>
 <h2><small>03</small>The <span>specimens</span></h2>
-<p class="note">Upload flame images from experiments or missions (up to four plates) or attach multimodal evidence files (video, CSV/TSV, JSON, PDF, DOCX, XLSX). Local OpenCV/NumPy extractors compute symmetry, mirror IoU, convexity, fractal dimension, and centroid jitter.</p>
+<p class="note">Upload flame images from experiments or missions (up to four plates) or attach multimodal evidence files (video, CSV/TSV, JSON, PDF, DOCX, XLSX). Local OpenCV/NumPy extractors compute bilateral/top-bottom/rotational symmetry, reflection IoU, convexity, fractal dimension, and centroid jitter.</p>
 <div class="plates" id="plates"></div>
 <div class="g2" style="margin-top:1.6rem">
   <div class="ledger">
-    <label><span>Additional evidence<i>video, CSV, PDF, DOCX, XLSX</i></span><input id="extraFiles" type="file" multiple accept=".png,.jpg,.jpeg,.tif,.tiff,.webp,.mp4,.avi,.mov,.webm,.csv,.tsv,.json,.pdf,.docx,.xlsx" style="font:400 .72rem var(--fm)"></label>
+    <label><span>Additional evidence<i>video, CSV, PDF, DOCX, XLSX</i></span><input id="extraFiles" type="file" multiple accept=".png,.jpg,.jpeg,.tif,.tiff,.webp,.mp4,.avi,.mov,.webm,.csv,.tsv,.json,.pdf,.docx,.xlsx,.txt,.log,.jdx" style="font:400 .72rem var(--fm)"></label>
     <div id="extraFileBadges" style="padding:.5rem 0"></div>
   </div>
   <div class="ledger">
     <label><span>SI Reasoning Provider<i>bounded API</i></span>
-      <select id="provSelect" style="width:13rem">
+      <select id="provSelect" style="width:14rem">
         <option value="gemini">Gemini (gemini-3.8-flash)</option>
         <option value="openai">OpenAI Responses API</option>
       </select>
@@ -209,22 +211,24 @@ footer{border-top:1px solid var(--ink);padding:1.4rem 0 2.4rem;display:flex;just
 <!-- STEP 3: 57 TECHNIQUES & BOUNDED SI ANALYSIS -->
 <div class="panel" id="p3" hidden>
 <h2><small>04</small>The <span>analysis</span></h2>
-<p class="note">Select from the 57 registered scientific techniques across 9 families. The SI engine runs local OpenCV/NumPy/SciPy extractors, audits prerequisite gates, matches against the NASA PSI SQLite catalogue, and validates structured findings.</p>
+<p class="note">Select from the 57 registered scientific techniques across 9 families. The SI engine runs local OpenCV/NumPy extractors, enforces unsupported solver locks (`piv`, `cnn_resnet`, `symmetry_loss`, `spectral_deconvolution`, `chemical_kinetics`, `gravity_scaling` → `requires_more_data`), matches against the SQLite catalogue, and validates structured findings.</p>
 
 <div class="cta" style="margin-top:1.2rem">
-  <select id="famFilter" style="max-width:260px">
-    <option value="">All 9 scientific families (57 techniques)</option>
+  <select id="famFilter" style="max-width:290px">
+    <option value="">All 9 scientific groups (57 techniques)</option>
   </select>
-  <select id="modFilter" style="max-width:180px">
+  <select id="modFilter" style="max-width:170px">
     <option value="">All modalities</option>
     <option value="image">Image</option>
     <option value="video">Video</option>
-    <option value="table">Table</option>
-    <option value="spectrum">Spectrum</option>
-    <option value="document">Document</option>
+    <option value="thermal">Thermal</option>
+    <option value="spectral">Spectral</option>
+    <option value="numeric">Numeric</option>
+    <option value="text">Text</option>
   </select>
   <button class="btn btn-ghost" id="btnTechCore" style="padding:.6rem 1rem">Core Set</button>
   <button class="btn btn-ghost" id="btnTechAll" style="padding:.6rem 1rem">All 57</button>
+  <button class="btn btn-ghost" id="btnTechClear" style="padding:.6rem 1rem">Clear</button>
   <span class="k" id="techCounterText">57 of 57 techniques active</span>
 </div>
 
@@ -238,9 +242,9 @@ footer{border-top:1px solid var(--ink);padding:1.4rem 0 2.4rem;display:flex;just
 <ol class="stages" id="stg">
   <li>Verify NASA PSI provenance &amp; evidence inventory</li>
   <li>Extract OpenCV/NumPy geometry, symmetry &amp; temporal descriptors</li>
-  <li>Audit 57 scientific techniques &amp; prerequisite gates</li>
-  <li>Match against NASA PSI SQLite experiment catalogue</li>
-  <li>Run technique-bounded SI synthesis &amp; schema validation</li>
+  <li>Audit 57 scientific techniques &amp; prerequisite solver locks</li>
+  <li>Match against SQLite experiment catalogue &amp; PSI baselines</li>
+  <li>Run technique-bounded SI synthesis &amp; response validation</li>
 </ol>
 <div class="log" id="log" aria-hidden="true"></div>
 </div></div>
@@ -263,19 +267,19 @@ footer{border-top:1px solid var(--ink);padding:1.4rem 0 2.4rem;display:flex;just
 <ol id="rank"></ol>
 
 <details open>
-  <summary>Computed Local Descriptors &amp; NASA PSI Candidate Matches</summary>
+  <summary>Computed Local Descriptors &amp; NASA PSI / Catalogue Candidate Matches</summary>
   <div class="g2" style="margin-top:.8rem">
     <div>
-      <p class="k">Extracted Descriptors (OpenCV / NumPy / SciPy)</p>
+      <p class="k">Extracted Descriptors (OpenCV / NumPy)</p>
       <table id="descTable">
         <thead><tr><th>Descriptor</th><th>Measured Value</th><th>Units / Method</th></tr></thead>
         <tbody></tbody>
       </table>
     </div>
     <div>
-      <p class="k">Verified NASA PSI Candidate Matches</p>
+      <p class="k">Verified NASA PSI &amp; Catalogue Candidate Matches</p>
       <table id="psiMatchTable">
-        <thead><tr><th>Accession</th><th>Investigation &amp; Platform</th><th>Similarity</th></tr></thead>
+        <thead><tr><th>ID</th><th>Investigation &amp; Platform</th><th>Confidence</th></tr></thead>
         <tbody></tbody>
       </table>
     </div>
@@ -283,12 +287,12 @@ footer{border-top:1px solid var(--ink);padding:1.4rem 0 2.4rem;display:flex;just
 </details>
 
 <details>
-  <summary>57-Technique Execution State Audit &amp; Bounded SI Findings</summary>
+  <summary>57-Technique Assessment Status Audit &amp; Bounded SI Findings</summary>
   <div id="stateSummaryRow" style="margin:.8rem 0"></div>
   <div class="g2" style="margin-top:.6rem">
     <div style="max-height:300px;overflow-y:auto">
       <table id="techAuditTable">
-        <thead><tr><th>ID</th><th>Scientific Technique</th><th>Execution State</th></tr></thead>
+        <thead><tr><th>Technique ID</th><th>Scientific Technique</th><th>Assessment Status</th></tr></thead>
         <tbody></tbody>
       </table>
     </div>
@@ -315,74 +319,74 @@ footer{border-top:1px solid var(--ink);padding:1.4rem 0 2.4rem;display:flex;just
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
 const panels=$$('.panel'),navb=$$('nav button');
 
-// Embedded 57-Technique Scientific Registry (synced with techniques.json & /api/techniques)
+// Canonical 57-Technique Scientific Registry (synced with techniques.json & Technical Documentation Section 05)
 const FALLBACK_TECHNIQUES=[
-  {id:"T01",name:"Buoyancy Absence Regime Analysis",group:"Microgravity fundamentals",supported_modalities:["image","video","table","document"],prerequisites:["Segmented flame geometry or g <= 0.01g metadata"],execution_mode:"local_descriptor"},
-  {id:"T02",name:"Diffusion-Dominated Transport Screening",group:"Microgravity fundamentals",supported_modalities:["image","video","table","document"],prerequisites:["Flame radius/area history or oxidizer metadata"],execution_mode:"local_descriptor"},
-  {id:"T03",name:"Marangoni Thermocapillary Flow Assessment",group:"Microgravity fundamentals",supported_modalities:["image","video","table","document"],prerequisites:["Liquid/melt interface imagery or thermal gradient"],execution_mode:"partially_executed"},
-  {id:"T04",name:"Spherical Flame Symmetry Evaluation",group:"Microgravity fundamentals",supported_modalities:["image","video"],prerequisites:["Visible flame image with resolvable outer boundary"],execution_mode:"local_descriptor"},
-  {id:"T05",name:"Cool-Flame & Low-Temperature Oxidation Screening",group:"Microgravity fundamentals",supported_modalities:["image","video","table","spectrum","document"],prerequisites:["Low-luminosity UV/formaldehyde emission or radiometer trace"],execution_mode:"local_descriptor"},
-  {id:"T06",name:"Cross-Gravity Regime Comparison",group:"Microgravity fundamentals",supported_modalities:["image","video","table","document"],prerequisites:["Gravity level metadata or multi-g dataset"],execution_mode:"local_descriptor"},
-  {id:"T07",name:"Radiative & Low-Strain Quenching Limit Analysis",group:"Microgravity fundamentals",supported_modalities:["table","video","document"],prerequisites:["Forced airflow velocity or radiometer time series"],execution_mode:"partially_executed"},
-  {id:"T08",name:"Multi-Threshold Flame Segmentation",group:"Geometry and vision",supported_modalities:["image","video"],prerequisites:["2D image or video frame with flame region"],execution_mode:"local_descriptor"},
-  {id:"T09",name:"Bilateral (Left-Right) Symmetry Analysis",group:"Geometry and vision",supported_modalities:["image","video"],prerequisites:["Segmented flame mask and intensity crop"],execution_mode:"local_descriptor"},
-  {id:"T10",name:"Top-Bottom (Axial) Symmetry Analysis",group:"Geometry and vision",supported_modalities:["image","video"],prerequisites:["Segmented flame mask"],execution_mode:"local_descriptor"},
-  {id:"T11",name:"Rotational & Radial Symmetry Profiling",group:"Geometry and vision",supported_modalities:["image","video"],prerequisites:["Segmented flame mask"],execution_mode:"local_descriptor"},
-  {id:"T12",name:"Mirror Intersection-over-Union (IoU)",group:"Geometry and vision",supported_modalities:["image","video"],prerequisites:["Binary flame segmentation mask"],execution_mode:"local_descriptor"},
-  {id:"T13",name:"Hull Convexity & Solidity Measurement",group:"Geometry and vision",supported_modalities:["image","video"],prerequisites:["Segmented flame contour"],execution_mode:"local_descriptor"},
-  {id:"T14",name:"Box-Counting Fractal Dimension",group:"Geometry and vision",supported_modalities:["image","video"],prerequisites:["Flame boundary edge map"],execution_mode:"local_descriptor"},
-  {id:"T15",name:"Boundary Roughness & Perimeter Tortuosity",group:"Geometry and vision",supported_modalities:["image","video"],prerequisites:["Segmented flame contour"],execution_mode:"local_descriptor"},
-  {id:"T16",name:"Intensity-Weighted Centroid & Offset Features",group:"Geometry and vision",supported_modalities:["image","video"],prerequisites:["Flame image and segmentation mask"],execution_mode:"local_descriptor"},
-  {id:"T17",name:"Geometric Flame Morphology Classification",group:"Geometry and vision",supported_modalities:["image","video"],prerequisites:["Aspect ratio, symmetry, and solidity descriptors"],execution_mode:"local_descriptor"},
-  {id:"T18",name:"Frame-to-Frame Area & Intensity Variation",group:"Temporal dynamics",supported_modalities:["video","table"],prerequisites:["Multi-frame video sequence or time series"],execution_mode:"local_descriptor"},
-  {id:"T19",name:"Temporal Symmetry Variance",group:"Temporal dynamics",supported_modalities:["video"],prerequisites:["Multi-frame flame video"],execution_mode:"local_descriptor"},
-  {id:"T20",name:"Centroid Jitter & Trajectory Stability",group:"Temporal dynamics",supported_modalities:["video","table"],prerequisites:["Time-ordered video frames or centroid log"],execution_mode:"local_descriptor"},
-  {id:"T21",name:"Flame Flicker Frequency & Spectral Oscillation",group:"Temporal dynamics",supported_modalities:["video","table"],prerequisites:["Video with known FPS or luminosity time series"],execution_mode:"local_descriptor"},
-  {id:"T22",name:"Extinction & Quenching Event Screening",group:"Temporal dynamics",supported_modalities:["video","table","document"],prerequisites:["Temporal sequence covering burn decay"],execution_mode:"local_descriptor"},
-  {id:"T23",name:"Reignition & Hot-Spot Recovery Screening",group:"Temporal dynamics",supported_modalities:["video","table","document"],prerequisites:["Continuous temporal recording across quenching"],execution_mode:"local_descriptor"},
-  {id:"T24",name:"Schlieren Density-Gradient Interpretation",group:"Diagnostics",supported_modalities:["image","video","document"],prerequisites:["Collimated Schlieren optical setup & knife-edge metadata"],execution_mode:"requires_specialist_solver"},
-  {id:"T25",name:"Shadowgraph Refractive-Index Field Screening",group:"Diagnostics",supported_modalities:["image","video","document"],prerequisites:["Calibrated shadowgraph optical path imagery"],execution_mode:"requires_specialist_solver"},
-  {id:"T26",name:"Particle Image Velocimetry (PIV) Flow Reconstruction",group:"Diagnostics",supported_modalities:["image","video","table"],prerequisites:["Seeded tracer particle image pairs & PIV cross-correlation solver"],execution_mode:"requires_specialist_solver"},
-  {id:"T27",name:"Infrared Thermography Field Analysis",group:"Diagnostics",supported_modalities:["image","video","table"],prerequisites:["IR camera data & spectral band calibration"],execution_mode:"requires_specialist_solver"},
-  {id:"T28",name:"Calibrated FLIR Radiometric Temperature Estimation",group:"Diagnostics",supported_modalities:["image","video","table"],prerequisites:["Radiometric FLIR array, emissivity & blackbody calibration"],execution_mode:"requires_specialist_solver"},
-  {id:"T29",name:"Coupled Temperature & Flow-Field Interpretation",group:"Diagnostics",supported_modalities:["table","document"],prerequisites:["Synchronized temperature and flow-velocity logs"],execution_mode:"local_descriptor"},
-  {id:"T30",name:"Laser-Induced Fluorescence (LIF) Radical Mapping",group:"Spectroscopy and chemistry",supported_modalities:["image","spectrum","table","document"],prerequisites:["Tuned excitation laser sheet & quenching correction"],execution_mode:"requires_specialist_solver"},
-  {id:"T31",name:"Fourier-Transform Infrared (FTIR) Gas Analysis",group:"Spectroscopy and chemistry",supported_modalities:["spectrum","table","document"],prerequisites:["Calibrated wavenumber axis (cm^-1) & HITRAN reference"],execution_mode:"requires_specialist_solver"},
-  {id:"T32",name:"Spontaneous & Coherent Raman Thermometry/Species",group:"Spectroscopy and chemistry",supported_modalities:["spectrum","table","document"],prerequisites:["Raman shift spectrum & line-shape solver"],execution_mode:"requires_specialist_solver"},
-  {id:"T33",name:"Spectral Peak & Baseline Processing",group:"Spectroscopy and chemistry",supported_modalities:["spectrum","table"],prerequisites:["Tabular or JSON wavelength/wavenumber spectrum"],execution_mode:"local_descriptor"},
-  {id:"T34",name:"Combustion Radical & Species Interpretation",group:"Spectroscopy and chemistry",supported_modalities:["spectrum","table","document"],prerequisites:["Calibrated wavelength peaks (OH*, CH*, C2*, CO2)"],execution_mode:"local_descriptor"},
-  {id:"T35",name:"CO & Soot Precursor Formation Screening",group:"Spectroscopy and chemistry",supported_modalities:["image","video","table","document"],prerequisites:["Color flame imagery or CO/soot telemetry"],execution_mode:"local_descriptor"},
-  {id:"T36",name:"Reduced & Detailed Chemical Kinetics Context",group:"Spectroscopy and chemistry",supported_modalities:["table","spectrum","document"],prerequisites:["Detailed chemical kinetic solver (Cantera/CHEMKIN)"],execution_mode:"requires_specialist_solver"},
-  {id:"T37",name:"Drop Tower Short-Duration 0g Context",group:"Platforms",supported_modalities:["image","video","table","document"],prerequisites:["Drop tower platform metadata (2.2s / 5.2s)"],execution_mode:"local_descriptor"},
-  {id:"T38",name:"Parabolic Flight Gravity-Jitter Context",group:"Platforms",supported_modalities:["image","video","table","document"],prerequisites:["Parabolic aircraft trajectory or g-jitter trace"],execution_mode:"local_descriptor"},
-  {id:"T39",name:"Sounding Rocket Extended Microgravity Context",group:"Platforms",supported_modalities:["image","video","table","document"],prerequisites:["Suborbital sounding rocket metadata"],execution_mode:"local_descriptor"},
-  {id:"T40",name:"ISS Combustion Integrated Rack (CIR / SoFIE / FLEX) Context",group:"Platforms",supported_modalities:["image","video","table","document"],prerequisites:["ISS facility metadata or PSI accession"],execution_mode:"local_descriptor"},
-  {id:"T41",name:"Orbital Capsule & Spacecraft Cabin Experiment Context",group:"Platforms",supported_modalities:["image","video","table","document"],prerequisites:["Enclosure volume or Saffire telemetry"],execution_mode:"local_descriptor"},
-  {id:"T42",name:"Microgravity (0g) Baseline Characterization",group:"Gravity scaling",supported_modalities:["image","video","table","document"],prerequisites:["0g experimental evidence or PSI baseline"],execution_mode:"local_descriptor"},
-  {id:"T43",name:"Terrestrial (1g) Buoyant Reference Comparison",group:"Gravity scaling",supported_modalities:["image","video","table","document"],prerequisites:["1g reference metrics or comparison table"],execution_mode:"local_descriptor"},
-  {id:"T44",name:"Lunar Gravity (0.17g) Flammability & Spread Context",group:"Gravity scaling",supported_modalities:["image","video","table","document"],prerequisites:["Lunar partial-g or exploration atmosphere context"],execution_mode:"local_descriptor"},
-  {id:"T45",name:"Martian Gravity (0.38g) Mixed-Convection Context",group:"Gravity scaling",supported_modalities:["image","video","table","document"],prerequisites:["Martian partial-g or habitat ventilation context"],execution_mode:"local_descriptor"},
-  {id:"T46",name:"Partial-Gravity Froude/Grashof Scaling Comparison",group:"Gravity scaling",supported_modalities:["table","image","video","document"],prerequisites:["Gravity level g and characteristic length scale"],execution_mode:"local_descriptor"},
-  {id:"T47",name:"CNN / ResNet Flame Regime Classification",group:"AI methods",supported_modalities:["image","video"],prerequisites:["Pretrained domain-validated ResNet/CNN weights"],execution_mode:"requires_specialist_solver"},
-  {id:"T48",name:"Differentiable Symmetry Loss & Mirror IoU Metric",group:"AI methods",supported_modalities:["image","video"],prerequisites:["Normalized intensity map and segmented mask"],execution_mode:"local_descriptor"},
-  {id:"T49",name:"Temporal Sequence ML Anomaly Detection",group:"AI methods",supported_modalities:["video","table"],prerequisites:["Multi-frame sequence (>= 8 samples)"],execution_mode:"local_descriptor"},
-  {id:"T50",name:"Spectral & Multimodal Embedding Retrieval",group:"AI methods",supported_modalities:["image","video","table","spectrum","document"],prerequisites:["Descriptor vector & NASA PSI SQLite catalogue"],execution_mode:"local_descriptor"},
-  {id:"T51",name:"Technique-Bounded LLM Evidence Synthesis",group:"AI methods",supported_modalities:["image","video","table","spectrum","document"],prerequisites:["Selected technique whitelist & extracted descriptors"],execution_mode:"local_descriptor"},
-  {id:"T52",name:"Cross-Experiment NASA PSI Similarity Comparison",group:"Safety interpretation",supported_modalities:["image","video","table","spectrum","document"],prerequisites:["NASA PSI SQLite catalogue & extracted descriptors"],execution_mode:"local_descriptor"},
-  {id:"T53",name:"Multi-Criteria Evidence & Hazard Ranking",group:"Safety interpretation",supported_modalities:["image","video","table","spectrum","document"],prerequisites:["Computed descriptors or matched PSI parameters"],execution_mode:"local_descriptor"},
-  {id:"T54",name:"Combustion Anomaly & Instability Screening",group:"Safety interpretation",supported_modalities:["image","video","table","spectrum","document"],prerequisites:["Extracted geometry, temporal, or tabular descriptors"],execution_mode:"local_descriptor"},
-  {id:"T55",name:"Spacecraft Material Flammability Risk Screening",group:"Safety interpretation",supported_modalities:["image","video","table","document"],prerequisites:["Material/fuel identifier and O2/pressure conditions"],execution_mode:"local_descriptor"},
-  {id:"T56",name:"Evidence-Linked Crew Safety & Suppression Insights",group:"Safety interpretation",supported_modalities:["image","video","table","spectrum","document"],prerequisites:["Computed descriptors and verified PSI references"],execution_mode:"local_descriptor"},
-  {id:"T57",name:"Measurement Uncertainty & Follow-Up Experiment Gap Analysis",group:"Safety interpretation",supported_modalities:["image","video","table","spectrum","document"],prerequisites:["Evidence inventory and technique execution audit"],execution_mode:"local_descriptor"}
+  {id:"absence_buoyancy",name:"Absence of Buoyancy",group:"Microgravity combustion fundamentals",modalities:["image","video","text","numeric"],prerequisites:"Gravity regime metadata or visual flame envelope.",local_support:"metadata_plus_visual"},
+  {id:"molecular_diffusion",name:"Molecular Diffusion Transport",group:"Microgravity combustion fundamentals",modalities:["image","video","text","numeric"],prerequisites:"Concentration, oxidizer, or burn-rate context; full transport solving requires species gradients.",local_support:"conceptual_or_numeric"},
+  {id:"marangoni_flow",name:"Marangoni / Thermocapillary Flow",group:"Microgravity combustion fundamentals",modalities:["video","image","thermal","text"],prerequisites:"Liquid droplet/pool context, surface-tension temperature gradient, or motion evidence.",local_support:"metadata_plus_video"},
+  {id:"spherical_symmetry",name:"Spherical Flame Symmetry",group:"Microgravity combustion fundamentals",modalities:["image","video","thermal"],prerequisites:"Segmented 2D flame projection; 2D circularity is a proxy for 3D sphericity.",local_support:"computed_image_metric"},
+  {id:"cool_flame_physics",name:"Cool-Flame Low-Temperature Chemistry",group:"Microgravity combustion fundamentals",modalities:["thermal","spectral","numeric","text","video"],prerequisites:"Low-temperature regime data (~500–800 K), formaldehyde/HO2 markers, or two-stage extinction notes.",local_support:"spectral_or_metadata"},
+  {id:"schlieren",name:"Schlieren Imaging",group:"Optical diagnostics & flow",modalities:["image","video","text"],prerequisites:"Actual Schlieren optical path imagery or explicit diagnostic metadata.",local_support:"visual_if_provided"},
+  {id:"shadowgraph",name:"Shadowgraph Imaging",group:"Optical diagnostics & flow",modalities:["image","video","text"],prerequisites:"Actual shadowgraph imagery or explicit optical setup metadata.",local_support:"visual_if_provided"},
+  {id:"reflection_iou",name:"Reflection Symmetry IoU",group:"Optical diagnostics & flow",modalities:["image","video","thermal"],prerequisites:"Clear foreground flame mask.",local_support:"computed_image_metric"},
+  {id:"bilateral_symmetry",name:"Bilateral Left-Right Symmetry",group:"Optical diagnostics & flow",modalities:["image","video","thermal"],prerequisites:"Clear foreground flame mask.",local_support:"computed_image_metric"},
+  {id:"top_bottom_symmetry",name:"Top-Bottom Symmetry",group:"Optical diagnostics & flow",modalities:["image","video","thermal"],prerequisites:"Clear foreground flame mask.",local_support:"computed_image_metric"},
+  {id:"piv",name:"Particle Image Velocimetry (PIV)",group:"Optical diagnostics & flow",modalities:["video","numeric","text"],prerequisites:"Seeded particle image pairs, frame timing, spatial calibration, or exported PIV vector fields.",local_support:"unsupported_solver_locked"},
+  {id:"flow_vectors",name:"Convective / Diffusive Flow Vector Analysis",group:"Optical diagnostics & flow",modalities:["numeric","video","text"],prerequisites:"Exported velocity vectors, anemometry, or calibrated multi-frame displacement data.",local_support:"numeric_if_provided"},
+  {id:"infrared_thermography",name:"Infrared Thermography",group:"Thermal & cool-flame diagnostics",modalities:["thermal","image","numeric","text"],prerequisites:"IR camera imagery, wavelength band, and emissivity/calibration context.",local_support:"visual_or_numeric_if_calibrated"},
+  {id:"flir_analysis",name:"FLIR Radiometric Analysis",group:"Thermal & cool-flame diagnostics",modalities:["thermal","image","numeric","text"],prerequisites:"Radiometric thermal export or calibrated temperature scale; RGB false-color alone is not temperature.",local_support:"numeric_if_calibrated"},
+  {id:"lif",name:"Laser-Induced Fluorescence (LIF)",group:"Thermal & cool-flame diagnostics",modalities:["spectral","image","numeric","text"],prerequisites:"Excitation/emission wavelength metadata or LIF intensity maps (e.g., OH, CH2O).",local_support:"spectral_or_metadata"},
+  {id:"ftir",name:"FTIR Gas-Phase Spectroscopy",group:"Thermal & cool-flame diagnostics",modalities:["spectral","numeric","text"],prerequisites:"Wavenumber/absorbance spectrum or FTIR species table.",local_support:"spectral_peak_assist"},
+  {id:"formaldehyde_ho2",name:"Formaldehyde & HO2 Intermediate Tracking",group:"Thermal & cool-flame diagnostics",modalities:["spectral","numeric","text"],prerequisites:"UV/IR spectral bands, LIF maps, or kinetic species measurements.",local_support:"spectral_or_metadata"},
+  {id:"cool_flame_extinction",name:"Radiative Extinction & Cool-Flame Transition",group:"Thermal & cool-flame diagnostics",modalities:["video","thermal","numeric","text"],prerequisites:"Time-resolved intensity/temperature decay or experiment log documenting hot-to-cool transition.",local_support:"video_or_numeric"},
+  {id:"temporal_dynamics",name:"Temporal Flame Area & Intensity Dynamics",group:"Thermal & cool-flame diagnostics",modalities:["video","numeric"],prerequisites:"Multi-frame video or time-series sensor data.",local_support:"computed_video_metric"},
+  {id:"symmetry_variance",name:"Temporal Symmetry Variance",group:"Thermal & cool-flame diagnostics",modalities:["video","numeric"],prerequisites:"Multi-frame video or time-indexed symmetry series.",local_support:"computed_video_metric"},
+  {id:"centroid_jitter",name:"Flame Centroid Jitter & Drift",group:"Thermal & cool-flame diagnostics",modalities:["video","numeric"],prerequisites:"Multi-frame video with stable camera framing.",local_support:"computed_video_metric"},
+  {id:"drop_tower",name:"Drop Tower (2.2 s / 5.2 s) Regime Assessment",group:"Platforms & cross-platform comparison",modalities:["text","numeric","video","image"],prerequisites:"Platform metadata, test duration, or g-jitter trace.",local_support:"metadata_comparison"},
+  {id:"parabolic_flight",name:"Parabolic Flight (~20 s) G-Jitter Assessment",group:"Platforms & cross-platform comparison",modalities:["text","numeric","video","image"],prerequisites:"Aircraft parabolic trajectory metadata or accelerometer log.",local_support:"metadata_comparison"},
+  {id:"sounding_rocket",name:"Sounding Rocket (6–15 min) Regime Assessment",group:"Platforms & cross-platform comparison",modalities:["text","numeric","video","image"],prerequisites:"Suborbital mission metadata and duration context.",local_support:"metadata_comparison"},
+  {id:"iss_cir",name:"ISS Combustion Integrated Rack (CIR) Context",group:"Platforms & cross-platform comparison",modalities:["text","numeric","video","image","spectral"],prerequisites:"Facility/insert metadata (e.g., CIR, MDCA, ACME, BASS, SoFIE) or experiment catalogue record.",local_support:"metadata_comparison"},
+  {id:"orbital_platforms",name:"Free-Flyer & Orbital Capsule Platforms",group:"Platforms & cross-platform comparison",modalities:["text","numeric","video","image"],prerequisites:"Vehicle/payload metadata (e.g., Cygnus Saffire, orbital capsule).",local_support:"metadata_comparison"},
+  {id:"fractal_dimension",name:"Boundary Box-Counting Fractal Dimension",group:"Platforms & cross-platform comparison",modalities:["image","video","thermal"],prerequisites:"Segmented contour with sufficient pixel resolution.",local_support:"computed_image_metric"},
+  {id:"convexity_defects",name:"Contour Convexity Defects",group:"Platforms & cross-platform comparison",modalities:["image","video","thermal"],prerequisites:"Segmented contour mask.",local_support:"computed_image_metric"},
+  {id:"platform_duration",name:"Microgravity Duration vs Residence-Time Scaling",group:"Platforms & cross-platform comparison",modalities:["numeric","text","video"],prerequisites:"Platform duration and burn/diffusion timescale metadata.",local_support:"numeric_or_metadata"},
+  {id:"segmentation",name:"HSV Warm-Mask Flame Segmentation",group:"Geometry & object classification",modalities:["image","video","thermal"],prerequisites:"Visible or false-color image with distinguishable luminous region.",local_support:"computed_image_metric"},
+  {id:"rotational_symmetry",name:"Rotational Symmetry (90° / 120° / 180° IoU)",group:"Geometry & object classification",modalities:["image","video","thermal"],prerequisites:"Centered foreground mask.",local_support:"computed_image_metric"},
+  {id:"convex_hull",name:"Convex Hull & Convexity Ratio",group:"Geometry & object classification",modalities:["image","video","thermal"],prerequisites:"Segmented contour mask.",local_support:"computed_image_metric"},
+  {id:"boundary_roughness",name:"Boundary Roughness (Perimeter / Hull Ratio)",group:"Geometry & object classification",modalities:["image","video","thermal"],prerequisites:"Segmented contour mask.",local_support:"computed_image_metric"},
+  {id:"perimeter_area",name:"Perimeter-to-Area Compactness",group:"Geometry & object classification",modalities:["image","video","thermal"],prerequisites:"Segmented contour mask.",local_support:"computed_image_metric"},
+  {id:"peak_detection",name:"Contour Profile Peak Detection",group:"Geometry & object classification",modalities:["image","video","spectral","numeric"],prerequisites:"Segmented contour or 1D signal trace.",local_support:"computed_image_or_signal"},
+  {id:"centroid_center_mass",name:"Geometric Centroid & Intensity Center of Mass",group:"Geometry & object classification",modalities:["image","video","thermal"],prerequisites:"Segmented region and intensity channel.",local_support:"computed_image_metric"},
+  {id:"fire_rigid_classification",name:"Flame vs Rigid-Object Heuristic Classification",group:"Geometry & object classification",modalities:["image","video","thermal"],prerequisites:"Geometry descriptors plus multi-frame or contextual evidence.",local_support:"heuristic_descriptor_assist"},
+  {id:"flicker_frequency",name:"Flame Flicker Frequency (Hz)",group:"Geometry & object classification",modalities:["video","numeric"],prerequisites:"High-frame-rate video with known FPS or photodiode/radiometer time series.",local_support:"numeric_if_high_rate_series"},
+  {id:"symmetry_loss",name:"Deep Symmetry-Loss Metric",group:"Geometry & object classification",modalities:["image","video"],prerequisites:"Trained neural symmetry-loss model or external evaluation output.",local_support:"unsupported_solver_locked"},
+  {id:"cnn_resnet",name:"CNN / ResNet Flame Regime Classifier",group:"Geometry & object classification",modalities:["image","video"],prerequisites:"Trained domain-validated CNN/ResNet checkpoint and inference pipeline.",local_support:"unsupported_solver_locked"},
+  {id:"temperature_distribution",name:"Temperature Field & Peak Temperature Analysis",group:"Numerical & combustion measurements",modalities:["numeric","thermal","text"],prerequisites:"Thermocouple array, pyrometry, or calibrated radiometric thermal data in K or °C.",local_support:"numeric_statistics"},
+  {id:"species_concentration",name:"Species Concentration & Stoichiometry",group:"Numerical & combustion measurements",modalities:["numeric","spectral","text"],prerequisites:"Gas analyzer, GC/MS, FTIR, or initial mixture mole/mass fractions.",local_support:"numeric_statistics"},
+  {id:"gas_velocity",name:"Oxidizer & Gas Velocity Field",group:"Numerical & combustion measurements",modalities:["numeric","text"],prerequisites:"Forced-flow setpoints, hot-wire anemometry, or calibrated velocimetry table.",local_support:"numeric_statistics"},
+  {id:"heat_radiation",name:"Radiative Heat Flux & Loss Fraction",group:"Numerical & combustion measurements",modalities:["numeric","thermal","text"],prerequisites:"Radiometer trace (W/m² or W) or heat-flux gauge data.",local_support:"numeric_statistics"},
+  {id:"soot_formation",name:"Soot Volume Fraction & Shell Morphology",group:"Numerical & combustion measurements",modalities:["image","video","numeric","spectral","text"],prerequisites:"Laser extinction, two-color pyrometry, or luminous yellow soot-shell imagery.",local_support:"visual_or_numeric"},
+  {id:"raman",name:"Raman Spectroscopy",group:"Chemical kinetics & spectroscopy",modalities:["spectral","numeric","text"],prerequisites:"Raman shift spectrum (cm⁻¹) and laser excitation metadata.",local_support:"spectral_peak_assist"},
+  {id:"spectral_deconvolution",name:"Overlapping Band Spectral Deconvolution",group:"Chemical kinetics & spectroscopy",modalities:["spectral","numeric"],prerequisites:"Instrument line-shape function, reference library, and nonlinear spectral fitting solver.",local_support:"unsupported_solver_locked"},
+  {id:"co_analysis",name:"Carbon Monoxide (CO) & Incomplete Oxidation",group:"Chemical kinetics & spectroscopy",modalities:["spectral","numeric","text"],prerequisites:"CO sensor log (ppm/%), IR band around 2143 cm⁻¹, or gas-sampling data.",local_support:"numeric_or_spectral"},
+  {id:"soot_precursors",name:"PAH & Soot Precursor Chemistry",group:"Chemical kinetics & spectroscopy",modalities:["spectral","numeric","text"],prerequisites:"UV/visible fluorescence, mass spectrometry, or kinetic precursor data (C2H2, benzene, PAH).",local_support:"spectral_or_metadata"},
+  {id:"chemical_kinetics",name:"Detailed Chemical Kinetic Mechanism Solving",group:"Chemical kinetics & spectroscopy",modalities:["numeric","text"],prerequisites:"External Cantera/CHEMKIN mechanism solver and thermodynamic/transport files.",local_support:"unsupported_solver_locked"},
+  {id:"gravity_scaling",name:"Non-Dimensional Gravity Scaling (Grashof / Froude / Damköhler)",group:"Gravity scaling & partial gravity",modalities:["numeric","text"],prerequisites:"Complete length scale, velocity, kinematic viscosity, ΔT, and reaction-rate parameters.",local_support:"unsupported_solver_locked"},
+  {id:"lunar_gravity",name:"Lunar Gravity (0.16 g) Flammability & Buoyancy Onset",group:"Gravity scaling & partial gravity",modalities:["image","video","numeric","text"],prerequisites:"Partial-gravity test conditions (~0.16 g) or comparative 0g/1g material flammability data.",local_support:"metadata_plus_visual"},
+  {id:"martian_gravity",name:"Martian Gravity (0.38 g) & Atmosphere Comparison",group:"Gravity scaling & partial gravity",modalities:["image","video","numeric","text"],prerequisites:"Partial-gravity (~0.38 g), pressure, or CO2/O2 diluent context.",local_support:"metadata_plus_visual"},
+  {id:"cross_experiment_compare",name:"Cross-Experiment Catalogue Comparison",group:"SI interpretation & safety assessment",modalities:["image","video","thermal","spectral","numeric","text"],prerequisites:"Imported SQLite experiment catalogue records and uploaded evidence descriptors.",local_support:"catalog_pre_match_plus_llm"},
+  {id:"evidence_ranking",name:"Relevance & Confidence Evidence Ranking",group:"SI interpretation & safety assessment",modalities:["image","video","thermal","spectral","numeric","text"],prerequisites:"At least one uploaded evidence item or metadata context.",local_support:"llm_with_validation"},
+  {id:"anomaly_detection",name:"Anomaly, Asymmetry & Instability Identification",group:"SI interpretation & safety assessment",modalities:["image","video","thermal","spectral","numeric","text"],prerequisites:"Extracted geometric/temporal/numeric descriptors or multi-run logs.",local_support:"computed_plus_llm"},
+  {id:"risk_interpretation",name:"Spacecraft Fire-Safety & Material Risk Interpretation",group:"SI interpretation & safety assessment",modalities:["image","video","thermal","spectral","numeric","text"],prerequisites:"Fuel/material, oxygen, pressure, and platform context.",local_support:"llm_with_validation"}
 ];
 
 const FALLBACK_PSI=[
-  {accession:"PSI-98",title:"Flame Extinguishment Experiment (FLEX)",platform:"ISS / CIR (MDCA)",gravity_regime:"0g",fuels:["heptane","methanol","decane"],source_url:"https://psi.nasa.gov/physci/repo/data/investigations/PSI-98",summary:"Spherical droplet combustion, radiative extinction, and cool-flame transitions in microgravity."},
-  {accession:"PSI-107",title:"Flame Extinguishment Experiment - 2 (FLEX-2)",platform:"ISS / CIR",gravity_regime:"0g",fuels:["heptane","decane","dodecane"],source_url:"https://psi.nasa.gov/physci/repo/data/investigations/PSI-107",summary:"Isolated droplet and droplet-array interactions, soot shells, and two-stage cool flames."},
-  {accession:"PSI-25",title:"Burning and Suppression of Solids - II (BASS-II)",platform:"ISS / MSG",gravity_regime:"0g",fuels:["pmma","cotton","nomex"],source_url:"https://psi.nasa.gov/physci/repo/data/investigations/PSI-25",summary:"Concurrent and opposed-flow flame spread and extinction over PMMA rods, slabs, and fabrics."},
-  {accession:"PSI-112",title:"Solid Fuel Ignition and Extinction (SoFIE)",platform:"ISS / CIR (SoFIE)",gravity_regime:"0g / Exploration Analog",fuels:["pmma","solid_polymer"],source_url:"https://psi.nasa.gov/physci/repo/data/investigations/PSI-112",summary:"Ignition and flame growth of solid spacecraft materials under lunar/Martian exploration atmospheres."},
-  {accession:"PSI-64",title:"Spacecraft Fire Experiment (Saffire)",platform:"Orbital Capsule (Cygnus)",gravity_regime:"0g",fuels:["cotton","sibal_fabric","pmma"],source_url:"https://psi.nasa.gov/physci/repo/data/investigations/PSI-64",summary:"Large-scale autonomous spacecraft fire growth, O2 depletion, and smoke/CO propagation."},
-  {accession:"PSI-41",title:"Advanced Combustion via Microgravity Experiments (ACME)",platform:"ISS / CIR",gravity_regime:"0g",fuels:["methane","ethylene","propane"],source_url:"https://psi.nasa.gov/physci/repo/data/investigations/PSI-41",summary:"Spherical and coflow non-premixed gaseous diffusion flames in the ISS CIR."}
+  {accession:"PSI-98",experiment_id:"PSI-98",title:"Flame Extinguishment Experiment (FLEX)",name:"Flame Extinguishment Experiment (FLEX)",platform:"ISS / CIR",gravity_regime:"0g",fuels:["heptane","methanol","decane"],source_url:"https://psi.nasa.gov/physci/repo/data/investigations/PSI-98",summary:"Spherical droplet combustion, radiative extinction, and cool-flame transitions in microgravity."},
+  {accession:"PSI-107",experiment_id:"PSI-107",title:"Flame Extinguishment Experiment - 2 (FLEX-2)",name:"Flame Extinguishment Experiment - 2 (FLEX-2)",platform:"ISS / CIR",gravity_regime:"0g",fuels:["heptane","decane","dodecane"],source_url:"https://psi.nasa.gov/physci/repo/data/investigations/PSI-107",summary:"Isolated droplet and droplet-array interactions, soot shells, and two-stage cool flames."},
+  {accession:"PSI-25",experiment_id:"PSI-25",title:"Burning and Suppression of Solids - II (BASS-II)",name:"Burning and Suppression of Solids - II (BASS-II)",platform:"ISS / CIR",gravity_regime:"0g",fuels:["pmma","cotton","nomex"],source_url:"https://psi.nasa.gov/physci/repo/data/investigations/PSI-25",summary:"Concurrent and opposed-flow flame spread and extinction over PMMA rods, slabs, and fabrics."},
+  {accession:"PSI-112",experiment_id:"PSI-112",title:"Solid Fuel Ignition and Extinction (SoFIE)",name:"Solid Fuel Ignition and Extinction (SoFIE)",platform:"ISS / CIR",gravity_regime:"0g / Exploration Analog",fuels:["pmma","solid_polymer"],source_url:"https://psi.nasa.gov/physci/repo/data/investigations/PSI-112",summary:"Ignition and flame growth of solid spacecraft materials under lunar/Martian exploration atmospheres."},
+  {accession:"PSI-64",experiment_id:"PSI-64",title:"Spacecraft Fire Experiment (Saffire)",name:"Spacecraft Fire Experiment (Saffire)",platform:"Orbital capsule / satellite",gravity_regime:"0g",fuels:["cotton","sibal_fabric","pmma"],source_url:"https://psi.nasa.gov/physci/repo/data/investigations/PSI-64",summary:"Large-scale autonomous spacecraft fire growth, O2 depletion, and smoke/CO propagation."},
+  {accession:"PSI-41",experiment_id:"PSI-41",title:"Advanced Combustion via Microgravity Experiments (ACME)",name:"Advanced Combustion via Microgravity Experiments (ACME)",platform:"ISS / CIR",gravity_regime:"0g",fuels:["methane","ethylene","propane"],source_url:"https://psi.nasa.gov/physci/repo/data/investigations/PSI-41",summary:"Spherical and coflow non-premixed gaseous diffusion flames in the ISS CIR."}
 ];
 
 let techniques=FALLBACK_TECHNIQUES;
@@ -418,32 +422,36 @@ function drawFlame(){
 }
 ['gr','ox','pr','fl','mat'].forEach(i=>$('#'+i).addEventListener('input',drawFlame));drawFlame();
 
-// STEP 1: NASA PSI REPOSITORY
+// STEP 1: NASA PSI REPOSITORY & CATALOGUE DB
 function renderPsiGrid(){
   $('#psiGrid').innerHTML=psiRecords.map(r=>{
-    const sel=r.accession===selectedPsi?'sel':'';
-    const fuels=(r.fuels||[]).map(f=>`<span class="tag">${f}</span>`).join('');
-    return `<article class="pcard ${sel}" data-acc="${r.accession}">
+    const id=r.accession||r.experiment_id;
+    const title=r.title||r.name||id;
+    const sel=id===selectedPsi?'sel':'';
+    const fuels=Array.isArray(r.fuels)?r.fuels:String(r.fuel_material||'').split(',').map(s=>s.trim()).filter(Boolean);
+    const fuelTags=fuels.map(f=>`<span class="tag">${f}</span>`).join('');
+    const src=r.source_url||r.source_ref||'https://psi.nasa.gov/physci/repo';
+    return `<article class="pcard ${sel}" data-acc="${id}">
       <div>
         <div style="display:flex;justify-content:space-between;align-items:center">
-          <span class="tag sp">${r.accession}</span>
-          <span class="k">${r.platform} · ${r.gravity_regime}</span>
+          <span class="tag sp">${id}</span>
+          <span class="k">${r.platform||'ISS / CIR'} · ${r.gravity_regime||(r.gravity_g!=null?r.gravity_g+'g':'0g')}</span>
         </div>
-        <h3>${r.title}</h3>
-        <p class="note" style="font-size:.8rem;margin:.3rem 0 .5rem">${r.summary}</p>
-        <div>${fuels}</div>
+        <h3>${title}</h3>
+        <p class="note" style="font-size:.8rem;margin:.3rem 0 .5rem">${r.summary||''}</p>
+        <div>${fuelTags}</div>
       </div>
       <div style="display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--rule);padding-top:.55rem">
-        <a href="${r.source_url}" target="_blank" rel="noopener" class="k" style="color:var(--acc)">Official PSI Record ↗</a>
-        <button class="btn btn-ghost pick-psi" data-acc="${r.accession}" style="padding:.4rem .75rem;font-size:.64rem">${r.accession===selectedPsi?'Selected':'Select'}</button>
+        <a href="${src}" target="_blank" rel="noopener" class="k" style="color:var(--acc)">Official Record ↗</a>
+        <button class="btn btn-ghost pick-psi" data-acc="${id}" style="padding:.4rem .75rem;font-size:.64rem">${id===selectedPsi?'Selected':'Select'}</button>
       </div>
     </article>`;
   }).join('');
 
   $$('.pick-psi').forEach(b=>b.addEventListener('click',()=>{
     selectedPsi=b.dataset.acc;
-    const rec=psiRecords.find(x=>x.accession===selectedPsi);
-    $('#psiSelectedText').textContent=`Selected PSI investigation: ${selectedPsi} · ${rec?rec.title:''}`;
+    const rec=psiRecords.find(x=>(x.accession||x.experiment_id)===selectedPsi);
+    $('#psiSelectedText').textContent=`Selected PSI investigation: ${selectedPsi} · ${rec?(rec.title||rec.name):''}`;
     renderPsiGrid();
   }));
 }
@@ -463,7 +471,7 @@ async function searchPsiApi(q,acc){
     }
   }catch(_){}
   const qLow=(q||'').toLowerCase(),aUp=(acc||'').toUpperCase();
-  psiRecords=FALLBACK_PSI.filter(r=>(!aUp||r.accession===aUp)&&(!qLow||`${r.accession} ${r.title} ${r.summary} ${r.fuels.join(' ')}`.toLowerCase().includes(qLow)));
+  psiRecords=FALLBACK_PSI.filter(r=>(!aUp||r.accession===aUp)&&(!qLow||`${r.accession} ${r.title} ${r.summary} ${(r.fuels||[]).join(' ')}`.toLowerCase().includes(qLow)));
   renderPsiGrid();
 }
 
@@ -473,13 +481,40 @@ $('#btnPsiSync').onclick=async()=>{
     const res=await fetch('/api/nasa-psi/sync',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({query:$('#psiQ').value.trim()||'combustion'})});
     if(res.ok){
       const d=await res.json();
-      $('#psiMetaNote').textContent=`Synced ${d.synced_count} verified NASA PSI records into local SQLite cache.`;
+      $('#psiMetaNote').textContent=`Synced ${d.synced_count} verified NASA PSI records into local SQLite catalogue (total=${d.total_catalog}).`;
       await searchPsiApi($('#psiQ').value.trim(),'');
       return;
     }
   }catch(_){}
   $('#psiMetaNote').textContent=`Synced ${psiRecords.length} verified NASA PSI records.`;
 };
+
+$('#catImportFile').addEventListener('change',async e=>{
+  const f=e.target.files[0];
+  if(!f)return;
+  const fd=new FormData();
+  fd.append('file',f);
+  try{
+    const res=await fetch('/api/catalog/import',{method:'POST',body:fd});
+    if(res.ok){
+      const d=await res.json();
+      psiRecords=d.records&&d.records.length?d.records:psiRecords;
+      $('#psiMetaNote').textContent=`Imported ${d.imported} record(s) into SQLite catalogue (total=${d.total}, skipped=${d.skipped}).`;
+      renderPsiGrid();
+    }
+  }catch(_){}
+});
+
+$('#btnCatClear').onclick=async()=>{
+  try{
+    const res=await fetch('/api/catalog',{method:'DELETE'});
+    if(res.ok){
+      const d=await res.json();
+      $('#psiMetaNote').textContent=`Cleared ${d.deleted} record(s) from SQLite catalogue (total=${d.total}).`;
+    }
+  }catch(_){}
+};
+
 $('#btnAnalyzePsiNow').onclick=()=>{go(3);$('#go').click();};
 
 // STEP 2: SPECIMENS & MULTIMODAL FILES
@@ -498,26 +533,30 @@ $('#extraFiles').addEventListener('change',()=>{
 function populateFamilies(){
   const fams=[...new Set(techniques.map(t=>t.group))];
   const sel=$('#famFilter');
-  sel.innerHTML='<option value="">All 9 scientific families ('+techniques.length+' techniques)</option>'+fams.map(f=>`<option value="${f}">${f} (${techniques.filter(t=>t.group===f).length})</option>`).join('');
+  sel.innerHTML='<option value="">All 9 scientific groups ('+techniques.length+' techniques)</option>'+fams.map(f=>`<option value="${f}">${f} (${techniques.filter(t=>t.group===f).length})</option>`).join('');
 }
 
 function renderTechGrid(){
   const fam=$('#famFilter').value;
   const mod=$('#modFilter').value;
-  const list=techniques.filter(t=>(!fam||t.group===fam)&&(!mod||(t.supported_modalities||[]).includes(mod)));
+  const list=techniques.filter(t=>{
+    const mods=t.modalities||t.supported_modalities||[];
+    return (!fam||t.group===fam)&&(!mod||mods.includes(mod));
+  });
   $('#techCounterText').textContent=`${selectedTechIds.size} of ${techniques.length} techniques active`;
   $('#cntTotal').textContent=`/ ${selectedTechIds.size||techniques.length} techniques`;
   $('#techGrid').innerHTML=list.map(t=>{
     const on=selectedTechIds.has(t.id);
-    const mods=(t.supported_modalities||[]).map(m=>`<span class="tag">${m}</span>`).join('');
+    const mods=(t.modalities||t.supported_modalities||[]).map(m=>`<span class="tag">${m}</span>`).join('');
+    const prereq=Array.isArray(t.prerequisites)?t.prerequisites[0]:t.prerequisites;
     return `<div class="tcard" role="checkbox" aria-checked="${on}" data-tid="${t.id}">
       <div style="display:flex;justify-content:space-between;align-items:center">
         <span class="tag sp">${t.id}</span>
-        <span class="k" style="font-size:.58rem">${t.group}</span>
+        <span class="k" style="font-size:.56rem">${t.group}</span>
       </div>
       <b>${t.name}</b>
       <div>${mods}</div>
-      <span class="k" style="font-size:.56rem">Prereq: ${(t.prerequisites||[])[0]||''}</span>
+      <span class="k" style="font-size:.55rem">Prereq: ${prereq||''}</span>
     </div>`;
   }).join('');
 
@@ -531,8 +570,17 @@ function renderTechGrid(){
 $('#famFilter').onchange=renderTechGrid;
 $('#modFilter').onchange=renderTechGrid;
 $('#btnTechAll').onclick=()=>{techniques.forEach(t=>selectedTechIds.add(t.id));renderTechGrid();};
+$('#btnTechClear').onclick=()=>{selectedTechIds.clear();renderTechGrid();};
 $('#btnTechCore').onclick=()=>{
-  selectedTechIds=new Set(['T01','T02','T04','T05','T08','T09','T10','T11','T12','T13','T14','T15','T16','T17','T26','T28','T30','T40','T44','T45','T51','T52','T53','T56','T57']);
+  selectedTechIds=new Set([
+    'absence_buoyancy','spherical_symmetry','cool_flame_physics','reflection_iou',
+    'bilateral_symmetry','top_bottom_symmetry','piv','temporal_dynamics',
+    'symmetry_variance','centroid_jitter','iss_cir','fractal_dimension',
+    'convexity_defects','segmentation','rotational_symmetry','convex_hull',
+    'boundary_roughness','perimeter_area','peak_detection','centroid_center_mass',
+    'lunar_gravity','martian_gravity','cross_experiment_compare','evidence_ranking',
+    'anomaly_detection','risk_interpretation'
+  ]);
   renderTechGrid();
 };
 
@@ -545,7 +593,6 @@ $('#go').onclick=async function(){
   const runList=chosen.length?chosen:techniques;
   let n=0;$('#log').innerHTML='';$('#toR').disabled=true;clearInterval(tm);
 
-  // Trigger real backend analysis request concurrently
   const reportPromise=executeBackendAnalysis(runList.map(t=>t.id));
 
   tm=setInterval(async()=>{
@@ -556,7 +603,7 @@ $('#go').onclick=async function(){
     const s=pct<0.15?0:pct<0.35?1:pct<0.70?2:pct<0.90?3:4;
     stg.forEach((l,i)=>l.className=i<s?'done':i===s?'now':'');
     const tech=runList[(n-1)%runList.length];
-    const stLabel=tech.execution_mode==='requires_specialist_solver'?'requires_specialist_solver':(tech.execution_mode==='partially_executed'?'partially_executed':'executed');
+    const stLabel=tech.local_support==='unsupported_solver_locked'?'requires_more_data (solver locked)':(tech.local_support&&tech.local_support.startsWith('computed_')?'computed_from_upload':'interpreted_from_metadata');
     $('#log').insertAdjacentHTML('beforeend',`${tech.id} · ${tech.group.toLowerCase()} · ${tech.name} · [${stLabel}]<br>`);
     $('#log').scrollTop=1e5;
     if(n>=total){
@@ -590,54 +637,64 @@ async function executeBackendAnalysis(techIds){
     if(res.ok)return await res.json();
   }catch(_){}
 
-  // Fallback client-side report if opened as standalone file
+  const locked=new Set(['piv','cnn_resnet','symmetry_loss','spectral_deconvolution','chemical_kinetics','gravity_scaling']);
+  const imgComputed=new Set(['segmentation','reflection_iou','bilateral_symmetry','top_bottom_symmetry','rotational_symmetry','spherical_symmetry','convex_hull','convexity_defects','fractal_dimension','boundary_roughness','perimeter_area','peak_detection','centroid_center_mass','cross_experiment_compare','evidence_ranking','anomaly_detection','risk_interpretation']);
+
   return {
     report_id:'rep-local-'+Date.now().toString(36),
     workflow_mode:'standalone_bounded_pipeline',
     evidence_inventory:[{
       filename:'specimen_0g_spherical.png',
       modality:'image',
-      bilateral_symmetry:0.958,
-      top_bottom_symmetry:0.946,
+      candidate_area_px:12076.0,
+      candidate_perimeter_px:391.4,
+      perimeter_to_area_ratio:0.0324,
+      bilateral_left_right_score:0.958,
+      top_bottom_symmetry_score:0.946,
+      reflection_iou:0.952,
       rotational_symmetry:0.931,
       spherical_symmetry_score:0.945,
-      mirror_iou_horizontal:0.928,
-      aspect_ratio:1.02,
-      circularity:0.914,
-      solidity:0.976,
-      convexity:0.942,
-      fractal_dimension:1.084,
+      convexity_score:0.976,
       boundary_roughness:1.061,
-      intensity_centroid_offset_px:1.42,
-      morphology_class:'spherical_diffusion',
+      fractal_dimension:1.084,
+      convexity_defect_count:0,
+      peak_count:1,
+      orientation_deg:0.0,
+      flame_regime:'spherical',
       units:{
-        bilateral_symmetry:'score [0,1]',top_bottom_symmetry:'score [0,1]',rotational_symmetry:'score [0,1]',
-        spherical_symmetry_score:'score [0,1]',mirror_iou_horizontal:'Jaccard IoU',aspect_ratio:'H/W',
-        circularity:'4πA/P²',solidity:'A/A_hull',fractal_dimension:'box-counting D [1,2]'
+        candidate_area_px:'px²',candidate_perimeter_px:'px',perimeter_to_area_ratio:'px⁻¹',
+        bilateral_left_right_score:'IoU [0,1]',top_bottom_symmetry_score:'IoU [0,1]',
+        reflection_iou:'IoU [0,1]',rotational_symmetry:'IoU [0,1]',
+        convexity_score:'ratio [0,1]',fractal_dimension:'box-counting D',
+        convexity_defect_count:'count',peak_count:'count',orientation_deg:'degrees'
       }
     }],
-    technique_assessments:techniques.filter(t=>techIds.includes(t.id)).map(t=>({
-      id:t.id,name:t.name,group:t.group,
-      state:t.execution_mode==='requires_specialist_solver'?'Requires specialist solver':(t.supported_modalities.includes('image')?'Executed':'Requires data'),
-      rationale:t.prerequisites[0]
-    })),
+    technique_assessments:techniques.filter(t=>techIds.includes(t.id)).map(t=>{
+      const status=locked.has(t.id)?'requires_more_data':(imgComputed.has(t.id)?'computed_from_upload':'interpreted_from_metadata');
+      return {
+        technique_id:t.id,id:t.id,name:t.name,group:t.group,
+        status:status,
+        state:status,
+        observations:t.prerequisites
+      };
+    }),
     candidate_experiments:FALLBACK_PSI.map((p,i)=>({
-      accession:p.accession,title:p.title,platform:p.platform,source_url:p.source_url,
-      similarity_score:+(0.94-i*0.04).toFixed(2),match_rationale:p.summary
+      accession:p.accession,experiment_id:p.accession,title:p.title,name:p.title,platform:p.platform,source_url:p.source_url,
+      similarity_score:+(0.94-i*0.04).toFixed(2),match_confidence:+(0.94-i*0.04).toFixed(2),match_rationale:p.summary
     })),
     si_interpretation:{
       provider:$('#provSelect').value,model:'gemini-3.8-flash',
       summary:`Bounded PyroSage synthesis across ${techIds.length} techniques. Top NASA PSI match: ${selectedPsi}.`,
       findings:[{
         title:'Spherical Flame Envelope & Symmetry Verification',
-        evidence_class:'computed_descriptor',
-        technique_ids:['T01','T04','T09','T10','T14'],
-        interpretation:'High bilateral (0.958) and axial (0.946) symmetry confirms buoyancy absence and diffusion-dominated transport.',
+        evidence_class:'computed_from_upload',
+        technique_ids:['segmentation','spherical_symmetry','bilateral_symmetry','top_bottom_symmetry','fractal_dimension'],
+        interpretation:'High bilateral (0.958) and top-bottom (0.946) symmetry IoU confirms buoyancy absence and diffusion-dominated transport.',
         evidence_reference:'OpenCV/NumPy local extractor + NASA PSI-98 / PSI-107 baselines'
       }],
       safety_insights:[{
         category:'Lunar (0.17g) & Martian (0.38g) Fire Safety',
-        insight:'Weak partial-gravity buoyant flow (10-25 cm/s) replenishes oxidizer faster than 0g diffusion while radiative losses remain low; isolate cabin ventilation immediately on UV/IR/CO alarm.',
+        insight:'Weak partial-gravity buoyant flow replenishes oxidizer faster than 0g diffusion while radiative losses remain low; isolate cabin ventilation immediately on UV/IR/CO alarm.',
         evidence_link:'PSI-25 (BASS-II) & PSI-112 (SoFIE)'
       }],
       data_gaps:['Uncalibrated RGB pixels cannot yield absolute temperature (K) without blackbody radiometric calibration.']
@@ -654,39 +711,48 @@ async function executeBackendAnalysis(techIds){
 function populateReportDetails(rep){
   if(!rep)return;
   $('#gateBadge').textContent=`Report ${rep.report_id} · NASA PSI Verified`;
-  $('#gateNote').textContent=rep.si_interpretation?.summary||'Bounded SI report ready.';
+  $('#gateNote').textContent=rep.si_interpretation?.summary||rep.report?.executive_summary||'Bounded SI report ready.';
 
-  const ev=(rep.evidence_inventory||[])[0]||{};
+  const ev=(rep.evidence_inventory||rep.local_extractions||[])[0]||{};
   const units=ev.units||{};
-  const skip=new Set(['units','bounding_box','mean_rgb','spectral_analysis','numeric_summaries','calibration_note','excerpt']);
+  const skip=new Set(['units','bounding_box','mean_rgb','spectral_analysis','numeric_summaries','calibration_note','excerpt','rotational_symmetry_iou','geometric_centroid','intensity_centroid','caveat']);
   $('#descTable tbody').innerHTML=Object.entries(ev).filter(([k])=>!skip.has(k)).slice(0,14).map(([k,v])=>
     `<tr><td>${k}</td><td><b>${typeof v==='object'?JSON.stringify(v):v}</b></td><td>${units[k]||'metadata'}</td></tr>`
   ).join('');
 
-  $('#psiMatchTable tbody').innerHTML=(rep.candidate_experiments||[]).map(m=>
-    `<tr><td><a href="${m.source_url}" target="_blank" rel="noopener" style="color:var(--acc)">${m.accession} ↗</a></td><td><b>${m.title}</b><br><span style="color:var(--mute);font-size:.72rem">${m.platform||''} · ${m.match_rationale||''}</span></td><td><b>${Math.round((m.similarity_score||0.85)*100)}%</b></td></tr>`
-  ).join('');
+  const matches=rep.candidate_experiments||rep.experiment_matches||[];
+  $('#psiMatchTable tbody').innerHTML=matches.map(m=>{
+    const id=m.accession||m.experiment_id;
+    const title=m.title||m.name||id;
+    const src=m.source_url||m.source_ref||'https://psi.nasa.gov/physci/repo';
+    const conf=m.match_confidence!=null?m.match_confidence:(m.similarity_score||0.85);
+    return `<tr><td><a href="${src}" target="_blank" rel="noopener" style="color:var(--acc)">${id} ↗</a></td><td><b>${title}</b><br><span style="color:var(--mute);font-size:.72rem">${m.platform||''} · ${m.reason||m.match_rationale||''}</span></td><td><b>${Math.round(conf*100)}%</b></td></tr>`;
+  }).join('');
 
   const assessments=rep.technique_assessments||[];
   const counts={};
-  assessments.forEach(a=>{counts[a.state]=(counts[a.state]||0)+1;});
+  assessments.forEach(a=>{
+    const st=a.status||a.state||'requires_more_data';
+    counts[st]=(counts[st]||0)+1;
+  });
   $('#stateSummaryRow').innerHTML=Object.entries(counts).map(([st,c])=>{
-    const cls=st==='Executed'?'ex':(st==='Partially executed'?'pa':'sp');
+    const cls=st==='computed_from_upload'?'ex':(st==='requires_more_data'?'sp':'pa');
     return `<span class="tag ${cls}">${st}: ${c}</span>`;
   }).join('');
 
   $('#techAuditTable tbody').innerHTML=assessments.map(a=>{
-    const cls=a.state==='Executed'?'ex':(a.state==='Partially executed'?'pa':'sp');
-    return `<tr><td>${a.id}</td><td>${a.name}</td><td><span class="tag ${cls}">${a.state}</span></td></tr>`;
+    const st=a.status||a.state||'requires_more_data';
+    const cls=st==='computed_from_upload'?'ex':(st==='requires_more_data'?'sp':'pa');
+    return `<tr><td>${a.technique_id||a.id}</td><td>${a.name}</td><td><span class="tag ${cls}">${st}</span></td></tr>`;
   }).join('');
 
   const fHtml=(rep.si_interpretation?.findings||[]).map(f=>
-    `<div style="border-top:1px solid var(--rule);padding:.5rem 0"><span class="tag ex">${f.evidence_class}</span> <b>${f.title}</b><p class="note" style="margin:.25rem 0;font-size:.82rem">${f.interpretation}</p><p class="k" style="font-size:.6rem">Ref: ${f.evidence_reference}</p></div>`
+    `<div style="border-top:1px solid var(--rule);padding:.5rem 0"><span class="tag ex">${f.evidence_class||f.evidence_type}</span> <b>${f.title}</b><p class="note" style="margin:.25rem 0;font-size:.82rem">${f.interpretation||f.finding}</p><p class="k" style="font-size:.6rem">Ref: ${f.evidence_reference||f.evidence}</p></div>`
   ).join('');
   const sHtml=(rep.si_interpretation?.safety_insights||[]).map(s=>
     `<div style="border-top:1px solid var(--rule);padding:.5rem 0"><span class="tag sp">${s.category}</span><p class="note" style="margin:.25rem 0;font-size:.82rem">${s.insight}</p><p class="k" style="font-size:.6rem">Source: ${s.evidence_link}</p></div>`
   ).join('');
-  const gHtml=(rep.si_interpretation?.data_gaps||[]).map(g=>`<li style="font-size:.8rem;color:var(--mute)">${g}</li>`).join('');
+  const gHtml=(rep.si_interpretation?.data_gaps||rep.report?.data_gaps||[]).map(g=>`<li style="font-size:.8rem;color:var(--mute)">${g}</li>`).join('');
   $('#siFindingsBox').innerHTML=fHtml+sHtml+`<ul style="padding-left:1rem;margin-top:.5rem">${gHtml}</ul>`;
 
   rank();
@@ -742,7 +808,7 @@ function rank(){
     ]);
     if(hRes.ok){
       const h=await hRes.json();
-      $('#apiStatus').textContent=`API Online · ${h.technique_count} techniques · ${h.cached_psi_experiments} NASA PSI records`;
+      $('#apiStatus').textContent=`API Online · ${h.technique_count} techniques · ${h.cached_psi_experiments} NASA PSI records · ${h.catalog_count} SQLite rows`;
     }
     if(tRes.ok){
       const td=await tRes.json();

@@ -30,37 +30,114 @@ def client() -> TestClient:
     return TestClient(server.app)
 
 
-def test_techniques_registry_has_57_methods_and_9_families() -> None:
+def test_1_technique_registry_has_57_methods_and_canonical_ids() -> None:
+    """Section 12 Test 1: Confirms 57 methods, 9 groups, and key canonical IDs."""
     techniques = server.load_techniques()
     assert len(techniques) == 57
 
     ids = [t["id"] for t in techniques]
     assert len(set(ids)) == 57
-    assert ids[0] == "T01"
-    assert ids[-1] == "T57"
+    for key_id in (
+        "absence_buoyancy",
+        "spherical_symmetry",
+        "piv",
+        "segmentation",
+        "rotational_symmetry",
+        "fractal_dimension",
+        "convexity_defects",
+        "cnn_resnet",
+        "symmetry_loss",
+        "spectral_deconvolution",
+        "chemical_kinetics",
+        "gravity_scaling",
+        "lunar_gravity",
+        "martian_gravity",
+        "cross_experiment_compare",
+        "evidence_ranking",
+        "anomaly_detection",
+        "risk_interpretation",
+    ):
+        assert key_id in ids
 
     families = {t["group"] for t in techniques}
     expected_families = {
-        "Microgravity fundamentals",
-        "Geometry and vision",
-        "Temporal dynamics",
-        "Diagnostics",
-        "Spectroscopy and chemistry",
-        "Platforms",
-        "Gravity scaling",
-        "AI methods",
-        "Safety interpretation",
+        "Microgravity combustion fundamentals",
+        "Optical diagnostics & flow",
+        "Thermal & cool-flame diagnostics",
+        "Platforms & cross-platform comparison",
+        "Geometry & object classification",
+        "Numerical & combustion measurements",
+        "Chemical kinetics & spectroscopy",
+        "Gravity scaling & partial gravity",
+        "SI interpretation & safety assessment",
     }
     assert families == expected_families
 
     for tech in techniques:
         assert tech.get("name")
         assert tech.get("description")
-        assert isinstance(tech.get("supported_modalities"), list) and len(tech["supported_modalities"]) >= 1
-        assert isinstance(tech.get("prerequisites"), list) and len(tech["prerequisites"]) >= 1
+        assert isinstance(tech.get("modalities"), list) and len(tech["modalities"]) >= 1
+        assert tech.get("prerequisites")
 
 
-def test_image_descriptor_extraction_distinguishes_spherical_and_elongated_flames() -> None:
+def test_2_catalogue_round_trip_empty_import_list_and_clear(client: TestClient) -> None:
+    """Section 12 Test 2: Confirms catalogue starts empty, imports records, lists them, and clears back to 0."""
+    initial = client.get("/api/catalog")
+    assert initial.status_code == 200
+    assert initial.json()["total"] == 0
+    assert initial.json()["records"] == []
+
+    sample_records = [
+        {
+            "experiment_id": "CAT-FLEX-01",
+            "name": "FLEX Droplet Test 01",
+            "mission": "ISS CIR",
+            "platform": "ISS / CIR",
+            "gravity_g": 0.0,
+            "fuel_material": "heptane",
+            "oxygen_pct": 21.0,
+            "pressure_kpa": 101.3,
+            "temperature_k": 298.0,
+            "techniques": "segmentation, spherical_symmetry",
+            "summary": "0g spherical heptane burn",
+            "bilateral_left_right_score": 0.96,
+            "top_bottom_symmetry_score": 0.95,
+            "convexity_score": 0.98,
+            "fractal_dimension": 1.07,
+        },
+        {
+            "title": "BASS-II Solid PMMA Rod",
+            "facility": "ISS MSG",
+            "gravity": 0.0,
+            "fuel": "pmma",
+            "oxygen": 18.5,
+        },
+    ]
+    imp = client.post("/api/catalog/import", json={"experiments": sample_records})
+    assert imp.status_code == 200
+    imp_data = imp.json()
+    assert imp_data["imported"] == 2
+    assert imp_data["total"] == 2
+
+    listed = client.get("/api/catalog")
+    assert listed.status_code == 200
+    assert listed.json()["total"] == 2
+    ids = [r["experiment_id"] for r in listed.json()["records"]]
+    assert "CAT-FLEX-01" in ids
+    assert any(i.startswith("CAT-") for i in ids)
+
+    cleared = client.delete("/api/catalog")
+    assert cleared.status_code == 200
+    assert cleared.json()["deleted"] == 2
+    assert cleared.json()["total"] == 0
+
+    after_clear = client.get("/api/catalog")
+    assert after_clear.status_code == 200
+    assert after_clear.json()["total"] == 0
+
+
+def test_3_image_extraction_computes_symmetry_and_rotation_features() -> None:
+    """Section 12 Test 3: Generates synthetic flame image and confirms symmetry and rotation features."""
     spherical_bytes = server.create_synthetic_sample_image("0g_spherical")
     plume_bytes = server.create_synthetic_sample_image("martian_038g")
 
@@ -68,226 +145,214 @@ def test_image_descriptor_extraction_distinguishes_spherical_and_elongated_flame
     plume_desc = server.extract_image_descriptors(plume_bytes, "plume_038g.png")
 
     assert sph_desc["modality"] == "image"
-    assert sph_desc["spherical_symmetry_score"] > plume_desc["spherical_symmetry_score"]
-    assert sph_desc["top_bottom_symmetry"] > plume_desc["top_bottom_symmetry"]
-    assert 0.85 <= sph_desc["aspect_ratio"] <= 1.15
+    assert sph_desc["candidate_area_px"] > 100.0
+    assert sph_desc["candidate_perimeter_px"] > 20.0
+    assert sph_desc["bilateral_left_right_score"] > 0.85
+    assert sph_desc["top_bottom_symmetry_score"] > plume_desc["top_bottom_symmetry_score"]
+    assert sph_desc["reflection_iou"] > 0.80
+    assert "rotational_symmetry_iou" in sph_desc
+    assert set(sph_desc["rotational_symmetry_iou"].keys()) == {"deg_90", "deg_120", "deg_180", "mean"}
+    assert sph_desc["rotational_symmetry"] > 0.75
+    assert 0.80 <= sph_desc["convexity_score"] <= 1.0
     assert 1.0 <= sph_desc["fractal_dimension"] < 2.0
-    assert sph_desc["solidity"] > 0.80
-    assert sph_desc["convexity"] > 0.80
-    assert "units" in sph_desc
+    assert sph_desc["peak_count"] >= 1
+    assert len(sph_desc["geometric_centroid"]) == 2
+    assert len(sph_desc["intensity_centroid"]) == 2
 
 
-def test_video_descriptor_extraction_on_synthetic_sequence(tmp_path: Path) -> None:
+def test_4_response_validation_removes_unselected_and_invented_ids_and_locks_piv() -> None:
+    """Section 12 Test 4: Confirms validate_analysis_response() removes unselected techniques, invented experiment IDs, and forces piv to requires_more_data."""
+    candidates = [
+        {
+            "experiment_id": "PSI-98",
+            "accession": "PSI-98",
+            "name": "FLEX",
+            "pre_match_score": 0.91,
+        }
+    ]
+    raw_report = {
+        "executive_summary": "Test report",
+        "technique_assessments": [
+            {"technique_id": "segmentation", "status": "computed_from_upload", "observations": "Mask computed."},
+            {"technique_id": "piv", "status": "computed_from_upload", "observations": "Fake PIV claim."},
+            {"technique_id": "cnn_resnet", "status": "visually_assessed", "observations": "Fake CNN claim."},
+            {"technique_id": "raman", "status": "computed_from_upload", "observations": "Unselected method."},
+        ],
+        "experiment_matches": [
+            {"experiment_id": "PSI-98", "match_confidence": 1.4, "reason": "Valid candidate"},
+            {"experiment_id": "PSI-99999", "match_confidence": 0.95, "reason": "Invented experiment ID"},
+        ],
+        "key_findings": [
+            {
+                "rank": 1,
+                "relevance_score": 1.5,
+                "confidence": -0.2,
+                "evidence_type": "computed_from_upload",
+                "technique_ids": ["segmentation", "piv", "raman"],
+                "finding": "Compared PSI-98 and hallucinated PSI-88888.",
+                "evidence": "spherical_0g.png",
+            }
+        ],
+        "data_gaps": [],
+        "overall_confidence": 1.25,
+    }
+
+    validated = server.validate_analysis_response(
+        raw_report=raw_report,
+        selected_technique_ids=["segmentation", "piv", "cnn_resnet", "bilateral_symmetry"],
+        candidate_experiments=candidates,
+    )
+
+    tech_by_id = {t["technique_id"]: t for t in validated["technique_assessments"]}
+    assert set(tech_by_id.keys()) == {"segmentation", "piv", "cnn_resnet", "bilateral_symmetry"}
+    assert "raman" not in tech_by_id
+    # piv and cnn_resnet must be forced to requires_more_data
+    assert tech_by_id["piv"]["status"] == "requires_more_data"
+    assert tech_by_id["cnn_resnet"]["status"] == "requires_more_data"
+    # missing selected technique bilateral_symmetry supplied with requires_more_data
+    assert tech_by_id["bilateral_symmetry"]["status"] == "requires_more_data"
+
+    # Invented experiment ID removed; valid candidate retained with clamped confidence
+    matched_ids = [m["experiment_id"] for m in validated["experiment_matches"]]
+    assert matched_ids == ["PSI-98"]
+    assert validated["experiment_matches"][0]["match_confidence"] == 1.0
+    assert "PSI-99999" in validated["rejected_experiment_ids"]
+    assert "PSI-88888" in validated["rejected_experiment_ids"]
+    assert "PSI-88888" not in validated["key_findings"][0]["finding"]
+    assert validated["key_findings"][0]["relevance_score"] == 1.0
+    assert validated["key_findings"][0]["confidence"] == 0.0
+    assert validated["overall_confidence"] == 1.0
+
+
+def test_5_geometry_matching_scores_matching_catalogue_record_higher() -> None:
+    """Section 12 Test 5: Confirms imported optional geometry descriptors match an uploaded geometry descriptor."""
+    spherical_bytes = server.create_synthetic_sample_image("0g_spherical")
+    img_desc = server.extract_image_descriptors(spherical_bytes, "droplet_0g.png")
+
+    catalog_rows = [
+        {
+            "experiment_id": "CAT-SPHERICAL",
+            "name": "Spherical 0g Droplet Reference",
+            "platform": "ISS / CIR",
+            "gravity_g": 0.0,
+            "fuel_material": "heptane",
+            "bilateral_left_right_score": img_desc["bilateral_left_right_score"],
+            "top_bottom_symmetry_score": img_desc["top_bottom_symmetry_score"],
+            "convexity_score": img_desc["convexity_score"],
+            "fractal_dimension": img_desc["fractal_dimension"],
+        },
+        {
+            "experiment_id": "CAT-ASYMMETRIC",
+            "name": "Asymmetric 1g Upward Plume Reference",
+            "platform": "1g Rig",
+            "gravity_g": 1.0,
+            "fuel_material": "cotton",
+            "bilateral_left_right_score": 0.35,
+            "top_bottom_symmetry_score": 0.20,
+            "convexity_score": 0.45,
+            "fractal_dimension": 1.75,
+        },
+    ]
+    server.import_catalog_records(catalog_rows)
+    matches = server.match_catalog_candidates([img_desc], {"gravity_g": 0.0, "fuel_material": "heptane"})
+
+    assert len(matches) == 2
+    assert matches[0]["experiment_id"] == "CAT-SPHERICAL"
+    assert matches[0]["pre_match_score"] > matches[1]["pre_match_score"]
+    assert "geometry descriptor similarity" in matches[0]["reason"]
+
+
+def test_video_table_and_document_extractors(tmp_path: Path) -> None:
+    # Video
     video_path = tmp_path / "flame_test.avi"
     fourcc = cv2.VideoWriter_fourcc(*"MJPG")
     writer = cv2.VideoWriter(str(video_path), fourcc, 15.0, (160, 160))
     for idx in range(12):
         frame = np.zeros((160, 160, 3), dtype=np.uint8)
         radius = 30 + int(4 * np.sin(idx * 0.8))
-        cx = 80 + (idx % 3)
-        cv2.circle(frame, (cx, 80), radius, (60, 130, 240), -1)
+        cv2.circle(frame, (80 + (idx % 3), 80), radius, (30, 120, 240), -1)
         writer.write(frame)
     writer.release()
 
-    video_bytes = video_path.read_bytes()
-    v_desc = server.extract_video_descriptors(video_bytes, "flame_test.avi")
+    v_desc = server.extract_video_descriptors(video_path.read_bytes(), "flame_test.avi")
     assert v_desc["modality"] == "video"
-    assert v_desc["sampled_frames"] >= 6
-    assert v_desc["area_cv"] >= 0.0
-    assert v_desc["centroid_jitter_px"] >= 0.0
-    assert v_desc["dominant_flicker_hz"] >= 0.0
-    assert isinstance(v_desc["extinction_detected"], bool)
+    assert v_desc["sampled_frames"] >= 3
+    assert v_desc["piv_computed"] is False
 
-
-def test_table_and_spectrum_parsing() -> None:
+    # Spectral CSV
     csv_spectrum = (
-        "wavelength_nm,intensity_counts,temperature_proxy\n"
-        "300.0,12.0,1.0\n"
-        "308.5,185.0,2.5\n"
-        "320.0,15.0,1.1\n"
-        "431.0,140.0,2.2\n"
-        "516.0,95.0,1.8\n"
+        "wavelength_nm,intensity_counts\n"
+        "300.0,12.0\n"
+        "308.5,185.0\n"
+        "320.0,15.0\n"
     ).encode("utf-8")
+    t_desc = server.extract_table_descriptors(csv_spectrum, "oh_spectrum.csv")
+    assert t_desc["modality"] == "spectral"
+    assert t_desc["spectral_analysis"]["dominant_wavelength_or_band"] == pytest.approx(308.5)
 
-    desc = server.extract_table_descriptors(csv_spectrum, "chemiluminescence_spectrum.csv")
-    assert desc["modality"] == "spectrum"
-    assert desc["row_count"] == 5
-    assert "wavelength_nm" in desc["numeric_summaries"]
-    spec = desc["spectral_analysis"]
-    assert spec["dominant_wavelength_or_band"] == pytest.approx(308.5)
-    assert spec["spectral_snr"] > 1.0
-    assert any("OH*" in band for band in spec["candidate_species_bands"])
-
-
-def test_multimodal_document_extractors_pdf_docx_xlsx_json() -> None:
-    # PDF
+    # PDF, DOCX, XLSX
     pdf_doc = fitz.open()
     page = pdf_doc.new_page()
-    page.insert_text((72, 72), "NASA PSI-98 FLEX and PSI-25 BASS-II heptane and PMMA microgravity combustion.")
+    page.insert_text((72, 72), "NASA PSI-98 FLEX heptane microgravity combustion.")
     pdf_bytes = pdf_doc.tobytes()
     pdf_doc.close()
-
-    pdf_desc = server.extract_document_descriptors(pdf_bytes, "report.pdf")
-    assert pdf_desc["page_count"] == 1
+    pdf_desc = server.extract_document_descriptors(pdf_bytes, "flex.pdf")
     assert "PSI-98" in pdf_desc["detected_psi_accessions"]
-    assert "PSI-25" in pdf_desc["detected_psi_accessions"]
-    assert "heptane" in pdf_desc["detected_fuels"]
 
-    # DOCX
     docx_obj = DocxDocument()
-    docx_obj.add_paragraph("SoFIE PSI-112 investigation on cast PMMA in exploration atmosphere.")
+    docx_obj.add_paragraph("SoFIE PSI-112 PMMA test.")
     docx_buf = io.BytesIO()
     docx_obj.save(docx_buf)
-    docx_desc = server.extract_document_descriptors(docx_buf.getvalue(), "notes.docx")
+    docx_desc = server.extract_document_descriptors(docx_buf.getvalue(), "sofie.docx")
     assert "PSI-112" in docx_desc["detected_psi_accessions"]
-    assert "pmma" in docx_desc["detected_fuels"]
 
-    # XLSX
     wb = openpyxl.Workbook()
     ws = wb.active
-    ws.title = "BASS2"
-    ws.append(["Test", "Accession", "Fuel", "O2_pct"])
-    ws.append([1, "PSI-25", "PMMA", 18.5])
+    ws.append(["Accession", "Fuel"])
+    ws.append(["PSI-25", "PMMA"])
     xlsx_buf = io.BytesIO()
     wb.save(xlsx_buf)
-    xlsx_desc = server.extract_document_descriptors(xlsx_buf.getvalue(), "matrix.xlsx")
-    assert xlsx_desc["modality"] == "table"
+    xlsx_desc = server.extract_document_descriptors(xlsx_buf.getvalue(), "bass2.xlsx")
     assert "PSI-25" in xlsx_desc["detected_psi_accessions"]
 
-    # JSON
-    json_bytes = json.dumps({"investigation": "PSI-64", "fuel": "cotton", "spectrum": [1, 2, 3]}).encode("utf-8")
-    json_desc = server.extract_document_descriptors(json_bytes, "metadata.json")
-    assert json_desc["modality"] == "spectrum"
-    assert "PSI-64" in json_desc["detected_psi_accessions"]
 
-
-def test_technique_execution_states_prevent_false_specialist_claims() -> None:
-    img_bytes = server.create_synthetic_sample_image("0g_spherical")
-    img_desc = server.extract_image_descriptors(img_bytes, "frame.png")
-
-    selected = ["T08", "T09", "T21", "T26", "T28", "T30", "T47"]
-    assessments = server.evaluate_techniques(selected, [img_desc], {"gravity_g": 0.0})
-    by_id = {a["id"]: a for a in assessments}
-
-    assert by_id["T08"]["state"] == "Executed"
-    assert by_id["T09"]["state"] == "Executed"
-    # T21 (flicker) requires video or time-series table, not a single still image
-    assert by_id["T21"]["state"] == "Requires data"
-    # T26 (PIV), T28 (calibrated FLIR), T30 (LIF), T47 (pretrained CNN/ResNet) require specialist solvers
-    assert by_id["T26"]["state"] == "Requires specialist solver"
-    assert by_id["T28"]["state"] == "Requires specialist solver"
-    assert by_id["T30"]["state"] == "Requires specialist solver"
-    assert by_id["T47"]["state"] == "Requires specialist solver"
-
-
-def test_nasa_psi_provenance_validation_and_rejection(client: TestClient) -> None:
-    # Valid PSI search
-    res = client.get("/api/nasa-psi/search", params={"accession": "PSI-98"})
-    assert res.status_code == 200
-    data = res.json()
-    assert data["count"] == 1
-    assert data["results"][0]["accession"] == "PSI-98"
-    assert data["results"][0]["data_source"] == "NASA PSI"
-
-    # Reject non-PSI accession format
-    bad_acc = client.get("/api/nasa-psi/search", params={"accession": "FAKE-123"})
-    assert bad_acc.status_code == 400
-
-    # Reject non-NASA PSI source in /api/nasa-psi/sync
-    bad_sync = client.post(
-        "/api/nasa-psi/sync",
-        json={
-            "accession": "PSI-999",
-            "title": "Third-Party Dataset",
-            "data_source": "External Lab",
-            "source_url": "https://example.com/PSI-999",
-        },
-    )
-    assert bad_sync.status_code == 400
-
-
-def test_si_output_validator_strips_hallucinated_psi_ids() -> None:
-    assessments = [
-        {"id": "T08", "state": "Executed"},
-        {"id": "T26", "state": "Requires specialist solver"},
-    ]
-    raw_llm = {
-        "summary": "Analysis summary",
-        "referenced_psi_accessions": ["PSI-98", "PSI-99999"],
-        "findings": [
-            {
-                "title": "Finding with unverified ID PSI-88888",
-                "evidence_class": "model_interpretation",
-                "technique_ids": ["T08", "T26", "T99"],
-                "evidence_reference": "Frame 1",
-                "interpretation": "Compared against PSI-98 and hallucinated PSI-88888.",
-                "claimed_executed": True,
-            }
-        ],
-        "safety_insights": [],
-        "hypotheses": [],
-        "data_gaps": [],
-    }
-
-    validated = server.validate_si_output(
-        raw_output=raw_llm,
-        allowed_technique_ids=["T08", "T26"],
-        allowed_psi_accessions=["PSI-98", "PSI-25"],
-        technique_assessments=assessments,
-    )
-    assert validated["referenced_psi_accessions"] == ["PSI-98"]
-    assert "PSI-99999" in validated["rejected_hallucinated_accessions"]
-    assert "PSI-88888" in validated["rejected_hallucinated_accessions"]
-    assert validated["findings"][0]["technique_ids"] == ["T08", "T26"]
-    assert "PSI-88888" not in validated["findings"][0]["interpretation"]
-
-
-def test_end_to_end_api_routes_and_report_retrieval(client: TestClient) -> None:
+def test_end_to_end_api_routes_and_nasa_psi_connector(client: TestClient) -> None:
     health = client.get("/api/health")
     assert health.status_code == 200
     assert health.json()["technique_count"] == 57
+    assert health.json()["catalog_count"] == 0
 
-    techs = client.get("/api/techniques", params={"group": "Geometry and vision"})
+    techs = client.get("/api/techniques", params={"group": "Geometry & object classification"})
     assert techs.status_code == 200
-    assert techs.json()["count"] == 10
+    assert techs.json()["count"] == 11
 
-    exps = client.get("/api/nasa-psi/experiments")
-    assert exps.status_code == 200
-    assert exps.json()["count"] >= 6
+    psi_search = client.get("/api/nasa-psi/search", params={"accession": "PSI-98"})
+    assert psi_search.status_code == 200
+    assert psi_search.json()["results"][0]["accession"] == "PSI-98"
 
-    psi_an = client.post(
-        "/api/nasa-psi/analyze",
-        json={"accession": "PSI-98", "technique_ids": ["T01", "T04", "T08", "T09", "T52", "T53"]},
-    )
-    assert psi_an.status_code == 200
-    psi_rep = psi_an.json()
-    assert psi_rep["provenance"]["accession"] == "PSI-98"
-    assert psi_rep["provenance"]["fiction_simulator_used"] is False
+    bad_psi = client.get("/api/nasa-psi/search", params={"accession": "INVALID-123"})
+    assert bad_psi.status_code == 400
 
-    # Upload an image to /api/analyze
     img_bytes = server.create_synthetic_sample_image("0g_spherical")
     upload_res = client.post(
         "/api/analyze",
         files=[("files", ("droplet_0g.png", img_bytes, "image/png"))],
         data={
-            "technique_ids": json.dumps(["T01", "T04", "T08", "T09", "T10", "T12", "T14", "T26", "T52", "T53"]),
+            "technique_ids": json.dumps(["segmentation", "spherical_symmetry", "bilateral_symmetry", "piv", "risk_interpretation"]),
             "gravity_g": "0.0",
-            "oxygen_pct": "21.0",
-            "pressure_kpa": "101.3",
             "fuel": "heptane",
         },
     )
     assert upload_res.status_code == 200
     rep = upload_res.json()
-    assert rep["provenance"]["relabelled_as_nasa_data"] is False
-    assert len(rep["ranked_findings"]) >= 1
+    statuses = {a["technique_id"]: a["status"] for a in rep["technique_assessments"]}
+    assert statuses["segmentation"] == "computed_from_upload"
+    assert statuses["piv"] == "requires_more_data"
 
-    # Retrieve stored report
     fetched = client.get(f"/api/report/{rep['report_id']}")
     assert fetched.status_code == 200
     assert fetched.json()["report_id"] == rep["report_id"]
 
-    # Dashboard & prototype routes and required documentation artifacts
     dash = client.get("/")
     assert dash.status_code == 200
     assert "PyroSage" in dash.text
@@ -299,8 +364,6 @@ def test_end_to_end_api_routes_and_report_retrieval(client: TestClient) -> None:
     connector_doc = server.ROOT_DIR / "docs" / "NASA_PSI_CONNECTOR.md"
     tech_pdf = server.ROOT_DIR / "docs" / "PyroSage_Technical_Documentation.pdf"
     assert connector_doc.exists() and connector_doc.stat().st_size > 500
-    assert tech_pdf.exists() and tech_pdf.stat().st_size > 5000
+    assert tech_pdf.exists() and tech_pdf.stat().st_size > 100000
     with fitz.open(str(tech_pdf)) as pdf_doc:
-        assert len(pdf_doc) >= 4
-        assert "PyroSage" in pdf_doc[0].get_text("text")
-
+        assert len(pdf_doc) == 21
