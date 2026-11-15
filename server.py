@@ -38,6 +38,7 @@ ROOT_DIR = Path(__file__).resolve().parent
 STATIC_DIR = ROOT_DIR / "static"
 DATA_DIR = ROOT_DIR / "data"
 TECHNIQUES_PATH = ROOT_DIR / "techniques.json"
+MAIN_DASHBOARD_PATH = ROOT_DIR / "pyrosage_interactive_dashboard.html"
 PROTOTYPE_PATH = ROOT_DIR / "reference_prototype.html"
 
 DEFAULT_PROVIDER = os.getenv("PYROSAGE_DEFAULT_PROVIDER", "gemini").strip().lower()
@@ -1919,12 +1920,24 @@ if STATIC_DIR.exists():
 
 @app.get("/", response_class=HTMLResponse)
 def serve_dashboard() -> Response:
+    if MAIN_DASHBOARD_PATH.exists():
+        return FileResponse(str(MAIN_DASHBOARD_PATH), media_type="text/html")
     index_file = STATIC_DIR / "index.html"
     if index_file.exists():
         return FileResponse(str(index_file), media_type="text/html")
     if PROTOTYPE_PATH.exists():
         return FileResponse(str(PROTOTYPE_PATH), media_type="text/html")
     return HTMLResponse("<h1>PyroSage API is running</h1>")
+
+
+@app.get("/pyrosage_interactive_dashboard.html", response_class=HTMLResponse)
+def serve_main_interactive_dashboard() -> Response:
+    if MAIN_DASHBOARD_PATH.exists():
+        return FileResponse(str(MAIN_DASHBOARD_PATH), media_type="text/html")
+    index_file = STATIC_DIR / "index.html"
+    if index_file.exists():
+        return FileResponse(str(index_file), media_type="text/html")
+    raise HTTPException(status_code=404, detail="pyrosage_interactive_dashboard.html not found.")
 
 
 @app.get("/reference_prototype.html", response_class=HTMLResponse)

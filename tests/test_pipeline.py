@@ -357,6 +357,11 @@ def test_end_to_end_api_routes_and_nasa_psi_connector(client: TestClient) -> Non
     assert dash.status_code == 200
     assert "PyroSage" in dash.text
 
+    main_dash = client.get("/pyrosage_interactive_dashboard.html")
+    assert main_dash.status_code == 200
+    assert "PyroSage" in main_dash.text
+    assert server.MAIN_DASHBOARD_PATH.exists()
+
     proto = client.get("/reference_prototype.html")
     assert proto.status_code == 200
     assert "Fiction" in proto.text
