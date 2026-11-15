@@ -45,6 +45,15 @@ h1 em{color:var(--acc);font-weight:300}
 .flame-hud-right{display:flex;flex-direction:column;align-items:flex-end;gap:2px;color:rgba(236,230,216,.72)}
 .flame-hud--bench{display:flex;justify-content:space-between;align-items:flex-start}
 .flame-fallback{position:absolute;inset:0;display:grid;place-items:center;background:#1B1713;color:#ECE6D8;font:400 .75rem var(--fm);padding:1rem;text-align:center}
+.flame-tech-overlay{position:absolute;inset:0;pointer-events:none;padding:44px 14px 28px 14px;display:flex;flex-direction:column;justify-content:space-between;align-items:flex-start;gap:8px;transition:opacity .2s;z-index:4}
+.flame-tech-overlay[hidden]{display:none!important}
+.tech-callout{background:rgba(20,16,13,.82);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);border:1px solid rgba(245,158,11,.35);padding:3px 7px;display:inline-flex;align-items:center;gap:6px;max-width:fit-content;border-radius:2px;box-shadow:0 2px 6px rgba(0,0,0,.45);pointer-events:auto;cursor:pointer;user-select:none;transition:border-color .15s,transform .15s}
+.tech-callout:hover{border-color:var(--acc);transform:translateX(2px)}
+.tech-badge{background:var(--acc);color:#120e0a;font:700 8.5px var(--fm);padding:1px 4px;letter-spacing:.04em;border-radius:1px;text-transform:uppercase;white-space:nowrap}
+.tech-desc{font:500 9.5px var(--fm);color:rgba(245,240,230,.92);letter-spacing:.02em}
+@media (max-width:640px){.tech-desc{max-width:210px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}}
+.tech-overlay-toggle-btn{font:600 .62rem var(--fm);letter-spacing:.06em;text-transform:uppercase;background:none;border:1px solid var(--acc);color:var(--acc);padding:.35rem .6rem;cursor:pointer;white-space:nowrap;transition:all .15s}
+.tech-overlay-toggle-btn[aria-pressed="true"]{background:var(--acc);color:#120e0a}
 .chart-controls{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:.5rem;margin-top:.75rem;padding-top:.65rem;border-top:1px solid var(--rule)}
 .preset-row{display:flex;flex-wrap:wrap;gap:.35rem}
 .preset-btn{font:400 .64rem var(--fm);letter-spacing:.06em;text-transform:uppercase;background:none;border:1px solid var(--rule);color:var(--mute);padding:.35rem .6rem;cursor:pointer;white-space:nowrap;transition:border-color .15s,color .15s,background .15s}
@@ -137,6 +146,16 @@ footer{border-top:1px solid var(--ink);padding:1.4rem 0 2.4rem;display:flex;just
 <figure class="core">
   <div class="flame-stage flame-stage--hero">
     <div id="heroFlameMount" class="flame-canvas-mount" role="img" aria-label="Interactive 3D microgravity flame cycling through spherical, ellipsoidal, and buoyant combustion regimes"></div>
+    <div class="flame-tech-overlay" id="heroTechOverlay" aria-hidden="true">
+      <div class="tech-callout" style="align-self:flex-start">
+        <span class="tech-badge" id="heroBadgeGeom">TECH-01 · TECH-04</span>
+        <span class="tech-desc" id="heroTechGeom">0g Microgravity Spherical Diffusion Mantle</span>
+      </div>
+      <div class="tech-callout" style="align-self:flex-start">
+        <span class="tech-badge" id="heroBadgeTwin">TECH-02 · TECH-48</span>
+        <span class="tech-desc" id="heroTechTwin">NASA Flight Twin Baseline · 57 Techniques Bounded</span>
+      </div>
+    </div>
     <div class="flame-hud flame-hud--hero" aria-hidden="true">
       <div class="flame-hud-col">
         <span id="heroHudMode">0g · SPHERICAL</span>
@@ -177,6 +196,20 @@ footer{border-top:1px solid var(--ink);padding:1.4rem 0 2.4rem;display:flex;just
 <figure class="chart">
   <div class="flame-stage flame-stage--bench">
     <div id="benchFlameMount" class="flame-canvas-mount" role="img" aria-label="Interactive 3D flame geometry and thermal color simulation"></div>
+    <div class="flame-tech-overlay" id="benchTechOverlay" aria-hidden="true">
+      <div class="tech-callout" style="align-self:flex-start">
+        <span class="tech-badge" id="benchBadgeGeom">TECH-01 · TECH-04</span>
+        <span class="tech-desc" id="benchTechGeom">0g Spherical Diffusion (Gr → 0 · Symmetry 98.6%)</span>
+      </div>
+      <div class="tech-callout" style="align-self:flex-start;margin-top:auto;margin-bottom:auto">
+        <span class="tech-badge" id="benchBadgeChem">TECH-02 · TECH-05</span>
+        <span class="tech-desc" id="benchTechChem">Stoichiometric Diffusion Root &amp; Radical Chemiluminescence</span>
+      </div>
+      <div class="tech-callout" style="align-self:flex-start">
+        <span class="tech-badge" id="benchBadgeTwin">TECH-48 · TECH-33</span>
+        <span class="tech-desc" id="benchTechTwin">Baseline: PSI-25 BASS Solid Spread · 57 Techniques Bounded</span>
+      </div>
+    </div>
     <div class="flame-hud flame-hud--bench" aria-hidden="true" style="flex-direction:column;justify-content:space-between">
       <div style="display:flex;justify-content:space-between;width:100%;align-items:flex-start">
         <div class="flame-hud-col">
@@ -203,6 +236,7 @@ footer{border-top:1px solid var(--ink);padding:1.4rem 0 2.4rem;display:flex;just
       <button type="button" class="preset-btn grav-preset-btn" data-g="1" aria-pressed="false">1.0g Earth</button>
       <button type="button" class="preset-btn" id="btnBenchCycle" aria-pressed="false">Cycle all</button>
       <button type="button" class="preset-btn" id="btnBenchReset">Reset view</button>
+      <button type="button" class="preset-btn tech-overlay-toggle-btn" id="btnBenchTechOverlay" aria-pressed="true" title="Toggle 57-technique determination overlay">🔬 57 Techniques: ON</button>
     </div>
     <div class="preset-row" style="width:100%;justify-content:space-between;align-items:center;border-top:1px dashed var(--rule);padding-top:.45rem;margin-top:.15rem">
       <span class="k" style="font-size:.6rem">Style Modifier:</span>
@@ -700,6 +734,45 @@ function drawFlame(sourceId){
     $('#physicsFootnote').textContent=`Physics: ${tel.flowMode} · Flame H/W=${(tel.heightMm/Math.max(1,tel.widthMm)).toFixed(2)} · Reaction sheet δf=${tel.shellThicknessMm}mm · Soot fv=${tel.sootPpm}ppm`;
   }
 
+  const bBadgeGeom = $('#benchBadgeGeom');
+  const bTechGeom = $('#benchTechGeom');
+  const bBadgeChem = $('#benchBadgeChem');
+  const bTechChem = $('#benchTechChem');
+  const bBadgeTwin = $('#benchBadgeTwin');
+  const bTechTwin = $('#benchTechTwin');
+
+  if (g < 0.08) {
+    if (bBadgeGeom) bBadgeGeom.textContent = 'TECH-01 · TECH-04';
+    if (bTechGeom) bTechGeom.textContent = `0g Spherical Diffusion (Gr→0 · Pe ${tel.peclet} · Absence of Buoyancy)`;
+  } else if (g < 0.38) {
+    const regName = g < 0.25 ? 'Lunar' : 'Martian';
+    if (bBadgeGeom) bBadgeGeom.textContent = 'TECH-33 · TECH-07';
+    if (bTechGeom) bTechGeom.textContent = `Partial-${regName} Plume (Fr/Gr Scaling · ub ${tel.buoyantVelCmS} cm/s)`;
+  } else {
+    if (bBadgeGeom) bBadgeGeom.textContent = 'TECH-33 · TECH-15';
+    if (bTechGeom) bTechGeom.textContent = `Buoyant Teardrop Plume (Kelvin-Helmholtz Waist · ub ${tel.buoyantVelCmS} cm/s)`;
+  }
+
+  if (tel.coolFlame === 'Likely') {
+    if (bBadgeChem) bBadgeChem.textContent = 'TECH-05 · TECH-18';
+    if (bTechChem) bTechChem.textContent = `Low-Temp Cool Flame (CH₂O* 400-500nm · T∞ ${tel.temperatureK}K)`;
+  } else if (mat === 'cotton') {
+    if (bBadgeChem) bBadgeChem.textContent = 'TECH-28 · TECH-54';
+    if (bTechChem) bTechChem.textContent = `Fibrous Char Smolder & Soot fv ${tel.sootPpm} PPM (P^1.65 Scaling)`;
+  } else if (mat === 'heptane') {
+    if (bBadgeChem) bBadgeChem.textContent = 'TECH-03 · TECH-49';
+    if (bTechChem) bTechChem.textContent = `Droplet d² Evaporation & Blue Chemiluminescent Standoff`;
+  } else {
+    if (bBadgeChem) bBadgeChem.textContent = 'TECH-02 · TECH-26';
+    if (bTechChem) bTechChem.textContent = `PMMA Solid Boundary Layer & Radical Standoff (δf ${tel.shellThicknessMm}mm)`;
+  }
+
+  if (bBadgeTwin) bBadgeTwin.textContent = 'TECH-48 · TECH-57';
+  if (bTechTwin) {
+    const twinRef = mat === 'pmma' ? 'PSI-25 SoFIE/BASS Polymer' : mat === 'cotton' ? 'PSI-64 Saffire Flow Tunnel' : 'PSI-98 FLEX Droplet';
+    bTechTwin.textContent = `Flight Twin: ${twinRef} · 57 Techniques Bounded`;
+  }
+
   $$('.grav-preset-btn').forEach(btn=>{
     const match=!benchAutoCycle&&Math.abs((+btn.dataset.g)-g)<0.005;
     btn.setAttribute('aria-pressed',match?'true':'false');
@@ -740,6 +813,22 @@ if($('#btnBenchCycle'))$('#btnBenchCycle').addEventListener('click',()=>{
 if($('#btnBenchReset'))$('#btnBenchReset').addEventListener('click',()=>{
   if(window.__pyroResetBenchCamera)window.__pyroResetBenchCamera();
 });
+
+let techOverlayActive = true;
+function updateTechOverlayToggle(active) {
+  techOverlayActive = active;
+  if($('#btnBenchTechOverlay')){
+    $('#btnBenchTechOverlay').setAttribute('aria-pressed', techOverlayActive ? 'true' : 'false');
+    $('#btnBenchTechOverlay').textContent = techOverlayActive ? '🔬 57 Techniques: ON' : '🔬 57 Techniques: OFF';
+  }
+  if(window.__pyroToggleTechOverlay)window.__pyroToggleTechOverlay(techOverlayActive);
+}
+if($('#btnBenchTechOverlay'))$('#btnBenchTechOverlay').addEventListener('click',()=>{
+  updateTechOverlayToggle(!techOverlayActive);
+});
+$$('.tech-callout').forEach(card=>card.addEventListener('click',()=>{
+  updateTechOverlayToggle(!techOverlayActive);
+}));
 
 $$('.style-mod-btn').forEach(btn=>btn.addEventListener('click',()=>{
   activeStyleModifier=btn.dataset.style||'microgravity';
@@ -1554,6 +1643,7 @@ function rank(){
     float n1 = fbm(flowCoord);
     float n2 = snoise(dir * (3.6 + uOxygenFactor * 2.8) + vec3(t * 0.45, -t * 1.65, t * 0.35));
     float n3 = snoise(dir * 7.2 - vec3(0.0, t * 2.8, 0.0)) * uOxygenFactor;
+    float nMicro = snoise(dir * 12.6 - vec3(0.0, t * 3.4, 0.0)) * 0.032 * (0.35 + gFactor * 0.65);
 
     // 0g Marangoni cellular breathing vs 1g upward flickering tongues
     float breathe = sin(uTime * 1.85 + n1 * 2.2) * (0.052 * (1.0 - gFactor * 0.65));
@@ -1565,7 +1655,7 @@ function rank(){
     morphed.x += sin(t * 2.05 + yNorm * 4.5) * sway;
     morphed.z += cos(t * 1.75 + yNorm * 3.9) * sway;
 
-    morphed += dir * (breathe + radialRipple) * effLayerScale;
+    morphed += dir * (breathe + radialRipple + nMicro) * effLayerScale;
     morphed.y += upwardLick * effLayerScale * (0.38 + gFactor * 0.95 + uFuelFlowFactor * 0.55);
     morphed *= effLayerScale * 0.68;
 
@@ -1627,13 +1717,14 @@ function rank(){
     vec3 p = vLocalPos * (2.35 + uPressureFactor * 0.55) - vec3(0.0, t * adv, 0.0);
     float filament = fbm(p);
     float micro = snoise(vLocalPos * (5.4 + uOxygenFactor * 3.5) - vec3(0.0, t * 2.1, 0.0));
+    float microFine = snoise(vLocalPos * 11.5 - vec3(0.0, t * 3.2, 0.0));
     float cellular = snoise(vLocalPos * 4.2 + vec3(sin(t * 0.7), cos(t * 0.6), 0.0));
 
     // Multi-tongue filament mask near the upper crown
     float crownMask = smoothstep(0.55, 0.98, vHeightNorm);
     float tongueRidge = 0.5 + 0.5 * sin(vAzimuth * 4.0 + filament * 3.5 - t * 2.2);
     float heat = clamp(
-      0.56 + filament * 0.46 + micro * (0.20 + uOxygenFactor * 0.16) + (1.0 - vHeightNorm) * 0.26 - crownMask * (1.0 - tongueRidge) * uCrownSplit * 0.38,
+      0.56 + filament * 0.44 + micro * (0.18 + uOxygenFactor * 0.14) + microFine * 0.08 + (1.0 - vHeightNorm) * 0.26 - crownMask * (1.0 - tongueRidge) * uCrownSplit * 0.38,
       0.0,
       1.0
     );
@@ -2293,16 +2384,17 @@ function rank(){
       this.currentBaseRgb = [0.22, 0.74, 0.97];
       this.currentLightRgb = [0.96, 0.54, 0.26];
 
-      // Damped OrbitControls spherical coordinates
+      // Damped OrbitControls spherical coordinates - centered on flame with balanced normal size
       this.defaultAzimuth = this.mode === 'hero' ? 0.08 : 0.41;
-      this.defaultPolar = this.mode === 'hero' ? 1.39 : 1.34;
-      this.defaultDist = this.mode === 'hero' ? 4.22 : 4.25;
+      this.defaultPolar = this.mode === 'hero' ? 1.38 : 1.34;
+      this.defaultDist = this.mode === 'hero' ? 5.10 : 4.90;
       this.azimuth = this.defaultAzimuth;
       this.polar = this.defaultPolar;
       this.dist = this.defaultDist;
       this.targetAzimuth = this.defaultAzimuth;
       this.targetPolar = this.defaultPolar;
       this.targetDist = this.defaultDist;
+      this.showTechOverlay = true;
 
       this.embers = [];
       for (let i = 0; i < EMBER_COUNT; i++) {
@@ -2515,8 +2607,9 @@ function rank(){
       this.polar = lerp(this.polar, this.targetPolar, 0.09);
       this.dist = lerp(this.dist, this.targetDist, 0.09);
 
+      const flameCenterY = 0.32 + this.currentGravity * 0.18 + this.currentLiftOffset * 0.4;
       const camX = this.dist * Math.sin(this.polar) * Math.sin(this.azimuth);
-      const camY = 0.10 + this.dist * Math.cos(this.polar);
+      const camY = flameCenterY + this.dist * Math.cos(this.polar);
       const camZ = this.dist * Math.sin(this.polar) * Math.cos(this.azimuth);
       const camPos = [camX, camY, camZ];
 
@@ -2607,8 +2700,9 @@ function rank(){
       gl.clearColor(bg[0], bg[1], bg[2], 1.0);
       gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-      const proj = mat4Perspective((36 * Math.PI) / 180, pw / ph, 0.1, 60.0);
-      const view = mat4LookAt(camPos, [0, 0.10, 0], [0, 1, 0]);
+      const flameCenterY = 0.32 + this.currentGravity * 0.18 + this.currentLiftOffset * 0.4;
+      const proj = mat4Perspective((35 * Math.PI) / 180, pw / ph, 0.1, 60.0);
+      const view = mat4LookAt(camPos, [0, flameCenterY, 0], [0, 1, 0]);
       const projView = mat4Multiply(proj, view);
 
       const flickerFreq = 8.5 + this.currentGravity * 6.0 + this.currentFuelFlowFactor * 8.0;
@@ -2742,14 +2836,14 @@ function rank(){
       ctx.fillRect(0, 0, pw, ph);
 
       const cx = pw * 0.5;
-      const cy = ph * 0.56;
-      const scale = Math.min(pw, ph) * 0.28 * (4.2 / Math.max(2.1, this.dist));
+      const cy = ph * 0.51;
+      const scale = Math.min(pw, ph) * 0.22 * (5.0 / Math.max(2.1, this.dist));
       const g = this.currentGravity;
       const styleMod = (effective && effective.styleModifier) || 'microgravity';
       const material = (effective && effective.material) || 'pmma';
 
       // 2. Chamber Grid / Pedestal Floor
-      const floorY = cy + scale * 0.88;
+      const floorY = cy + scale * 0.85;
       ctx.strokeStyle = this.isDarkTheme ? 'rgba(217, 119, 6, 0.12)' : 'rgba(217, 119, 6, 0.18)';
       ctx.lineWidth = 1.5;
       ctx.beginPath();
@@ -2769,7 +2863,7 @@ function rank(){
       }
 
       // 3. Burner Base & Collar
-      const burnerTopY = cy + scale * 0.35;
+      const burnerTopY = cy + scale * 0.32;
       const burnerBaseY = floorY;
       const burnerW = scale * 0.32;
       const collarW = scale * 0.44;
@@ -2976,6 +3070,31 @@ function rank(){
       ctx.font = '600 11px system-ui, -apple-system, sans-serif';
       ctx.fillText('● 2.5D COMBUSTION ENGINE', 24, 31);
 
+      if (this.showTechOverlay) {
+        ctx.save();
+        ctx.strokeStyle = 'rgba(245, 158, 11, 0.42)';
+        ctx.fillStyle = 'rgba(245, 158, 11, 0.85)';
+        ctx.lineWidth = 1;
+        ctx.setLineDash([3, 3]);
+        ctx.font = '500 10px system-ui, -apple-system, sans-serif';
+
+        // Outer caliper for flame radius
+        const calR = Math.max(rx, ry);
+        ctx.beginPath();
+        ctx.arc(cx, flameCy, calR * 1.06, -Math.PI * 0.35, -Math.PI * 0.05);
+        ctx.stroke();
+        ctx.fillText('TECH-04: Rf Standoff', cx + calR * 0.85, flameCy - calR * 0.55);
+
+        // Base reaction zone caliper
+        ctx.beginPath();
+        ctx.moveTo(cx - rx * 0.88, burnerTopY);
+        ctx.lineTo(cx - rx * 0.88 - 14, burnerTopY);
+        ctx.stroke();
+        ctx.fillText('TECH-02: Root', cx - rx * 0.88 - 85, burnerTopY + 3);
+
+        ctx.restore();
+      }
+
       ctx.restore();
     }
   }
@@ -3004,6 +3123,27 @@ function rank(){
         if (t) t.textContent = tel.coolFlame === 'Likely' ? 'COOL FLAME' : 'DIFFUSION';
         if (f) f.textContent = tel.flowLabel;
         if (k) k.textContent = `${tel.temperatureK}K`;
+
+        const hBadgeGeom = document.getElementById('heroBadgeGeom');
+        const hGeom = document.getElementById('heroTechGeom');
+        const hBadgeTwin = document.getElementById('heroBadgeTwin');
+        const hTwin = document.getElementById('heroTechTwin');
+
+        if (tel.modeLabel.includes('0g')) {
+          if (hBadgeGeom) hBadgeGeom.textContent = 'TECH-01 · TECH-04';
+          if (hGeom) hGeom.textContent = '0g Microgravity Spherical Diffusion Mantle (Absence of Buoyancy)';
+        } else {
+          if (hBadgeGeom) hBadgeGeom.textContent = 'TECH-33 · TECH-07';
+          if (hGeom) hGeom.textContent = `${tel.modeLabel} Plume · Froude/Grashof Buoyant Scaling`;
+        }
+
+        if (tel.coolFlame === 'Likely') {
+          if (hBadgeTwin) hBadgeTwin.textContent = 'TECH-05 · TECH-18';
+          if (hTwin) hTwin.textContent = 'Cool Flame Radical Regime · Formaldehyde CH₂O* Band';
+        } else {
+          if (hBadgeTwin) hBadgeTwin.textContent = 'TECH-48 · TECH-57';
+          if (hTwin) hTwin.textContent = 'NASA Flight Twin Baseline · 57 Techniques Bounded';
+        }
       }
     });
   }
@@ -3039,6 +3179,20 @@ function rank(){
   window.__pyroResetBenchCamera = () => {
     if (benchCtrl) benchCtrl.resetCamera();
     if (heroCtrl) heroCtrl.resetCamera();
+  };
+  window.__pyroToggleTechOverlay = enabled => {
+    if (benchCtrl) benchCtrl.showTechOverlay = enabled;
+    if (heroCtrl) heroCtrl.showTechOverlay = enabled;
+    const bOv = document.getElementById('benchTechOverlay');
+    if (bOv) {
+      if (enabled) bOv.removeAttribute('hidden');
+      else bOv.setAttribute('hidden', '');
+    }
+    const hOv = document.getElementById('heroTechOverlay');
+    if (hOv) {
+      if (enabled) hOv.removeAttribute('hidden');
+      else hOv.setAttribute('hidden', '');
+    }
   };
   window.__pyroSetStyleModifier = styleMod => {
     if (benchCtrl) benchCtrl.setStyleModifier(styleMod);
