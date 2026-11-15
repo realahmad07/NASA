@@ -34,26 +34,26 @@ h1 em{color:var(--acc);font-weight:300}
 .btn-ghost{background:none;color:var(--ink);border:1px solid var(--ink)}
 .cta{display:flex;gap:1.4rem;align-items:center;flex-wrap:wrap}
 .core{margin:0}
-.flame-stage{position:relative;width:100%;overflow:hidden;border:1px solid var(--rule);background:#1B1713}
-.flame-stage--hero{height:460px}
-.flame-stage--bench{height:360px}
-.flame-canvas-mount{width:100%;height:100%;cursor:grab}
+.flame-stage{position:relative;width:100%;overflow:hidden;border:1px solid var(--rule);background:#15120F}
+.flame-stage--hero{height:485px}
+.flame-stage--bench{height:435px}
+.flame-canvas-mount{width:100%;height:100%;cursor:grab;position:relative}
 .flame-canvas-mount:active{cursor:grabbing}
-.flame-hud{position:absolute;inset:0;pointer-events:none;padding:14px 16px;font-family:var(--fm);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:rgba(236,230,216,.88)}
+.flame-hud{position:absolute;inset:0;pointer-events:none;padding:10px 14px;font-family:var(--fm);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:rgba(236,230,216,.92);z-index:5}
 .flame-hud--hero{display:flex;justify-content:space-between;align-items:flex-start}
-.flame-hud-col{display:flex;flex-direction:column;gap:6px}
-.flame-hud-right{display:flex;flex-direction:column;align-items:flex-end;gap:2px;color:rgba(236,230,216,.72)}
+.flame-hud-col{display:flex;flex-direction:column;gap:4px;background:rgba(15,12,10,.72);padding:4px 8px;border-radius:3px;border:1px solid rgba(245,158,11,.22)}
+.flame-hud-right{display:flex;flex-direction:column;align-items:flex-end;gap:2px;color:rgba(236,230,216,.88);background:rgba(15,12,10,.72);padding:4px 8px;border-radius:3px;border:1px solid rgba(245,158,11,.22)}
 .flame-hud--bench{display:flex;justify-content:space-between;align-items:flex-start}
 .flame-fallback{position:absolute;inset:0;display:grid;place-items:center;background:#1B1713;color:#ECE6D8;font:400 .75rem var(--fm);padding:1rem;text-align:center}
-.flame-tech-overlay{position:absolute;inset:0;pointer-events:none;padding:42px 14px 26px 14px;display:flex;flex-direction:column;justify-content:space-between;align-items:flex-start;gap:6px;transition:opacity .2s;z-index:4}
+.flame-tech-overlay{position:absolute;inset:0;pointer-events:none;padding:54px 12px 32px 12px;display:flex;flex-direction:column;justify-content:space-between;align-items:flex-start;gap:5px;transition:opacity .2s;z-index:4;overflow:hidden}
 .flame-tech-overlay[hidden]{display:none!important}
-.geom-tag-group{display:flex;flex-direction:column;gap:5px;align-items:flex-start}
-.geom-badge-card{background:rgba(18,14,11,.88);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1px solid rgba(245,158,11,.35);border-left:3px solid var(--acc);padding:4px 8px;display:inline-flex;align-items:center;gap:7px;border-radius:2px;box-shadow:0 2px 8px rgba(0,0,0,.5);pointer-events:auto;cursor:pointer;user-select:none;transition:border-color .15s,transform .15s}
+.geom-tag-group{display:flex;flex-direction:column;gap:4px;align-items:flex-start;max-width:100%}
+.geom-badge-card{background:rgba(16,13,10,.86);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1px solid rgba(245,158,11,.38);border-left:3px solid var(--acc);padding:3px 7px;display:inline-flex;align-items:center;gap:5px;border-radius:3px;box-shadow:0 2px 10px rgba(0,0,0,.55);pointer-events:auto;cursor:pointer;user-select:none;transition:border-color .15s,transform .15s;max-width:calc(100% - 4px);overflow:hidden}
 .geom-badge-card:hover{border-color:var(--acc);transform:translateX(2px)}
-.geom-id-badge{background:var(--acc);color:#120e0a;font:700 8.5px var(--fm);padding:1.5px 4.5px;letter-spacing:.04em;border-radius:1px;text-transform:uppercase;white-space:nowrap}
-.geom-tech-name{font:700 9px var(--fm);color:#FBBF24;letter-spacing:.02em;white-space:nowrap}
-.geom-val-metric{font:500 9.5px var(--fm);color:rgba(245,240,230,.95);letter-spacing:.02em;border-left:1px solid rgba(245,158,11,.35);padding-left:6px;white-space:nowrap}
-@media (max-width:640px){.geom-tech-name{display:none}.geom-val-metric{max-width:210px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}}
+.geom-id-badge{background:var(--acc);color:#120e0a;font:700 8px var(--fm);padding:1px 4px;letter-spacing:.04em;border-radius:1px;text-transform:uppercase;white-space:nowrap;flex-shrink:0}
+.geom-tech-name{font:700 8.5px var(--fm);color:#FBBF24;letter-spacing:.02em;white-space:nowrap;flex-shrink:0}
+.geom-val-metric{font:500 8.5px var(--fm);color:rgba(245,240,230,.95);letter-spacing:.01em;border-left:1px solid rgba(245,158,11,.35);padding-left:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@media (max-width:640px){.geom-tech-name{display:none}.geom-val-metric{max-width:190px}}
 .tech-overlay-toggle-btn{font:600 .62rem var(--fm);letter-spacing:.06em;text-transform:uppercase;background:none;border:1px solid var(--acc);color:var(--acc);padding:.35rem .6rem;cursor:pointer;white-space:nowrap;transition:all .15s}
 .tech-overlay-toggle-btn[aria-pressed="true"]{background:var(--acc);color:#120e0a}
 .chart-controls{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:.5rem;margin-top:.75rem;padding-top:.65rem;border-top:1px solid var(--rule)}
@@ -2581,7 +2581,7 @@ function rank(){
 
     morphed += dir * (breathe + radialRipple + nMicro) * effLayerScale;
     morphed.y += upwardLick * effLayerScale * (0.38 + gFactor * 0.95 + uFuelFlowFactor * 0.55);
-    morphed *= effLayerScale * 0.68;
+    morphed *= effLayerScale * 0.60;
 
     vec3 worldPos = morphed + vec3(0.0, 0.15 + uLiftOffset, 0.0);
     vLocalPos = morphed;
@@ -3113,7 +3113,17 @@ function rank(){
           : gravity < 0.5
             ? `${gravity.toFixed(2)}g · MARTIAN`
             : `${gravity.toFixed(2)}g · BUOYANT`;
-    return { regime, spreadRisk, coolFlame, temperatureK, flowLabel, modeLabel };
+
+    const oxNorm = Math.max(0, (oxygen - 15) / 25);
+    const prRatio = Math.max(0.15, pressure / 101);
+    const flFactor = Math.pow(Math.max(0.1, fuelFlow) / 2, 0.38);
+    const widthMm = +(16.5 * (1.08 - gravity * 0.42) * Math.pow(prRatio, -0.28) * (0.85 + oxNorm * 0.28) * Math.min(1.35, 0.78 + flFactor * 0.22)).toFixed(1);
+    const heightMm = +(16.5 * (0.96 + gravity * 1.38) * Math.pow(prRatio, -0.18) * (0.82 + oxNorm * 0.42) * flFactor).toFixed(1);
+    const buoyantVelCmS = +(Math.sqrt(gravity * 981 * (heightMm / 10)) * 0.62 + fuelFlow * 0.35).toFixed(1);
+    const shellThicknessMm = +(2.4 * Math.pow(prRatio, -0.68) * (1.15 - oxNorm * 0.35)).toFixed(2);
+    const peclet = +(0.32 + gravity * 4.8 + fuelFlow * 0.45).toFixed(2);
+
+    return { regime, spreadRisk, coolFlame, temperatureK, flowLabel, modeLabel, widthMm, heightMm, buoyantVelCmS, shellThicknessMm, peclet };
   }
 
   function computeFlameVisuals(params, colorPhase = 0) {
@@ -3311,7 +3321,7 @@ function rank(){
       // Damped OrbitControls spherical coordinates - centered on flame with balanced normal size
       this.defaultAzimuth = this.mode === 'hero' ? 0.08 : 0.41;
       this.defaultPolar = this.mode === 'hero' ? 1.38 : 1.34;
-      this.defaultDist = this.mode === 'hero' ? 5.10 : 4.90;
+      this.defaultDist = this.mode === 'hero' ? 5.35 : 5.15;
       this.azimuth = this.defaultAzimuth;
       this.polar = this.defaultPolar;
       this.dist = this.defaultDist;
@@ -3341,6 +3351,18 @@ function rank(){
       this.canvas.style.height = '100%';
       this.container.innerHTML = '';
       this.container.appendChild(this.canvas);
+
+      // Dedicated high-resolution 2D scientific overlay canvas (calipers, axes, live technique mini-graphs)
+      this.overlayCanvas = document.createElement('canvas');
+      this.overlayCanvas.style.display = 'block';
+      this.overlayCanvas.style.position = 'absolute';
+      this.overlayCanvas.style.inset = '0';
+      this.overlayCanvas.style.width = '100%';
+      this.overlayCanvas.style.height = '100%';
+      this.overlayCanvas.style.pointerEvents = 'none';
+      this.overlayCanvas.style.zIndex = '3';
+      this.container.appendChild(this.overlayCanvas);
+      this.overlayCtx = this.overlayCanvas.getContext('2d');
 
       this.initOrbitEvents();
       this.initRenderer();
@@ -3389,9 +3411,9 @@ function rank(){
         newCanvas.style.width = '100%';
         newCanvas.style.height = '100%';
         newCanvas.style.cursor = 'grab';
-        const dpr = Math.min(window.devicePixelRatio || 1, 2);
+        const dpr = Math.min(window.devicePixelRatio || 1, 2.5);
         const cw = Math.max(320, this.container.clientWidth || 480);
-        const ch = Math.max(280, this.container.clientHeight || (this.mode === 'hero' ? 460 : 360));
+        const ch = Math.max(280, this.container.clientHeight || (this.mode === 'hero' ? 485 : 435));
         newCanvas.width = Math.round(cw * dpr);
         newCanvas.height = Math.round(ch * dpr);
         if (oldCanvas && oldCanvas.parentNode) {
@@ -3399,6 +3421,7 @@ function rank(){
         } else {
           this.container.innerHTML = '';
           this.container.appendChild(newCanvas);
+          if (this.overlayCanvas) this.container.appendChild(this.overlayCanvas);
         }
         this.canvas = newCanvas;
         this.ctx2d = newCanvas.getContext('2d');
@@ -3488,13 +3511,17 @@ function rank(){
       this.lastTime = now;
       this.elapsed += dt;
 
-      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const dpr = Math.min(window.devicePixelRatio || 1, 2.5);
       const cw = Math.max(320, this.container.clientWidth || 480);
-      const ch = Math.max(280, this.container.clientHeight || (this.mode === 'hero' ? 460 : 360));
+      const ch = Math.max(280, this.container.clientHeight || (this.mode === 'hero' ? 485 : 435));
       const pw = Math.round(cw * dpr), ph = Math.round(ch * dpr);
       if (this.canvas.width !== pw || this.canvas.height !== ph) {
         this.canvas.width = pw;
         this.canvas.height = ph;
+      }
+      if (this.overlayCanvas && (this.overlayCanvas.width !== pw || this.overlayCanvas.height !== ph)) {
+        this.overlayCanvas.width = pw;
+        this.overlayCanvas.height = ph;
       }
 
       const effective = this.getEffectiveParams(this.elapsed);
@@ -3531,7 +3558,7 @@ function rank(){
       this.polar = lerp(this.polar, this.targetPolar, 0.09);
       this.dist = lerp(this.dist, this.targetDist, 0.09);
 
-      const flameCenterY = 0.32 + this.currentGravity * 0.18 + this.currentLiftOffset * 0.4;
+      const flameCenterY = 0.28 + this.currentGravity * 0.14 + this.currentLiftOffset * 0.30;
       const camX = this.dist * Math.sin(this.polar) * Math.sin(this.azimuth);
       const camY = flameCenterY + this.dist * Math.cos(this.polar);
       const camZ = this.dist * Math.sin(this.polar) * Math.cos(this.azimuth);
@@ -3609,6 +3636,11 @@ function rank(){
         }
       }
 
+      // Render prominent scientific technique calipers & live mini-graphs on high-resolution overlay
+      if (this.overlayCtx) {
+        this.drawScientificOverlays(this.overlayCtx, pw, ph, effective, visuals, telemetry);
+      }
+
       if (this.onTelemetry && this.elapsed - this.lastTelemetryEmit > 0.08) {
         this.lastTelemetryEmit = this.elapsed;
         this.onTelemetry(telemetry);
@@ -3624,7 +3656,7 @@ function rank(){
       gl.clearColor(bg[0], bg[1], bg[2], 1.0);
       gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-      const flameCenterY = 0.32 + this.currentGravity * 0.18 + this.currentLiftOffset * 0.4;
+      const flameCenterY = 0.28 + this.currentGravity * 0.14 + this.currentLiftOffset * 0.30;
       const proj = mat4Perspective((35 * Math.PI) / 180, pw / ph, 0.1, 60.0);
       const view = mat4LookAt(camPos, [0, flameCenterY, 0], [0, 1, 0]);
       const projView = mat4Multiply(proj, view);
@@ -3760,38 +3792,38 @@ function rank(){
       ctx.fillRect(0, 0, pw, ph);
 
       const cx = pw * 0.5;
-      const cy = ph * 0.51;
-      const scale = Math.min(pw, ph) * 0.22 * (5.0 / Math.max(2.1, this.dist));
       const g = this.currentGravity;
       const styleMod = (effective && effective.styleModifier) || 'microgravity';
       const material = (effective && effective.material) || 'pmma';
 
+      // Calibrated scale ratio: grounded burner plinth & guaranteed headroom for plume apex
+      const scale = Math.min(pw, ph) * 0.175 * (5.0 / Math.max(2.1, this.dist));
+      const floorY = ph * 0.82;
+      const burnerTopY = ph * 0.68;
+      const burnerBaseY = floorY;
+      const burnerW = scale * 0.32;
+      const collarW = scale * 0.44;
+
       // 2. Chamber Grid / Pedestal Floor
-      const floorY = cy + scale * 0.85;
-      ctx.strokeStyle = this.isDarkTheme ? 'rgba(217, 119, 6, 0.12)' : 'rgba(217, 119, 6, 0.18)';
-      ctx.lineWidth = 1.5;
+      ctx.strokeStyle = this.isDarkTheme ? 'rgba(217, 119, 6, 0.14)' : 'rgba(217, 119, 6, 0.20)';
+      ctx.lineWidth = 1.4;
       ctx.beginPath();
-      ctx.ellipse(cx, floorY, scale * 1.6, scale * 0.38, 0, 0, Math.PI * 2);
+      ctx.ellipse(cx, floorY, scale * 1.6, scale * 0.36, 0, 0, Math.PI * 2);
       ctx.stroke();
 
       ctx.beginPath();
-      ctx.ellipse(cx, floorY, scale * 1.0, scale * 0.24, 0, 0, Math.PI * 2);
+      ctx.ellipse(cx, floorY, scale * 1.0, scale * 0.22, 0, 0, Math.PI * 2);
       ctx.stroke();
 
       // Radial grid rays
       for (let a = 0; a < Math.PI * 2; a += Math.PI / 4) {
         ctx.beginPath();
         ctx.moveTo(cx + Math.cos(a) * scale * 0.2, floorY + Math.sin(a) * scale * 0.05);
-        ctx.lineTo(cx + Math.cos(a) * scale * 1.6, floorY + Math.sin(a) * scale * 0.38);
+        ctx.lineTo(cx + Math.cos(a) * scale * 1.6, floorY + Math.sin(a) * scale * 0.36);
         ctx.stroke();
       }
 
       // 3. Burner Base & Collar
-      const burnerTopY = cy + scale * 0.32;
-      const burnerBaseY = floorY;
-      const burnerW = scale * 0.32;
-      const collarW = scale * 0.44;
-
       const pedGrad = ctx.createLinearGradient(cx - burnerW, 0, cx + burnerW, 0);
       pedGrad.addColorStop(0, '#1F1B18');
       pedGrad.addColorStop(0.5, '#423B33');
@@ -3859,10 +3891,8 @@ function rank(){
       }
 
       // 5. Volumetric Flame Plume (Physics-based multi-layer gradients)
-      const rx = scale * this.currentWidthScale * 0.88;
-      const ry = scale * this.currentHeightScale * (0.88 + g * 0.42);
-      const flameLift = (g * 0.38 + this.currentLiftOffset) * scale;
-      const flameCy = burnerTopY - scale * 0.18 - flameLift * 0.45;
+      const rx = scale * this.currentWidthScale * 0.86;
+      const ry = scale * this.currentHeightScale * (0.86 + g * 0.38);
 
       const [rC, gC, bC] = this.currentCoreRgb.map(v => Math.round(v * 255));
       const [rM, gM, bM] = this.currentMidRgb.map(v => Math.round(v * 255));
@@ -3873,7 +3903,8 @@ function rank(){
 
       if (g < 0.10) {
         // 0g ISOTROPIC SPHERICAL DIFFUSION FLAME
-        const sphereR = Math.max(rx, ry) * 0.92;
+        const flameCy = burnerTopY - scale * 0.95;
+        const sphereR = Math.max(rx, scale * 0.88);
 
         const coronaGrad = ctx.createRadialGradient(cx, flameCy, sphereR * 0.7, cx, flameCy, sphereR * 1.35);
         coronaGrad.addColorStop(0, `rgba(${rB},${gB},${bB},0.45)`);
@@ -3903,17 +3934,18 @@ function rank(){
         ctx.fill();
       } else {
         // BUOYANT TEARDROP / CANDLE / JET PLUME
-        const tipY = flameCy - ry * 1.35;
-        const baseY = burnerTopY - scale * 0.08;
+        const baseY = burnerTopY - scale * 0.06;
+        // Bounded plume height so apex is always fully visible with comfortable headroom
+        const tipY = Math.max(ph * 0.11, burnerTopY - ry * 2.15);
         const midY = (tipY + baseY) * 0.5;
 
         ctx.beginPath();
         ctx.moveTo(cx - rx * 0.5, baseY);
-        ctx.bezierCurveTo(cx - rx * 1.25, midY + ry * 0.2, cx - rx * 0.75, midY - ry * 0.4, cx, tipY);
-        ctx.bezierCurveTo(cx + rx * 0.75, midY - ry * 0.4, cx + rx * 1.25, midY + ry * 0.2, cx + rx * 0.5, baseY);
+        ctx.bezierCurveTo(cx - rx * 1.25, midY + (baseY - midY) * 0.45, cx - rx * 0.75, tipY + (midY - tipY) * 0.45, cx, tipY);
+        ctx.bezierCurveTo(cx + rx * 0.75, tipY + (midY - tipY) * 0.45, cx + rx * 1.25, midY + (baseY - midY) * 0.45, cx + rx * 0.5, baseY);
         ctx.closePath();
 
-        const plumeGrad = ctx.createRadialGradient(cx, midY + ry * 0.1, rx * 0.1, cx, midY, ry * 1.3);
+        const plumeGrad = ctx.createRadialGradient(cx, midY + ry * 0.1, rx * 0.1, cx, midY, (baseY - tipY) * 0.75);
         plumeGrad.addColorStop(0, `rgba(${rC},${gC},${bC},0.95)`);
         plumeGrad.addColorStop(0.38, `rgba(${rM},${gM},${bM},0.82)`);
         plumeGrad.addColorStop(0.72, `rgba(${rO},${gO},${bO},0.55)`);
@@ -3923,10 +3955,10 @@ function rank(){
         ctx.fill();
 
         ctx.beginPath();
-        const coreTipY = midY - ry * 0.25;
+        const coreTipY = midY - (midY - tipY) * 0.45;
         ctx.moveTo(cx - rx * 0.28, baseY);
-        ctx.bezierCurveTo(cx - rx * 0.65, midY + ry * 0.1, cx - rx * 0.35, coreTipY + ry * 0.1, cx, coreTipY);
-        ctx.bezierCurveTo(cx + rx * 0.35, coreTipY + ry * 0.1, cx + rx * 0.65, midY + ry * 0.1, cx + rx * 0.28, baseY);
+        ctx.bezierCurveTo(cx - rx * 0.65, midY + (baseY - midY) * 0.3, cx - rx * 0.35, coreTipY + (midY - coreTipY) * 0.3, cx, coreTipY);
+        ctx.bezierCurveTo(cx + rx * 0.35, coreTipY + (midY - coreTipY) * 0.3, cx + rx * 0.65, midY + (baseY - midY) * 0.3, cx + rx * 0.28, baseY);
         ctx.closePath();
 
         const coreGrad = ctx.createLinearGradient(0, baseY, 0, coreTipY);
@@ -3969,7 +4001,7 @@ function rank(){
         const e = this.embers[i];
         if (e.curSize <= 0.01) continue;
         const px = cx + e.x * scale * 1.5;
-        const py = cy - (e.y - 0.10) * scale * 1.5;
+        const py = (floorY - scale * 0.14) - (e.y - 0.10) * scale * 1.5;
         const [pr, pg, pb] = e.curColor.map(v => Math.round(v * 255));
         ctx.fillStyle = `rgba(${pr},${pg},${pb},0.85)`;
         ctx.beginPath();
@@ -3978,56 +4010,301 @@ function rank(){
       }
 
       ctx.globalCompositeOperation = 'source-over';
+      ctx.restore();
+    }
 
-      // 7. Dynamic Engine HUD Badge
-      ctx.fillStyle = 'rgba(23, 19, 16, 0.72)';
-      ctx.strokeStyle = 'rgba(217, 119, 6, 0.35)';
-      ctx.lineWidth = 1;
-      const bW = 195, bH = 26;
+    drawScientificOverlays(ctx, pw, ph, effective, visuals, telemetry) {
+      ctx.clearRect(0, 0, pw, ph);
+      if (!this.showTechOverlay) return;
+
+      ctx.save();
+      const cx = pw * 0.5;
+      const g = this.currentGravity;
+      const scale = Math.min(pw, ph) * 0.175 * (5.0 / Math.max(2.1, this.dist));
+      const floorY = ph * 0.82;
+      const burnerTopY = ph * 0.68;
+
+      const rx = scale * this.currentWidthScale * 0.86;
+      const ry = scale * this.currentHeightScale * (0.86 + g * 0.38);
+
+      let flameCy, flameTopY, flameHeight, flameBaseY;
+      if (g < 0.10) {
+        flameCy = burnerTopY - scale * 0.95;
+        const sphereR = Math.max(rx, scale * 0.88);
+        flameTopY = flameCy - sphereR;
+        flameBaseY = flameCy + sphereR;
+        flameHeight = sphereR * 2.0;
+      } else {
+        flameBaseY = burnerTopY - scale * 0.06;
+        flameTopY = Math.max(ph * 0.11, burnerTopY - ry * 2.15);
+        flameHeight = flameBaseY - flameTopY;
+        flameCy = (flameTopY + flameBaseY) * 0.5;
+      }
+
+      const fontScale = Math.max(0.85, Math.min(1.4, pw / 700));
+      const fs = sz => `${Math.round(sz * fontScale)}px "Space Mono", monospace, system-ui, sans-serif`;
+
+      // -------------------------------------------------------------
+      // 1. VERTICAL BILATERAL SYMMETRY AXIS (TECH-09 Bilateral IoU)
+      // -------------------------------------------------------------
+      const iouBilateral = Math.max(0.72, (0.965 - g * 0.18)).toFixed(3);
+      ctx.strokeStyle = 'rgba(56, 189, 248, 0.72)';
+      ctx.lineWidth = 1.2;
+      ctx.setLineDash([4, 4]);
       ctx.beginPath();
-      if (ctx.roundRect) ctx.roundRect(14, 14, bW, bH, 6);
-      else ctx.rect(14, 14, bW, bH);
-      ctx.fill();
+      ctx.moveTo(cx, flameTopY - 14);
+      ctx.lineTo(cx, floorY + 10);
       ctx.stroke();
 
-      ctx.fillStyle = '#F59E0B';
-      ctx.font = '600 11px system-ui, -apple-system, sans-serif';
-      ctx.fillText('● 2.5D COMBUSTION ENGINE', 24, 31);
+      // Tick marks on axis
+      ctx.setLineDash([]);
+      ctx.beginPath();
+      ctx.moveTo(cx - 7, flameTopY); ctx.lineTo(cx + 7, flameTopY);
+      ctx.moveTo(cx - 7, flameCy); ctx.lineTo(cx + 7, flameCy);
+      ctx.moveTo(cx - 7, flameBaseY); ctx.lineTo(cx + 7, flameBaseY);
+      ctx.stroke();
 
-      if (this.showTechOverlay) {
-        ctx.save();
-        ctx.strokeStyle = 'rgba(245, 158, 11, 0.42)';
-        ctx.fillStyle = 'rgba(245, 158, 11, 0.85)';
-        ctx.lineWidth = 1;
-        ctx.setLineDash([3, 3]);
-        ctx.font = '500 9.5px system-ui, -apple-system, sans-serif';
+      // Bilateral IoU badge on top of vertical axis
+      ctx.fillStyle = 'rgba(15, 12, 10, 0.85)';
+      ctx.strokeStyle = 'rgba(56, 189, 248, 0.55)';
+      ctx.lineWidth = 1;
+      const bText = `TECH-09 Bilateral IoU: ${iouBilateral}`;
+      ctx.font = `600 ${fs(9.5)}`;
+      const bW = ctx.measureText(bText).width + 12;
+      const bX = Math.max(12, Math.min(pw - bW - 12, cx - bW * 0.5));
+      const bY = Math.max(48, flameTopY - 24);
+      if (ctx.roundRect) ctx.roundRect(bX, bY, bW, 18, 3); else ctx.rect(bX, bY, bW, 18);
+      ctx.fill(); ctx.stroke();
+      ctx.fillStyle = '#38BDF8';
+      ctx.fillText(bText, bX + 6, bY + 12);
 
-        // Outer caliper for flame radius & symmetry
-        const calR = Math.max(rx, ry);
+      // -------------------------------------------------------------
+      // 2. HORIZONTAL MID-PLANE AXIS (TECH-10 Top-Bottom IoU)
+      // -------------------------------------------------------------
+      const iouTopBottom = (g < 0.08 ? 0.952 : Math.max(0.38, 0.952 - g * 0.54)).toFixed(3);
+      ctx.strokeStyle = 'rgba(245, 158, 11, 0.65)';
+      ctx.lineWidth = 1.2;
+      ctx.setLineDash([4, 4]);
+      const xSpan = Math.max(rx * 1.35, scale * 1.1);
+      ctx.beginPath();
+      ctx.moveTo(cx - xSpan, flameCy);
+      ctx.lineTo(cx + xSpan, flameCy);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      // -------------------------------------------------------------
+      // 3. FLAME BOUNDING CONTOURS & CALIPERS
+      // -------------------------------------------------------------
+      ctx.strokeStyle = 'rgba(245, 158, 11, 0.78)';
+      ctx.fillStyle = '#FBBF24';
+      ctx.lineWidth = 1.2;
+
+      if (g < 0.10) {
+        // TECH-04 Spherical Symmetry Outer Ring
+        const sphereR = Math.max(rx, scale * 0.88);
+        ctx.setLineDash([4, 3]);
         ctx.beginPath();
-        ctx.arc(cx, flameCy, calR * 1.06, -Math.PI * 0.35, -Math.PI * 0.05);
+        ctx.arc(cx, flameCy, sphereR * 1.04, 0, Math.PI * 2);
         ctx.stroke();
-        ctx.fillText('TECH-04 Spherical Symmetry · Rf', cx + calR * 0.72, flameCy - calR * 0.55);
+        ctx.setLineDash([]);
 
-        // Flame height & buoyant apex
+        // Diameter Caliper (2Rf)
+        const dLineY = flameBaseY + 12;
         ctx.beginPath();
-        ctx.moveTo(cx + rx * 0.95 + 6, burnerTopY);
-        ctx.lineTo(cx + rx * 0.95 + 18, burnerTopY);
-        ctx.moveTo(cx + rx * 0.95 + 12, burnerTopY);
-        ctx.lineTo(cx + rx * 0.95 + 12, flameCy - ry * 1.05);
-        ctx.lineTo(cx + rx * 0.95 + 18, flameCy - ry * 1.05);
+        ctx.moveTo(cx - sphereR, dLineY - 4); ctx.lineTo(cx - sphereR, dLineY + 4);
+        ctx.moveTo(cx - sphereR, dLineY); ctx.lineTo(cx + sphereR, dLineY);
+        ctx.moveTo(cx + sphereR, dLineY - 4); ctx.lineTo(cx + sphereR, dLineY + 4);
         ctx.stroke();
-        ctx.fillText('TECH-33 Buoyant Plume · H', cx + rx * 0.95 + 22, (burnerTopY + flameCy - ry * 1.05) * 0.5);
 
-        // Base reaction zone caliper
+        ctx.font = `600 ${fs(9)}`;
+        const dText = `TECH-04 Spherical 2Rf = ${(telemetry.widthMm).toFixed(1)}mm`;
+        const dW = ctx.measureText(dText).width;
+        ctx.fillStyle = 'rgba(15, 12, 10, 0.8)';
+        ctx.fillRect(cx - dW * 0.5 - 4, dLineY - 7, dW + 8, 14);
+        ctx.fillStyle = '#FBBF24';
+        ctx.fillText(dText, cx - dW * 0.5, dLineY + 4);
+      } else {
+        // Plume Height Caliper H (TECH-33 Buoyant Plume Height)
+        const hLineX = Math.min(pw - 24, cx + rx * 1.22 + 14);
         ctx.beginPath();
-        ctx.moveTo(cx - rx * 0.88, burnerTopY);
-        ctx.lineTo(cx - rx * 0.88 - 14, burnerTopY);
+        ctx.moveTo(hLineX - 4, flameTopY); ctx.lineTo(hLineX + 4, flameTopY);
+        ctx.moveTo(hLineX, flameTopY); ctx.lineTo(hLineX, flameBaseY);
+        ctx.moveTo(hLineX - 4, flameBaseY); ctx.lineTo(hLineX + 4, flameBaseY);
         ctx.stroke();
-        ctx.fillText('TECH-02 Standoff Root · δf', cx - rx * 0.88 - 142, burnerTopY + 3);
 
-        ctx.restore();
+        ctx.font = `600 ${fs(9)}`;
+        const hText = `H = ${(telemetry.heightMm).toFixed(1)}mm`;
+        const hW = ctx.measureText(hText).width;
+        ctx.fillStyle = 'rgba(15, 12, 10, 0.8)';
+        ctx.fillRect(hLineX - hW * 0.5 - 3, flameCy - 7, hW + 6, 14);
+        ctx.fillStyle = '#FBBF24';
+        ctx.fillText(hText, hLineX - hW * 0.5, flameCy + 4);
+
+        // Equatorial Width Caliper W (TECH-31 Aspect Ratio)
+        const wLineY = flameCy + 14;
+        ctx.beginPath();
+        ctx.moveTo(cx - rx * 0.95, wLineY - 4); ctx.lineTo(cx - rx * 0.95, wLineY + 4);
+        ctx.moveTo(cx - rx * 0.95, wLineY); ctx.lineTo(cx + rx * 0.95, wLineY);
+        ctx.moveTo(cx + rx * 0.95, wLineY - 4); ctx.lineTo(cx + rx * 0.95, wLineY + 4);
+        ctx.stroke();
+
+        const wText = `W = ${(telemetry.widthMm).toFixed(1)}mm`;
+        const wW = ctx.measureText(wText).width;
+        ctx.fillStyle = 'rgba(15, 12, 10, 0.8)';
+        ctx.fillRect(cx - wW * 0.5 - 3, wLineY - 7, wW + 6, 14);
+        ctx.fillStyle = '#38BDF8';
+        ctx.fillText(wText, cx - wW * 0.5, wLineY + 4);
       }
+
+      // Centroid crosshair (TECH-26)
+      ctx.strokeStyle = '#38BDF8';
+      ctx.lineWidth = 1.2;
+      ctx.beginPath();
+      ctx.arc(cx, flameCy, 4, 0, Math.PI * 2);
+      ctx.moveTo(cx - 8, flameCy); ctx.lineTo(cx + 8, flameCy);
+      ctx.moveTo(cx, flameCy - 8); ctx.lineTo(cx, flameCy + 8);
+      ctx.stroke();
+
+      // -------------------------------------------------------------
+      // 4. LIVE TECHNIQUE MINI-GRAPH 1: RADIAL EMISSION T(r) & CH2O*
+      // (TECH-05 Cool-Flame / TECH-13 Chemiluminescence / TECH-36 Abel)
+      // -------------------------------------------------------------
+      const g1W = Math.min(160, Math.max(128, pw * 0.28));
+      const g1H = 86;
+      const g1X = pw - g1W - 12;
+      const g1Y = Math.max(54, Math.min(ph - g1H - 42, ph * 0.26));
+
+      ctx.fillStyle = 'rgba(15, 12, 10, 0.88)';
+      ctx.strokeStyle = 'rgba(245, 158, 11, 0.45)';
+      ctx.lineWidth = 1;
+      if (ctx.roundRect) ctx.roundRect(g1X, g1Y, g1W, g1H, 5); else ctx.rect(g1X, g1Y, g1W, g1H);
+      ctx.fill(); ctx.stroke();
+
+      // Card Header
+      ctx.fillStyle = 'rgba(245, 158, 11, 0.25)';
+      if (ctx.roundRect) ctx.roundRect(g1X + 5, g1Y + 5, 42, 11, 2); else ctx.rect(g1X + 5, g1Y + 5, 42, 11);
+      ctx.fill();
+      ctx.fillStyle = '#FBBF24';
+      ctx.font = `700 ${fs(7)}`;
+      ctx.fillText('TECH-05', g1X + 8, g1Y + 13.5);
+
+      ctx.fillStyle = '#E2E8F0';
+      ctx.font = `600 ${fs(7.5)}`;
+      ctx.fillText('RADIAL EMISSION T(r)', g1X + 52, g1Y + 13.5);
+
+      // Graph Plot Box
+      const pX = g1X + 8, pY = g1Y + 22, pW = g1W - 16, pH = g1H - 34;
+      ctx.fillStyle = 'rgba(5, 4, 3, 0.65)';
+      ctx.fillRect(pX, pY, pW, pH);
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.12)';
+      ctx.lineWidth = 0.8;
+      ctx.strokeRect(pX, pY, pW, pH);
+
+      // Plot grid lines
+      ctx.setLineDash([2, 2]);
+      ctx.beginPath();
+      ctx.moveTo(pX + pW * 0.5, pY); ctx.lineTo(pX + pW * 0.5, pY + pH);
+      ctx.moveTo(pX, pY + pH * 0.5); ctx.lineTo(pX + pW, pY + pH * 0.5);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      // Curve 1: Temperature profile T(r/Rf)
+      ctx.strokeStyle = '#F97316';
+      ctx.lineWidth = 1.6;
+      ctx.beginPath();
+      const peakX = 0.65;
+      for (let i = 0; i <= 24; i++) {
+        const u = i / 24; // 0 to 1.2 normalized radius
+        let tVal;
+        if (u < peakX) {
+          tVal = 0.28 + Math.pow(u / peakX, 1.8) * 0.68;
+        } else {
+          tVal = 0.96 * Math.exp(-(u - peakX) * 3.5);
+        }
+        const pxPt = pX + u * pW;
+        const pyPt = pY + pH * (1.0 - tVal * 0.92);
+        if (i === 0) ctx.moveTo(pxPt, pyPt); else ctx.lineTo(pxPt, pyPt);
+      }
+      ctx.stroke();
+
+      // Curve 2: Radical Chemiluminescence CH2O* / OH* (sharp reaction peak at Rf)
+      ctx.strokeStyle = '#38BDF8';
+      ctx.lineWidth = 1.4;
+      ctx.beginPath();
+      for (let i = 0; i <= 24; i++) {
+        const u = i / 24;
+        const diff = (u - peakX) * 7.5;
+        const cVal = Math.exp(-diff * diff) * (this.currentCoolFlame > 0.4 ? 0.95 : 0.75);
+        const pxPt = pX + u * pW;
+        const pyPt = pY + pH * (1.0 - cVal * 0.88);
+        if (i === 0) ctx.moveTo(pxPt, pyPt); else ctx.lineTo(pxPt, pyPt);
+      }
+      ctx.stroke();
+
+      // Legend
+      ctx.font = `500 ${fs(6.5)}`;
+      ctx.fillStyle = '#F97316';
+      ctx.fillText(`■ T(r) ${telemetry.temperatureK}K`, pX + 2, g1Y + g1H - 3.5);
+      ctx.fillStyle = '#38BDF8';
+      ctx.fillText('■ CH₂O*', pX + pW - 36, g1Y + g1H - 3.5);
+
+      // -------------------------------------------------------------
+      // 5. LIVE TECHNIQUE MINI-GRAPH 2: SYMMETRY & FROUDE SCALING
+      // (TECH-08 Spherical IoU / TECH-10 Vertical / TECH-33 Froude)
+      // -------------------------------------------------------------
+      const g2W = Math.min(160, Math.max(128, pw * 0.28));
+      const g2H = 86;
+      const g2X = 12;
+      const g2Y = Math.max(54, Math.min(ph - g2H - 42, ph * 0.50));
+
+      ctx.fillStyle = 'rgba(15, 12, 10, 0.88)';
+      ctx.strokeStyle = 'rgba(56, 189, 248, 0.45)';
+      ctx.lineWidth = 1;
+      if (ctx.roundRect) ctx.roundRect(g2X, g2Y, g2W, g2H, 5); else ctx.rect(g2X, g2Y, g2W, g2H);
+      ctx.fill(); ctx.stroke();
+
+      // Header
+      ctx.fillStyle = 'rgba(56, 189, 248, 0.22)';
+      if (ctx.roundRect) ctx.roundRect(g2X + 5, g2Y + 5, 42, 11, 2); else ctx.rect(g2X + 5, g2Y + 5, 42, 11);
+      ctx.fill();
+      ctx.fillStyle = '#38BDF8';
+      ctx.font = `700 ${fs(7)}`;
+      ctx.fillText('TECH-08', g2X + 8, g2Y + 13.5);
+
+      ctx.fillStyle = '#E2E8F0';
+      ctx.font = `600 ${fs(7.5)}`;
+      ctx.fillText('SYMMETRY & FROUDE', g2X + 52, g2Y + 13.5);
+
+      // Bar 1: Spherical IoU
+      const sphVal = g < 0.08 ? 0.965 : Math.max(0.42, 0.965 - g * 0.52);
+      const b1Y = g2Y + 22;
+      ctx.font = `500 ${fs(6.5)}`;
+      ctx.fillStyle = '#94A3B8';
+      ctx.fillText(`Spherical IoU: ${(sphVal).toFixed(3)}`, g2X + 7, b1Y + 7);
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
+      ctx.fillRect(g2X + 7, b1Y + 9, g2W - 14, 5);
+      ctx.fillStyle = sphVal > 0.85 ? '#10B981' : (sphVal > 0.60 ? '#F59E0B' : '#EF4444');
+      ctx.fillRect(g2X + 7, b1Y + 9, (g2W - 14) * sphVal, 5);
+
+      // Bar 2: Top-Bottom IoU
+      const tbVal = g < 0.08 ? 0.952 : Math.max(0.38, 0.952 - g * 0.54);
+      const b2Y = g2Y + 41;
+      ctx.fillStyle = '#94A3B8';
+      ctx.fillText(`Top-Bottom IoU: ${(tbVal).toFixed(3)}`, g2X + 7, b2Y + 7);
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
+      ctx.fillRect(g2X + 7, b2Y + 9, g2W - 14, 5);
+      ctx.fillStyle = tbVal > 0.85 ? '#10B981' : (tbVal > 0.60 ? '#F59E0B' : '#EF4444');
+      ctx.fillRect(g2X + 7, b2Y + 9, (g2W - 14) * tbVal, 5);
+
+      // Bar 3: Buoyant Velocity ub
+      const ubVal = Math.min(22.0, telemetry.buoyantVelCmS);
+      const b3Y = g2Y + 60;
+      ctx.fillStyle = '#94A3B8';
+      ctx.fillText(`Buoyant ub: ${telemetry.buoyantVelCmS} cm/s`, g2X + 7, b3Y + 7);
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
+      ctx.fillRect(g2X + 7, b3Y + 9, g2W - 14, 5);
+      ctx.fillStyle = '#38BDF8';
+      ctx.fillRect(g2X + 7, b3Y + 9, (g2W - 14) * (ubVal / 22.0), 5);
 
       ctx.restore();
     }
@@ -4068,21 +4345,29 @@ function rank(){
         if (tel.modeLabel.includes('0g')) {
           if (hBadgeH) hBadgeH.textContent = 'TECH-01';
           if (hNameH) hNameH.textContent = 'Absence of Buoyancy';
-          if (hValH) hValH.textContent = '0g Microgravity Spherical Diffusion Mantle (Gr < 10⁻⁴)';
+          if (hValH) hValH.textContent = '0g Spherical Mantle (Gr < 10⁻⁴)';
+        } else if (tel.modeLabel.includes('LUNAR')) {
+          if (hBadgeH) hBadgeH.textContent = 'TECH-33';
+          if (hNameH) hNameH.textContent = 'Lunar Plume Froude Scaling';
+          if (hValH) hValH.textContent = '0.17g Lunar (ub ~ 6.8 cm/s)';
+        } else if (tel.modeLabel.includes('MARTIAN')) {
+          if (hBadgeH) hBadgeH.textContent = 'TECH-33';
+          if (hNameH) hNameH.textContent = 'Martian Plume Scaling';
+          if (hValH) hValH.textContent = '0.38g Martian (ub ~ 10.5 cm/s)';
         } else {
           if (hBadgeH) hBadgeH.textContent = 'TECH-33';
-          if (hNameH) hNameH.textContent = 'Buoyant Plume Froude Scaling';
-          if (hValH) hValH.textContent = `${tel.modeLabel} Plume Regime`;
+          if (hNameH) hNameH.textContent = 'Buoyancy-Driven Plume';
+          if (hValH) hValH.textContent = '1.00g Earth Convective Plume';
         }
 
         if (tel.coolFlame === 'Likely') {
           if (hBadgeTwin) hBadgeTwin.textContent = 'TECH-05';
-          if (hNameTwin) hNameTwin.textContent = 'Cool-Flame Low-Temperature Chemistry';
-          if (hValTwin) hValTwin.textContent = 'Formaldehyde CH₂O* Emission Band (~400-500 nm)';
+          if (hNameTwin) hNameTwin.textContent = 'Cool-Flame Low-T Chemistry';
+          if (hValTwin) hValTwin.textContent = 'CH₂O* Radical Band (~400-500 nm)';
         } else {
           if (hBadgeTwin) hBadgeTwin.textContent = 'TECH-48';
           if (hNameTwin) hNameTwin.textContent = 'NASA Flight Twin Baseline';
-          if (hValTwin) hValTwin.textContent = 'NASA PSI Flight Dataset · 57 Techniques Bounded';
+          if (hValTwin) hValTwin.textContent = 'PSI-98 FLEX / PSI-25 · 57 Techniques';
         }
       }
     });
