@@ -3474,6 +3474,26 @@ def api_get_report(report_id: str) -> dict[str, Any]:
     return json.loads(row["report_json"])
 
 
+@app.api_route("/{full_path:path}", methods=["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS", "HEAD"])
+async def catch_all_debug(request: Request, full_path: str):
+    # If the subpath matches an API route that had /api stripped or modified, route directly!
+    clean_p = full_path.lstrip("/")
+    if clean_p in ("health", "api/health"):
+        return api_health()
+    if clean_p in ("techniques", "api/techniques"):
+        return api_techniques()
+    if clean_p in ("catalog", "api/catalog"):
+        return api_get_catalog()
+    if clean_p in ("nasa-psi/experiments", "api/nasa-psi/experiments"):
+        return api_list_nasa_psi_experiments()
+    return {
+        "status": "unmatched_route",
+        "full_path": full_path,
+        "scope_path": request.scope.get("path"),
+        "raw_path": request.scope.get("raw_path", b"").decode("latin1", errors="replace"),
+    }
+
+
 if __name__ == "__main__":
     import uvicorn
 
