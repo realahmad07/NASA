@@ -1,0 +1,663 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>PyroSage — Microgravity Fire Intelligence</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..500;1,9..144,300..500&family=Hanken+Grotesk:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--paper:#ECE6D8;--card:#F4EFE4;--ink:#16130F;--mute:#6B6355;--rule:rgba(22,19,15,.2);--acc:#B4411F;--c2:#1F4D45;--c3:#B98A2E;--fd:'Fraunces',Georgia,serif;--fb:'Hanken Grotesk',system-ui,sans-serif;--fm:'DM Mono',ui-monospace,Menlo,monospace;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--paper:#15120F;--card:#1D1915;--ink:#EDE6D6;--mute:#A39A88;--rule:rgba(237,230,214,.22);--acc:#E5693F;--c2:#7DB8A8;--c3:#D9A94A}}
+:root[data-theme="dark"]{--paper:#15120F;--card:#1D1915;--ink:#EDE6D6;--mute:#A39A88;--rule:rgba(237,230,214,.22);--acc:#E5693F;--c2:#7DB8A8;--c3:#D9A94A}
+html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 64px)}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:var(--paper);color:var(--ink);font:400 1rem/1.55 var(--fb)}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--paper);z-index:10}
+.k{font:400 .68rem/1.4 var(--fm);letter-spacing:.1em;text-transform:uppercase;color:var(--mute);margin:0}
+:focus-visible{outline:2px solid var(--acc);outline-offset:3px}
+.wrap{max-width:1280px;margin:0 auto;padding:0 clamp(16px,4vw,48px)}
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:9;background:var(--paper);border-bottom:1px solid var(--rule)}
+.top .wrap{display:flex;align-items:center;gap:1.2rem;min-height:60px;flex-wrap:wrap}
+.mark{font:400 1.45rem/1 var(--fd);color:var(--ink);text-decoration:none;letter-spacing:-.02em;margin-right:auto}.mark em{color:var(--acc)}
+nav{display:flex;gap:.2rem;overflow-x:auto;scrollbar-width:none}
+nav button{font:400 .68rem var(--fm);letter-spacing:.08em;text-transform:uppercase;background:none;border:0;color:var(--mute);padding:.6rem .65rem;cursor:pointer;white-space:nowrap;border-bottom:2px solid transparent}
+nav button[aria-current=step]{color:var(--ink);border-color:var(--acc)}
+.ghost{background:none;border:1px solid var(--rule);color:var(--ink);width:36px;height:36px;border-radius:50%;cursor:pointer;font-size:1rem}
+.hero{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(0,.8fr);gap:clamp(24px,5vw,80px);padding:clamp(36px,6vw,88px) 0 clamp(28px,4vw,52px);align-items:end}
+h1{font:300 clamp(2.6rem,7.4vw,6.2rem)/.93 var(--fd);letter-spacing:-.035em;margin:.8rem 0 1.4rem;font-variation-settings:"opsz" 144}
+h1 em{color:var(--acc);font-weight:300}
+.lede{max-width:38rem;font-size:1.08rem;color:var(--mute);margin:0 0 1.8rem}
+.btn{font:500 .74rem var(--fm);letter-spacing:.09em;text-transform:uppercase;background:var(--ink);color:var(--paper);border:1px solid var(--ink);padding:.9rem 1.35rem;cursor:pointer;transition:background .2s,color .2s;text-decoration:none;display:inline-flex;align-items:center;gap:.45rem}
+.btn:hover:not(:disabled){background:var(--acc);border-color:var(--acc);color:#fff}.btn:disabled{opacity:.35;cursor:default}
+.btn.sec{background:none;color:var(--ink);border:1px solid var(--ink)}
+.btn.sec:hover:not(:disabled){background:var(--ink);color:var(--paper)}
+.cta{display:flex;gap:1rem;align-items:center;flex-wrap:wrap}
+.core{margin:0}.core svg{width:100%;max-height:420px;display:block}.bh{animation:fl 3s linear infinite}@keyframes fl{to{stroke-dashoffset:-16}}
+.facts{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--ink)}
+.facts li{padding:1.2rem 1.2rem 1.4rem 0;border-right:1px solid var(--rule)}.facts li+li{padding-left:1.2rem}.facts li:last-child{border:0}
+.facts b{display:block;font:300 clamp(1.8rem,3.4vw,2.8rem)/1 var(--fd);letter-spacing:-.03em;margin-bottom:.4rem}
+#bench{padding:clamp(40px,6vw,80px) 0 80px}
+.bh2{display:flex;justify-content:space-between;align-items:baseline;border-bottom:1px solid var(--ink);padding-bottom:.8rem;margin-bottom:2rem;gap:1rem;flex-wrap:wrap}
+.bh2 h2,.panel h2{font:300 clamp(1.8rem,3.5vw,2.6rem)/1 var(--fd);letter-spacing:-.025em;margin:0}
+.panel h2 span{font:italic 300 1em var(--fd);color:var(--acc)}.panel h2 small{font:400 .75rem var(--fm);color:var(--mute);margin-right:.8rem;letter-spacing:.1em}
+.panel[hidden]{display:none}
+.g2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:clamp(24px,4vw,56px);margin-top:1.4rem}
+.ledger label{display:grid;grid-template-columns:1fr auto;gap:.45rem 1rem;align-items:center;padding:.75rem 0;border-top:1px solid var(--rule)}
+.ledger label>span{font-weight:500}.ledger i{font:400 .68rem var(--fm);color:var(--mute);margin-left:.5rem;font-style:normal}
+input[type=number],input[type=text],.nm{background:var(--card);border:1px solid var(--rule);font:400 .9rem var(--fm);color:var(--ink);padding:.45rem .6rem;border-radius:0}
+input[type=number]{width:8rem;text-align:right}
+input[type=range]{grid-column:1/-1;width:100%;accent-color:var(--acc)}
+select,textarea{background:var(--card);border:1px solid var(--rule);font:400 .88rem var(--fm);color:var(--ink);padding:.48rem .6rem;width:100%}
+.read{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin:1.4rem 0 0;border-top:1px solid var(--ink);padding-top:1rem}
+.read dt{font:400 .64rem var(--fm);letter-spacing:.1em;text-transform:uppercase;color:var(--mute)}.read dd{margin:.3rem 0 0;font:300 1.65rem/1.1 var(--fd);letter-spacing:-.02em}
+.chart,.cardbox{margin:0;background:var(--card);border:1px solid var(--rule);padding:1.2rem}
+.chart svg{width:100%;display:block}
+.row{display:flex;justify-content:space-between;align-items:center;margin-top:2rem;padding-top:1.2rem;border-top:1px solid var(--rule);gap:1rem;flex-wrap:wrap}
+.gate{display:flex;gap:1rem;align-items:center;background:var(--card);border:1px solid var(--rule);border-left:4px solid var(--c3);padding:.85rem 1.1rem;margin:1rem 0;flex-wrap:wrap}
+.gate.ok{border-left-color:var(--c2)}
+.gate b{font:500 .75rem var(--fm);letter-spacing:.08em;text-transform:uppercase}
+.psi-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:1.1rem;margin-top:1.2rem}
+.psi-card{background:var(--card);border:1px solid var(--rule);padding:1.1rem;display:flex;flex-direction:column;justify-content:space-between;gap:.8rem}
+.psi-card.active{border-color:var(--acc);box-shadow:inset 0 0 0 1px var(--acc)}
+.psi-card h3{font:400 1.25rem/1.2 var(--fd);margin:.2rem 0}
+.badge{display:inline-block;font:400 .64rem var(--fm);letter-spacing:.07em;text-transform:uppercase;padding:.2rem .48rem;border:1px solid var(--rule);background:var(--paper);color:var(--ink);margin-right:.3rem;margin-bottom:.3rem}
+.badge.ex{border-color:var(--c2);color:var(--c2)}
+.badge.pa{border-color:var(--c3);color:var(--c3)}
+.badge.sp{border-color:var(--acc);color:var(--acc)}
+.tech-toolbar{display:flex;gap:.75rem;flex-wrap:wrap;align-items:center;margin:1.2rem 0}
+.tech-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:.85rem;max-height:540px;overflow-y:auto;padding-right:.3rem;border-top:1px solid var(--rule);padding-top:1rem}
+.tech-item{background:var(--card);border:1px solid var(--rule);padding:.8rem .9rem;display:flex;flex-direction:column;gap:.4rem;cursor:pointer}
+.tech-item.sel{border-color:var(--acc);background:color-mix(in srgb,var(--card) 90%,var(--acc) 10%)}
+.tech-item header{display:flex;justify-content:space-between;align-items:center;gap:.5rem}
+.tech-item b{font:500 .88rem/1.25 var(--fb)}
+.tech-item p{font-size:.82rem;color:var(--mute);margin:0}
+.w{display:grid;grid-template-columns:repeat(3,1fr);gap:1.4rem;margin:1.4rem 0 .6rem}.w label{font:400 .68rem var(--fm);letter-spacing:.08em;text-transform:uppercase;color:var(--mute);display:block}.w input{width:100%;accent-color:var(--acc)}
+#rank{list-style:none;margin:0;padding:0;border-top:1px solid var(--ink)}
+#rank li{display:grid;grid-template-columns:3rem minmax(0,1.4fr) minmax(0,1fr) 3.4rem 2.4rem;gap:1rem;align-items:center;padding:1.1rem 0;border-bottom:1px solid var(--rule)}
+.rk{font:300 2.6rem/1 var(--fd);letter-spacing:-.04em;color:var(--acc)}#rank h3{font:400 1.35rem/1.15 var(--fd);margin:0 0 .25rem;letter-spacing:-.01em}
+.meter{height:3px;background:var(--rule);position:relative}.meter i{position:absolute;left:0;top:-3px;height:9px;background:var(--ink)}
+.sc{font:300 1.9rem/1 var(--fd);text-align:right}.gr{width:2.1rem;height:2.1rem;border:1px solid var(--ink);border-radius:50%;display:grid;place-items:center;font:500 .8rem var(--fm)}
+table{width:100%;border-collapse:collapse;font:400 .8rem var(--fm);margin-top:.6rem}td,th{text-align:left;padding:.55rem .6rem .55rem 0;border-top:1px solid var(--rule);vertical-align:top}th{color:var(--mute);font-weight:400}
+.note{color:var(--mute);font-size:.92rem;max-width:46rem;margin:.4rem 0 1rem}
+.dropzone{border:1.5px dashed var(--ink);background:var(--card);padding:1.5rem;text-align:center;cursor:pointer;position:relative}
+.dropzone input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+footer{border-top:1px solid var(--ink);padding:1.4rem 0 2.4rem;display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap}
+@media(max-width:860px){.hero,.g2,.facts,.w{grid-template-columns:1fr}.facts li{border:0;border-bottom:1px solid var(--rule);padding-left:0!important}
+#rank li{grid-template-columns:2.4rem 1fr 3rem 2rem}.meter{display:none}}
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap">
+<a class="mark" href="#top">Pyro<em>Sage</em></a>
+<nav aria-label="Workspaces">
+  <button data-go="0" aria-current="step">01 NASA PSI Discovery</button>
+  <button data-go="1">02 Evidence Intake</button>
+  <button data-go="2">03 Techniques (57)</button>
+  <button data-go="3">04 Report &amp; Ranking</button>
+  <button data-go="4">05 Fiction Combustion</button>
+</nav>
+<button class="ghost" id="th" aria-label="Switch light and dark theme">◐</button>
+</div></header>
+
+<main class="wrap" id="top">
+<section class="hero">
+<div>
+<p class="k">NASA PSI · Technique-Bounded Multimodal Combustion Intelligence</p>
+<h1>Read the <em>flame</em> that doesn't rise.</h1>
+<p class="lede">Discover official NASA Physical Sciences Informatics (PSI) investigations, extract calibrated geometric and temporal descriptors from multimodal evidence, constrain SI reasoning to a 57-technique scientific registry, and synthesize fire-safety insights for lunar and Martian exploration.</p>
+<div class="cta">
+  <button class="btn" data-go="0">Explore NASA PSI →</button>
+  <button class="btn sec" data-go="4">Open Fiction Simulator</button>
+  <span class="k" id="healthBadge">Checking API status…</span>
+</div>
+</div>
+<figure class="core" aria-hidden="true"><svg viewBox="0 0 300 420">
+<circle cx="150" cy="140" r="64" fill="#B4411F" opacity=".9"/>
+<circle cx="150" cy="140" r="44" fill="#E5693F"/>
+<circle cx="150" cy="140" r="20" fill="#F2B84B"/>
+<line class="bh" x1="150" y1="36" x2="150" y2="244" stroke="#ECE6D8" stroke-width="1.3" stroke-dasharray="3 5"/>
+<path d="M60 285 Q150 265 240 285" stroke="var(--rule)" fill="none"/>
+<path d="M60 305 Q150 285 240 305" stroke="var(--rule)" fill="none"/>
+<g font-family="DM Mono,monospace" font-size="9" letter-spacing=".8" fill="var(--ink)"><text x="20" y="45">0g · SPHERICAL DIFFUSION</text><text x="20" y="255">57 SCIENTIFIC TECHNIQUES</text><text x="20" y="330">NASA PSI PROVENANCE</text></g>
+<g font-family="DM Mono,monospace" font-size="9" fill="var(--mute)"><text x="215" y="130">PSI-98 / 107</text><text x="215" y="148">PSI-25 / 112</text></g>
+</svg></figure>
+</section>
+
+<ul class="facts">
+<li><b>57</b><p class="k">Registered scientific techniques across 9 families</p></li>
+<li><b>NASA PSI</b><p class="k">Provenance-enforced SQLite experiment cache</p></li>
+<li><b>0.17g / 0.38g</b><p class="k">Lunar &amp; Martian partial-gravity safety context</p></li>
+<li><b>Multimodal</b><p class="k">Image, video, CSV/TSV, spectrum, PDF, DOCX, XLSX</p></li>
+</ul>
+
+<section id="bench">
+<div class="bh2"><h2 id="wsTitle">Workspace</h2><p class="k" id="stp">Workspace 1 of 5</p></div>
+
+<!-- WORKSPACE 0: NASA PSI DISCOVERY -->
+<div class="panel" id="p0">
+<h2><small>01</small>NASA PSI <span>Discovery</span></h2>
+<p class="note">Search the official NASA Physical Sciences Informatics repository (`psi.nasa.gov/physci/repo`) or look up a known PSI accession (`PSI-98`, `PSI-107`, `PSI-25`, `PSI-112`, `PSI-64`, `PSI-41`). Only verified NASA PSI records are admitted to the SQLite catalogue.</p>
+
+<div class="tech-toolbar">
+  <input id="psiQuery" type="text" value="combustion" placeholder="Search keyword (e.g., droplet, PMMA, cool flame)" style="flex:1;min-width:200px">
+  <input id="psiAcc" type="text" placeholder="Accession (e.g., PSI-98)" style="width:11rem">
+  <button class="btn" id="btnPsiSearch">Search PSI</button>
+  <button class="btn sec" id="btnPsiSync">Sync to SQLite Cache</button>
+</div>
+
+<div class="gate ok" id="psiStatusGate">
+  <b>Provenance Policy: NASA PSI Only</b>
+  <span class="note" style="margin:0" id="psiStatusText">Showing verified NASA PSI investigations with official source URLs.</span>
+</div>
+
+<div class="psi-grid" id="psiResults"></div>
+
+<div class="row">
+  <span class="k" id="selectedPsiLabel">Selected investigation: PSI-98 (Flame Extinguishment Experiment)</span>
+  <div class="cta">
+    <button class="btn sec" id="btnRunPsiAnalyze">Analyze Selected PSI Investigation →</button>
+    <button class="btn" data-go="1">Evidence Intake →</button>
+  </div>
+</div>
+</div>
+
+<!-- WORKSPACE 1: EVIDENCE INTAKE -->
+<div class="panel" id="p1" hidden>
+<h2><small>02</small>Evidence <span>Intake</span></h2>
+<p class="note">Upload archival or experimental files (images, video, CSV/TSV, JSON, PDF, DOCX, XLSX) or select a calibrated synthetic specimen. User-uploaded files are tagged as `uploaded_evidence` and never relabelled as NASA data.</p>
+
+<div class="g2">
+  <div>
+    <div class="dropzone" id="dropzone">
+      <input type="file" id="fileInput" multiple accept=".png,.jpg,.jpeg,.bmp,.tif,.tiff,.webp,.mp4,.avi,.mov,.mkv,.webm,.csv,.tsv,.json,.pdf,.docx,.xlsx">
+      <p style="font:400 1.25rem var(--fd);margin:0 0 .4rem">Drop evidence files or click to browse</p>
+      <p class="k">Supports PNG/JPG/TIFF, MP4/AVI/MOV, CSV/TSV, JSON, PDF, DOCX, XLSX (up to 15 MB/file)</p>
+    </div>
+    <div id="fileList" style="margin-top:1rem"></div>
+
+    <div class="cardbox" style="margin-top:1rem">
+      <p class="k" style="margin-bottom:.6rem">Or choose a synthetic test specimen preset</p>
+      <div class="cta">
+        <button class="btn sec preset-btn" data-preset="0g_spherical">0g Spherical Flame</button>
+        <button class="btn sec preset-btn" data-preset="lunar_017g">0.17g Lunar Ellipsoidal</button>
+        <button class="btn sec preset-btn" data-preset="martian_038g">0.38g Martian Plume</button>
+      </div>
+      <p class="k" id="activePresetLabel" style="margin-top:.6rem">Active preset: 0g_spherical (used if no file is uploaded)</p>
+    </div>
+  </div>
+
+  <div>
+    <div class="ledger">
+      <label><span>Gravity level<i>g</i></span><input id="ctxGr" type="number" value="0.00" min="0" max="1" step="0.01"></label>
+      <label><span>Oxygen concentration<i>% O₂</i></span><input id="ctxOx" type="number" value="21.0" min="10" max="50" step="0.5"></label>
+      <label><span>Ambient pressure<i>kPa</i></span><input id="ctxPr" type="number" value="101.3" min="10" max="200" step="0.5"></label>
+      <label><span>Fuel / Material<i>specimen</i></span>
+        <select id="ctxFuel">
+          <option value="heptane">n-Heptane droplet (FLEX / PSI-98)</option>
+          <option value="pmma">Cast PMMA solid (BASS-II / SoFIE / PSI-25)</option>
+          <option value="cotton">Cotton / SIBAL fabric (Saffire / PSI-64)</option>
+          <option value="methanol">Methanol droplet (FLEX-2 / PSI-107)</option>
+          <option value="methane">Gaseous hydrocarbon (ACME / PSI-41)</option>
+        </select>
+      </label>
+      <label><span>Facility / Platform<i>context</i></span>
+        <select id="ctxPlat">
+          <option value="ISS / CIR">ISS Combustion Integrated Rack (CIR)</option>
+          <option value="ISS / MSG">ISS Microgravity Science Glovebox (MSG)</option>
+          <option value="Drop Tower">NASA Glenn 2.2s / 5.2s Drop Tower</option>
+          <option value="Orbital Capsule">Orbital Capsule (Cygnus / Saffire)</option>
+          <option value="Sounding Rocket">Suborbital Sounding Rocket</option>
+        </select>
+      </label>
+      <label><span>SI Provider<i>API</i></span>
+        <select id="ctxProv">
+          <option value="gemini">Google Gemini API (technique-bounded)</option>
+          <option value="openai">OpenAI Responses API (technique-bounded)</option>
+        </select>
+      </label>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <span class="k">Provenance rule: Uploaded files remain operator evidence; PSI matches are retrieval candidates</span>
+  <button class="btn" data-go="2">Select Scientific Techniques (57) →</button>
+</div>
+</div>
+
+<!-- WORKSPACE 2: 57 SCIENTIFIC TECHNIQUES -->
+<div class="panel" id="p2" hidden>
+<h2><small>03</small>Scientific <span>Techniques (57)</span></h2>
+<p class="note">Select the scientific techniques allowed for this analysis run. Each method specifies its supported modalities and prerequisites. Techniques lacking required modalities or specialist solvers will be transparently flagged rather than fabricated.</p>
+
+<div class="tech-toolbar">
+  <select id="techFamilyFilter" style="max-width:260px">
+    <option value="">All 9 scientific families (57)</option>
+  </select>
+  <select id="techModalityFilter" style="max-width:190px">
+    <option value="">All modalities</option>
+    <option value="image">Image</option>
+    <option value="video">Video</option>
+    <option value="table">Numerical Table</option>
+    <option value="spectrum">Spectrum</option>
+    <option value="document">Document</option>
+  </select>
+  <button class="btn sec" id="btnSelectCore">Core Vision &amp; Safety Set</button>
+  <button class="btn sec" id="btnSelectAll">Select All 57</button>
+  <button class="btn sec" id="btnClearTechs">Reset</button>
+  <span class="k" id="techCountLabel">14 of 57 selected</span>
+</div>
+
+<div class="tech-grid" id="techGrid"></div>
+
+<div class="row">
+  <span class="k">Selected techniques form the strict whitelist passed to the SI engine</span>
+  <button class="btn" id="btnRunAnalysis">Run Bounded SI Analysis →</button>
+</div>
+</div>
+
+<!-- WORKSPACE 3: EVIDENCE REPORT & RANKING -->
+<div class="panel" id="p3" hidden>
+<h2><small>04</small>Evidence <span>Report &amp; Ranking</span></h2>
+
+<div class="gate ok" id="reportBanner">
+  <b id="repModeBadge">Ready</b>
+  <span class="note" style="margin:0" id="repSummaryText">Run an analysis from NASA PSI Discovery or Scientific Techniques to populate a full evidence report.</span>
+  <button class="btn sec" id="btnExportJson" style="margin-left:auto" disabled>Export Report JSON</button>
+</div>
+
+<div class="g2">
+  <div class="cardbox">
+    <p class="k">Computed Local Descriptors</p>
+    <table id="descTable">
+      <thead><tr><th>Descriptor</th><th>Measured Value</th><th>Units / Context</th></tr></thead>
+      <tbody><tr><td colspan="3">No descriptors computed yet.</td></tr></tbody>
+    </table>
+  </div>
+  <div class="cardbox">
+    <p class="k">Selected Technique Execution Audit</p>
+    <div id="stateSummaryBadges" style="margin:.6rem 0"></div>
+    <div style="max-height:290px;overflow-y:auto">
+      <table id="techAuditTable">
+        <thead><tr><th>ID</th><th>Technique</th><th>Execution State</th></tr></thead>
+        <tbody><tr><td colspan="3">No techniques evaluated yet.</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div style="margin-top:2.2rem">
+  <p class="k">Multi-Criteria NASA PSI Candidate &amp; Hazard Ranking</p>
+  <div class="w">
+    <div><label for="w0">Flammability severity</label><input id="w0" type="range" min="0" max="100" value="45"></div>
+    <div><label for="w1">Evidence completeness</label><input id="w1" type="range" min="0" max="100" value="30"></div>
+    <div><label for="w2">Lunar / Martian relevance</label><input id="w2" type="range" min="0" max="100" value="25"></div>
+  </div>
+  <ol id="rank"></ol>
+</div>
+
+<div class="g2" style="margin-top:2rem">
+  <div class="cardbox">
+    <p class="k">Bounded Findings &amp; Crew Safety Insights</p>
+    <div id="findingsBox" style="margin-top:.6rem"></div>
+  </div>
+  <div class="cardbox">
+    <p class="k">Uncertainties, Solver Boundaries &amp; Follow-up Data Gaps</p>
+    <div id="gapsBox" style="margin-top:.6rem"></div>
+  </div>
+</div>
+</div>
+
+<!-- WORKSPACE 4: FICTION COMBUSTION (SEPARATE SIMULATOR) -->
+<div class="panel" id="p4" hidden>
+<h2><small>05</small>Fiction <span>Combustion</span></h2>
+<div class="gate">
+  <b>Simulator Notice: Hypothetical Exploration Only</b>
+  <span class="note" style="margin:0">This interactive sandbox is strictly separated from the archival NASA PSI evidence pipeline and must never be cited as experimental NASA data.</span>
+</div>
+<div class="g2"><div>
+<div class="ledger">
+<label><span>Gravity level<i>g</i></span><input id="gr" type="number" value="0" min="0" max="1" step="0.01"></label>
+<label><span>Oxygen concentration<i>%</i></span><input id="ox" type="range" min="15" max="40" value="21"></label>
+<label><span>Cabin pressure<i>kPa</i></span><input id="pr" type="number" value="101" min="10" max="200"></label>
+<label><span>Fuel flow rate<i>mm/s</i></span><input id="fl" type="number" value="2" min="0.1" max="20" step="any"></label>
+<label><span>Material type<i>hypothetical</i></span><select id="mat"><option value="pmma">PMMA (Plexiglass)</option><option value="cotton">Cotton fabric</option><option value="heptane">Heptane liquid</option></select></label>
+</div>
+<dl class="read"><div><dt>Flame regime</dt><dd id="rg">Spherical</dd></div><div><dt>Spread risk</dt><dd id="rk">Low</dd></div><div><dt>Cool flame</dt><dd id="cf">Possible</dd></div></dl>
+</div>
+<figure class="chart"><svg id="fg" viewBox="0 0 600 320" role="img" aria-label="Flame geometry simulation"></svg><figcaption class="k" style="margin-top:.6rem">Hypothetical flame geometry · buoyancy absent below 0.1g · Marangoni flow</figcaption></figure>
+</div>
+</div>
+
+</section>
+</main>
+
+<footer class="wrap">
+  <p class="k">PyroSage · NASA Physical Sciences Informatics (PSI) Research Decision Support</p>
+  <p class="k">Decision support, not a flight-safety certification</p>
+</footer>
+
+<script>
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const panels=$$('.panel'),navb=$$('nav button');
+const wsNames=['NASA PSI Discovery','Evidence Intake','Scientific Techniques (57)','Evidence Report & Ranking','Fiction Combustion (Simulator)'];
+
+function go(n,sc){
+  panels.forEach((p,i)=>p.hidden=i!==n);
+  navb.forEach((b,i)=>b.setAttribute('aria-current',i===n?'step':'false'));
+  $('#stp').textContent=`Workspace ${n+1} of 5 · ${wsNames[n]}`;
+  if(sc!==false)$('#bench').scrollIntoView({behavior:matchMedia('(prefers-reduced-motion:reduce)').matches?'auto':'smooth'});
+}
+$$('[data-go]').forEach(b=>b.addEventListener('click',()=>{if(!b.disabled)go(+b.dataset.go)}));
+go(0,false);
+
+$('#th').onclick=()=>{
+  const r=document.documentElement;
+  const d=r.dataset.theme?r.dataset.theme==='dark':matchMedia('(prefers-color-scheme:dark)').matches;
+  r.dataset.theme=d?'light':'dark';
+};
+
+// State
+let allTechniques=[];
+let selectedTechIds=new Set(['T01','T02','T04','T05','T08','T09','T10','T12','T13','T14','T16','T40','T44','T52','T53','T56','T57']);
+let psiExperiments=[];
+let selectedPsiAccession='PSI-98';
+let activePreset='0g_spherical';
+let currentReport=null;
+
+async function initApp(){
+  try{
+    const h=await fetch('/api/health').then(r=>r.json());
+    $('#healthBadge').textContent=`API Ready · ${h.technique_count} techniques · ${h.cached_psi_experiments} PSI records`;
+  }catch(e){
+    $('#healthBadge').textContent='Offline preview mode';
+  }
+  await loadPsiExperiments();
+  await loadTechniques();
+  await runPsiAnalysis('PSI-98',false);
+}
+
+async function loadPsiExperiments(q='',acc=''){
+  try{
+    const params=new URLSearchParams();
+    if(q)params.set('q',q);
+    if(acc)params.set('accession',acc);
+    const data=await fetch('/api/nasa-psi/search?'+params.toString()).then(r=>r.json());
+    psiExperiments=data.results||[];
+    $('#psiStatusText').textContent=`Retrieved ${psiExperiments.length} verified NASA PSI investigation(s) from ${data.repository_url}`;
+    renderPsiCards();
+  }catch(e){
+    $('#psiStatusText').textContent='Error querying NASA PSI endpoint: '+e.message;
+  }
+}
+
+function renderPsiCards(){
+  const box=$('#psiResults');
+  if(!psiExperiments.length){
+    box.innerHTML='<p class="note">No matching NASA PSI investigations found.</p>';
+    return;
+  }
+  box.innerHTML=psiExperiments.map(exp=>{
+    const act=exp.accession===selectedPsiAccession?'active':'';
+    const fuels=(exp.fuels||[]).map(f=>`<span class="badge">${f}</span>`).join('');
+    const mods=(exp.modalities||[]).map(m=>`<span class="badge ex">${m}</span>`).join('');
+    return `<article class="psi-card ${act}" data-acc="${exp.accession}">
+      <div>
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <span class="badge sp">${exp.accession}</span>
+          <span class="k">${exp.platform} · ${exp.gravity_regime}</span>
+        </div>
+        <h3>${exp.title}</h3>
+        <p class="note" style="font-size:.82rem;margin:.4rem 0">${exp.summary}</p>
+        <div>${fuels}${mods}</div>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--rule);padding-top:.6rem">
+        <a href="${exp.source_url}" target="_blank" rel="noopener" class="k" style="color:var(--acc)">Official PSI Record ↗</a>
+        <button class="btn sec select-psi-btn" data-acc="${exp.accession}" style="padding:.45rem .8rem;font-size:.66rem">Select ${exp.accession}</button>
+      </div>
+    </article>`;
+  }).join('');
+
+  $$('.select-psi-btn').forEach(btn=>btn.addEventListener('click',e=>{
+    e.stopPropagation();
+    selectedPsiAccession=btn.dataset.acc;
+    const found=psiExperiments.find(x=>x.accession===selectedPsiAccession);
+    $('#selectedPsiLabel').textContent=`Selected investigation: ${selectedPsiAccession} (${found?found.title:''})`;
+    renderPsiCards();
+  }));
+}
+
+$('#btnPsiSearch').onclick=()=>loadPsiExperiments($('#psiQuery').value.trim(),$('#psiAcc').value.trim());
+$('#btnPsiSync').onclick=async()=>{
+  const q=$('#psiQuery').value.trim()||'combustion';
+  const res=await fetch('/api/nasa-psi/sync',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({query:q})}).then(r=>r.json());
+  $('#psiStatusText').textContent=`Synced ${res.synced_count} verified NASA PSI investigation(s) into local SQLite cache.`;
+  await loadPsiExperiments(q,'');
+};
+
+$('#btnRunPsiAnalyze').onclick=()=>runPsiAnalysis(selectedPsiAccession,true);
+
+async function runPsiAnalysis(accession,switchTab=true){
+  const res=await fetch('/api/nasa-psi/analyze',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({
+      accession,
+      technique_ids:[...selectedTechIds],
+      gravity_g:+$('#ctxGr').value,
+      oxygen_pct:+$('#ctxOx').value,
+      pressure_kpa:+$('#ctxPr').value,
+      fuel:$('#ctxFuel').value,
+      provider:$('#ctxProv').value
+    })
+  });
+  if(res.ok){
+    currentReport=await res.json();
+    renderReport(currentReport);
+    if(switchTab)go(3);
+  }
+}
+
+// Evidence intake
+$('#fileInput').addEventListener('change',()=>{
+  const files=[...$('#fileInput').files];
+  if(!files.length){$('#fileList').innerHTML='';return;}
+  $('#fileList').innerHTML=files.map(f=>`<div class="badge ex">${f.name} (${(f.size/1024).toFixed(1)} KB)</div>`).join(' ');
+});
+
+$$('.preset-btn').forEach(b=>b.addEventListener('click',()=>{
+  activePreset=b.dataset.preset;
+  $('#activePresetLabel').textContent=`Active preset: ${activePreset}`;
+  if(activePreset==='0g_spherical')$('#ctxGr').value='0.00';
+  if(activePreset==='lunar_017g')$('#ctxGr').value='0.17';
+  if(activePreset==='martian_038g')$('#ctxGr').value='0.38';
+}));
+
+// Load 57 Techniques
+async function loadTechniques(){
+  const data=await fetch('/api/techniques').then(r=>r.json());
+  allTechniques=data.techniques||[];
+  const famSel=$('#techFamilyFilter');
+  (data.families||[]).forEach(f=>{
+    const opt=document.createElement('option');
+    opt.value=f.name;
+    opt.textContent=`${f.name} (${f.count})`;
+    famSel.appendChild(opt);
+  });
+  renderTechniques();
+}
+
+function renderTechniques(){
+  const fam=$('#techFamilyFilter').value.toLowerCase();
+  const mod=$('#techModalityFilter').value.toLowerCase();
+  const filtered=allTechniques.filter(t=>{
+    if(fam && t.group.toLowerCase()!==fam)return false;
+    if(mod && !t.supported_modalities.map(m=>m.toLowerCase()).includes(mod))return false;
+    return true;
+  });
+  $('#techCountLabel').textContent=`${selectedTechIds.size} of ${allTechniques.length} selected`;
+  $('#techGrid').innerHTML=filtered.map(t=>{
+    const sel=selectedTechIds.has(t.id);
+    const mods=t.supported_modalities.map(m=>`<span class="badge">${m}</span>`).join('');
+    return `<article class="tech-item ${sel?'sel':''}" data-tid="${t.id}">
+      <header>
+        <span class="badge sp">${t.id}</span>
+        <span class="k">${t.group}</span>
+      </header>
+      <b>${t.name}</b>
+      <p>${t.description}</p>
+      <div>${mods}</div>
+      <p class="k" style="font-size:.6rem">Prereq: ${(t.prerequisites||[]).join('; ')}</p>
+    </article>`;
+  }).join('');
+
+  $$('.tech-item').forEach(el=>el.addEventListener('click',()=>{
+    const tid=el.dataset.tid;
+    if(selectedTechIds.has(tid))selectedTechIds.delete(tid);
+    else selectedTechIds.add(tid);
+    renderTechniques();
+  }));
+}
+
+$('#techFamilyFilter').onchange=renderTechniques;
+$('#techModalityFilter').onchange=renderTechniques;
+$('#btnSelectAll').onclick=()=>{allTechniques.forEach(t=>selectedTechIds.add(t.id));renderTechniques();};
+$('#btnClearTechs').onclick=()=>{selectedTechIds.clear();['T01','T08','T09','T10','T52','T53','T56'].forEach(id=>selectedTechIds.add(id));renderTechniques();};
+$('#btnSelectCore').onclick=()=>{
+  selectedTechIds=new Set(['T01','T02','T04','T05','T08','T09','T10','T11','T12','T13','T14','T15','T16','T17','T40','T44','T45','T51','T52','T53','T56','T57']);
+  renderTechniques();
+};
+
+$('#btnRunAnalysis').onclick=async()=>{
+  const fd=new FormData();
+  const files=[...$('#fileInput').files];
+  files.forEach(f=>fd.append('files',f));
+  fd.append('technique_ids',JSON.stringify([...selectedTechIds]));
+  fd.append('gravity_g',$('#ctxGr').value);
+  fd.append('oxygen_pct',$('#ctxOx').value);
+  fd.append('pressure_kpa',$('#ctxPr').value);
+  fd.append('fuel',$('#ctxFuel').value);
+  fd.append('platform',$('#ctxPlat').value);
+  fd.append('provider',$('#ctxProv').value);
+  fd.append('sample_preset',activePreset);
+
+  $('#btnRunAnalysis').disabled=true;
+  $('#btnRunAnalysis').textContent='Running Bounded SI Pipeline…';
+  try{
+    const res=await fetch('/api/analyze',{method:'POST',body:fd});
+    if(res.ok){
+      currentReport=await res.json();
+      renderReport(currentReport);
+      go(3);
+    }
+  }finally{
+    $('#btnRunAnalysis').disabled=false;
+    $('#btnRunAnalysis').textContent='Run Bounded SI Analysis →';
+  }
+};
+
+function renderReport(rep){
+  if(!rep)return;
+  $('#repModeBadge').textContent=`Report ${rep.report_id} · ${rep.workflow_mode}`;
+  $('#repSummaryText').textContent=rep.si_interpretation.summary;
+  $('#btnExportJson').disabled=false;
+  $('#btnExportJson').onclick=()=>{
+    window.open(`/api/report/${rep.report_id}`,'_blank');
+  };
+
+  // Descriptors table
+  const ev=(rep.evidence_inventory||[])[0]||{};
+  const units=ev.units||{};
+  const skipKeys=new Set(['units','bounding_box','mean_rgb','spectral_analysis','numeric_summaries','calibration_note','excerpt']);
+  const rows=Object.entries(ev).filter(([k])=>!skipKeys.has(k)).slice(0,18).map(([k,v])=>{
+    const valStr=typeof v==='object'?JSON.stringify(v):String(v);
+    return `<tr><td>${k}</td><td><b>${valStr}</b></td><td>${units[k]||'metadata'}</td></tr>`;
+  }).join('');
+  $('#descTable tbody').innerHTML=rows||'<tr><td colspan="3">No descriptors available.</td></tr>';
+
+  // Technique states
+  const assessments=rep.technique_assessments||[];
+  const counts={};
+  assessments.forEach(a=>{counts[a.state]=(counts[a.state]||0)+1;});
+  $('#stateSummaryBadges').innerHTML=Object.entries(counts).map(([st,c])=>{
+    const cls=st==='Executed'?'ex':(st==='Partially executed'?'pa':'sp');
+    return `<span class="badge ${cls}">${st}: ${c}</span>`;
+  }).join(' ');
+
+  $('#techAuditTable tbody').innerHTML=assessments.map(a=>{
+    const cls=a.state==='Executed'?'ex':(a.state==='Partially executed'?'pa':'sp');
+    return `<tr><td>${a.id}</td><td><b>${a.name}</b><br><span style="color:var(--mute);font-size:.72rem">${a.rationale}</span></td><td><span class="badge ${cls}">${a.state}</span></td></tr>`;
+  }).join('');
+
+  // Findings & Safety Insights
+  const findings=(rep.si_interpretation.findings||[]).map(f=>`
+    <div style="border-top:1px solid var(--rule);padding:.65rem 0">
+      <span class="badge ex">${f.evidence_class}</span>
+      ${(f.technique_ids||[]).map(t=>`<span class="badge">${t}</span>`).join('')}
+      <h4 style="margin:.3rem 0;font:500 .95rem var(--fb)">${f.title}</h4>
+      <p style="margin:.2rem 0;font-size:.86rem">${f.interpretation}</p>
+      <p class="k" style="font-size:.62rem">Ref: ${f.evidence_reference}</p>
+    </div>
+  `).join('');
+  const insights=(rep.si_interpretation.safety_insights||[]).map(s=>`
+    <div style="border-top:1px solid var(--rule);padding:.65rem 0">
+      <span class="badge sp">${s.category}</span>
+      <p style="margin:.25rem 0;font-size:.86rem">${s.insight}</p>
+      <p class="k" style="font-size:.62rem">Provenance: ${s.evidence_link}</p>
+    </div>
+  `).join('');
+  $('#findingsBox').innerHTML=findings+insights;
+
+  // Hypotheses & Data Gaps
+  const hyps=(rep.si_interpretation.hypotheses||[]).map(h=>`<p style="font-size:.86rem"><span class="badge pa">Hypothesis</span> ${h}</p>`).join('');
+  const gaps=(rep.si_interpretation.data_gaps||[]).map(g=>`<li style="margin-bottom:.45rem;font-size:.85rem;color:var(--mute)">${g}</li>`).join('');
+  $('#gapsBox').innerHTML=`${hyps}<ul style="padding-left:1.1rem">${gaps}</ul>`;
+
+  renderRanking();
+}
+
+function renderRanking(){
+  if(!currentReport||!currentReport.ranked_findings)return;
+  const w=[0,1,2].map(i=>+$('#w'+i).value);
+  const t=w.reduce((a,b)=>a+b,0)||1;
+  const items=currentReport.ranked_findings.map(rf=>{
+    const sc=100*(w[0]*rf.flammability_severity+w[1]*rf.evidence_completeness+w[2]*rf.mission_relevance)/t;
+    const gr=sc>=80?'A':(sc>=68?'B':(sc>=52?'C':'D'));
+    return {...rf,sc,gr};
+  }).sort((a,b)=>b.sc-a.sc);
+
+  $('#rank').innerHTML=items.map((x,i)=>`<li>
+    <span class="rk">${i+1}</span>
+    <div>
+      <h3><a href="${x.source_url}" target="_blank" rel="noopener" style="color:inherit;text-decoration:none">${x.accession} · ${x.title} ↗</a></h3>
+      <p class="k">${x.platform} · ${x.flag}</p>
+    </div>
+    <div class="meter"><i style="width:${Math.min(100,Math.round(x.sc))}%"></i></div>
+    <b class="sc">${Math.round(x.sc)}</b>
+    <span class="gr" title="Confidence grade">${x.gr}</span>
+  </li>`).join('');
+}
+[0,1,2].forEach(i=>$('#w'+i).addEventListener('input',renderRanking));
+
+// FICTION COMBUSTION SIMULATOR (Preserved separately in Workspace 05)
+function drawFlame(){
+  const g=+$('#gr').value,ox=+$('#ox').value,pr=+$('#pr').value,fl=+$('#fl').value,mat=$('#mat').value;
+  const cx=300,cy=160;
+  let h=80*(1+ox/50)*(pr/101)*(fl/2),w=60*(1-g*0.7);
+  if(g<0.05){w=h*0.9;}else if(g<0.3){w=h*0.6;}else{w=h*0.3;}
+  let path='';
+  if(g<0.1){path=`M${cx} ${cy-h} Q${cx+w} ${cy} ${cx} ${cy+h} Q${cx-w} ${cy} ${cx} ${cy-h}`;}
+  else{path=`M${cx-w/2} ${cy+h/2} Q${cx-w*0.3} ${cy-h*0.3} ${cx} ${cy-h} Q${cx+w*0.3} ${cy-h*0.3} ${cx+w/2} ${cy+h/2} Q${cx} ${cy+h*0.7} ${cx-w/2} ${cy+h/2}`;}
+  $('#fg').innerHTML=`<path d="${path}" fill="#B4411F" opacity=".3"/><path d="${path}" fill="none" stroke="var(--acc)" stroke-width="2"/><circle cx="${cx}" cy="${cy}" r="4" fill="var(--ink)"/><text x="${cx+10}" y="${cy-10}" font-family="DM Mono" font-size="10">T∞ ${500+ox*10}K</text><text x="20" y="30" font-family="DM Mono" font-size="11">FICTION SIMULATOR · g=${g} · ${ox}% O₂ · ${pr}kPa</text>`;
+  $('#rg').textContent=g<0.05?'Spherical':g<0.3?'Ellipsoidal':'Teardrop';
+  $('#rk').textContent=(ox>30&&mat==='cotton')?'High':(g>0.2?'Medium':'Low');
+  $('#cf').textContent=(mat==='heptane'&&ox<25)?'Likely':'Possible';
+}
+['gr','ox','pr','fl','mat'].forEach(i=>$('#'+i).addEventListener('input',drawFlame));
+drawFlame();
+initApp();
+</script>
+</body>
+</html>

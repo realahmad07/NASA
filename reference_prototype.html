@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>PyroSage — Microgravity Fire Intelligence</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..500;1,9..144,300..500&family=Hanken+Grotesk:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--paper:#ECE6D8;--card:#F4EFE4;--ink:#16130F;--mute:#6B6355;--rule:rgba(22,19,15,.2);--acc:#B4411F;--c2:#1F4D45;--c3:#B98A2E;--fd:'Fraunces',Georgia,serif;--fb:'Hanken+Grotesk',system-ui,sans-serif;--fm:'DM Mono',ui-monospace,Menlo,monospace;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--paper:#15120F;--card:#1D1915;--ink:#EDE6D6;--mute:#A39A88;--rule:rgba(237,230,214,.22);--acc:#E5693F;--c2:#7DB8A8;--c3:#D9A94A}}
+:root[data-theme="dark"]{--paper:#15120F;--card:#1D1915;--ink:#EDE6D6;--mute:#A39A88;--rule:rgba(237,230,214,.22);--acc:#E5693F;--c2:#7DB8A8;--c3:#D9A94A}
+html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 64px)}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:var(--paper);color:var(--ink);font:400 1rem/1.55 var(--fb)}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--paper);z-index:10}
+.k{font:400 .68rem/1.4 var(--fm);letter-spacing:.1em;text-transform:uppercase;color:var(--mute);margin:0}
+:focus-visible{outline:2px solid var(--acc);outline-offset:3px}
+.wrap{max-width:1240px;margin:0 auto;padding:0 clamp(16px,4vw,48px)}
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:9;background:var(--paper);border-bottom:1px solid var(--rule)}
+.top .wrap{display:flex;align-items:center;gap:1.5rem;height:60px}
+.mark{font:400 1.45rem/1 var(--fd);color:var(--ink);text-decoration:none;letter-spacing:-.02em;margin-right:auto}.mark em{color:var(--acc)}
+nav{display:flex;gap:.2rem;overflow-x:auto;scrollbar-width:none}
+nav button{font:400 .7rem var(--fm);letter-spacing:.08em;text-transform:uppercase;background:none;border:0;color:var(--mute);padding:.6rem .7rem;cursor:pointer;white-space:nowrap;border-bottom:2px solid transparent}
+nav button[aria-current=step]{color:var(--ink);border-color:var(--acc)}
+.ghost{background:none;border:1px solid var(--rule);color:var(--ink);width:36px;height:36px;border-radius:50%;cursor:pointer;font-size:1rem}
+.hero{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(0,.8fr);gap:clamp(24px,5vw,80px);padding:clamp(40px,8vw,110px) 0 clamp(32px,5vw,64px);align-items:end}
+h1{font:300 clamp(2.7rem,8.2vw,7rem)/.92 var(--fd);letter-spacing:-.035em;margin:1rem 0 1.6rem;font-variation-settings:"opsz" 144}
+h1 em{color:var(--acc);font-weight:300}
+.lede{max-width:34rem;font-size:1.12rem;color:var(--mute);margin:0 0 2rem}
+.btn{font:500 .76rem var(--fm);letter-spacing:.09em;text-transform:uppercase;background:var(--ink);color:var(--paper);border:0;padding:1.05rem 1.5rem;cursor:pointer;transition:background .2s}
+.btn:hover:not(:disabled){background:var(--acc);color:#fff}.btn:disabled{opacity:.35;cursor:default}
+.cta{display:flex;gap:1.4rem;align-items:center;flex-wrap:wrap}
+.core{margin:0}.core svg{width:100%;max-height:520px;display:block}.bh{animation:fl 3s linear infinite}@keyframes fl{to{stroke-dashoffset:-16}}
+.facts{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid var(--ink)}
+.facts li{padding:1.3rem 1.5rem 1.6rem 0;border-right:1px solid var(--rule)}.facts li+li{padding-left:1.5rem}.facts li:last-child{border:0}
+.facts b{display:block;font:300 clamp(2rem,4vw,3.4rem)/1 var(--fd);letter-spacing:-.03em;margin-bottom:.5rem}
+#bench{padding:clamp(48px,8vw,100px) 0 80px}
+.bh2{display:flex;justify-content:space-between;align-items:baseline;border-bottom:1px solid var(--ink);padding-bottom:.8rem;margin-bottom:2rem}
+.bh2 h2,.panel h2{font:300 clamp(1.8rem,3.6vw,2.8rem)/1 var(--fd);letter-spacing:-.025em;margin:0}
+.panel h2 span{font:italic 300 1em var(--fd);color:var(--acc)}.panel h2 small{font:400 .75rem var(--fm);color:var(--mute);margin-right:.8rem;letter-spacing:.1em}
+.panel[hidden]{display:none}
+.g2{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:clamp(24px,5vw,72px);margin-top:1.6rem}
+.ledger label{display:grid;grid-template-columns:1fr auto;gap:.5rem 1rem;align-items:end;padding:.85rem 0;border-top:1px solid var(--rule)}
+.ledger label>span{font-weight:500}.ledger i{font:400 .7rem var(--fm);color:var(--mute);margin-left:.6rem;font-style:normal}
+input[type=number],.nm{background:none;border:0;border-bottom:1px solid var(--ink);font:500 1.05rem var(--fm);color:var(--ink);padding:.3rem 0;width:7.5rem;text-align:right;border-radius:0}
+input[type=range]{grid-column:1/-1;width:100%;accent-color:var(--acc)}
+select{background:var(--card);border:1px solid var(--rule);font:500 .9rem var(--fm);color:var(--ink);padding:.4rem;width:100%}
+.read{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin:1.6rem 0 0;border-top:1px solid var(--ink);padding-top:1rem}
+.read dt{font:400 .64rem var(--fm);letter-spacing:.1em;text-transform:uppercase;color:var(--mute)}.read dd{margin:.3rem 0 0;font:300 1.8rem/1.1 var(--fd);letter-spacing:-.02em}
+.chart{margin:0;background:var(--card);border:1px solid var(--rule);padding:1.2rem 1.2rem .8rem}.chart svg{width:100%;display:block}
+.chart text{font:400 11px var(--fm);fill:var(--mute)}
+.row{display:flex;justify-content:space-between;align-items:center;margin-top:2.2rem;padding-top:1.2rem;border-top:1px solid var(--rule)}
+.plates{display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(12px,2vw,28px);margin-top:1.8rem}
+.plate{position:relative;display:flex;flex-direction:column;justify-content:flex-end;aspect-ratio:4/5;background:var(--card) center/cover;border:1px solid var(--rule);padding:.7rem;color:var(--mute);cursor:pointer;overflow:hidden}
+.plate::before,.plate::after{content:"";position:absolute;width:14px;height:14px;border:1.5px solid var(--ink)}.plate::before{top:6px;left:6px;border-right:0;border-bottom:0}.plate::after{bottom:6px;right:6px;border-left:0;border-top:0}
+.plate input{position:absolute;inset:0;opacity:0;width:100%;height:100%;cursor:pointer}
+.plate b{font:400 1.7rem/1 var(--fd);color:var(--ink)}.plate span{font:400 .64rem var(--fm);letter-spacing:.08em;text-transform:uppercase}
+.plate.has b,.plate.has span{color:#fff;text-shadow:0 1px 6px rgba(0,0,0,.6)}
+.plate:not(.has){background-image:repeating-linear-gradient(135deg,transparent 0 9px,var(--rule) 9px 10px)}
+.nm{width:100%;text-align:left;margin-top:.8rem;font:500 .95rem var(--fb)}
+.seg{display:flex;margin-top:.7rem;border:1px solid var(--rule)}.seg button{flex:1;font:400 .58rem var(--fm);letter-spacing:.06em;text-transform:uppercase;background:none;border:0;padding:.5rem 0;color:var(--mute);cursor:pointer}
+.seg button[aria-pressed=true]{background:var(--ink);color:var(--paper)}
+.big{font:300 clamp(4rem,11vw,9rem)/.9 var(--fd);letter-spacing:-.05em}.big small{font-size:.28em;color:var(--mute);letter-spacing:0;margin-left:.4rem}
+.bar{height:6px;background:var(--rule);margin:1.2rem 0 1.6rem}.bar i{display:block;height:100%;width:0;background:var(--acc);transition:width .1s}
+.stages{list-style:none;margin:0;padding:0;counter-reset:s}.stages li{counter-increment:s;display:grid;grid-template-columns:2.2rem 1fr auto;padding:.9rem 0;border-top:1px solid var(--rule);color:var(--mute)}
+.stages li::before{content:counter(s,decimal-leading-zero);font:400 .72rem var(--fm);padding-top:.2rem}.stages li::after{content:"waiting";font:400 .64rem var(--fm);letter-spacing:.08em;text-transform:uppercase}
+.stages li.now{color:var(--ink)}.stages li.now::after{content:"running";color:var(--acc)}.stages li.done{color:var(--ink)}.stages li.done::after{content:"done";color:var(--c2)}
+.log{font:400 .72rem/1.7 var(--fm);color:var(--mute);height:7.2rem;overflow:hidden;margin-top:1rem;border-top:1px solid var(--rule);padding-top:.7rem}
+.gate{display:flex;gap:1rem;align-items:center;background:var(--card);border:1px solid var(--rule);border-left:4px solid var(--c3);padding:.9rem 1.1rem;margin-top:1.6rem}
+.gate b{font:500 .8rem var(--fm);letter-spacing:.08em;text-transform:uppercase}
+.w{display:grid;grid-template-columns:repeat(3,1fr);gap:1.6rem;margin:1.6rem 0 .6rem}.w label{font:400 .68rem var(--fm);letter-spacing:.08em;text-transform:uppercase;color:var(--mute);display:block}.w input{width:100%;accent-color:var(--acc)}
+#rank{list-style:none;margin:0;padding:0;border-top:1px solid var(--ink)}
+#rank li{display:grid;grid-template-columns:3.2rem minmax(0,1.3fr) minmax(0,1fr) 3.4rem 2.4rem;gap:1rem;align-items:center;padding:1.2rem 0;border-bottom:1px solid var(--rule)}
+.rk{font:300 3rem/1 var(--fd);letter-spacing:-.04em;color:var(--acc)}#rank h3{font:400 1.5rem/1.1 var(--fd);margin:0 0 .3rem;letter-spacing:-.01em}
+.meter{height:2px;background:var(--rule);position:relative}.meter i{position:absolute;left:0;top:-3px;height:8px;background:var(--ink)}
+.sc{font:300 2.1rem/1 var(--fd);text-align:right}.gr{width:2.1rem;height:2.1rem;border:1px solid var(--ink);border-radius:50%;display:grid;place-items:center;font:500 .8rem var(--fm)}
+details{margin-top:2rem;border-top:1px solid var(--ink)}summary{font:400 .74rem var(--fm);letter-spacing:.1em;text-transform:uppercase;padding:1rem 0;cursor:pointer}
+table{width:100%;border-collapse:collapse;font:400 .82rem var(--fm)}td,th{text-align:left;padding:.55rem .6rem .55rem 0;border-top:1px solid var(--rule)}th{color:var(--mute);font-weight:400}
+.note{color:var(--mute);font-size:.9rem;max-width:40rem}
+footer{border-top:1px solid var(--ink);padding:1.4rem 0 2.4rem;display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap}
+@media(max-width:860px){.hero,.g2{grid-template-columns:1fr}.core svg{max-height:260px}.plates{grid-template-columns:repeat(2,1fr)}.facts{grid-template-columns:1fr}.facts li{border:0;border-bottom:1px solid var(--rule);padding-left:0!important}
+#rank li{grid-template-columns:2.4rem 1fr 3rem 2rem}.meter{display:none}.top nav{display:none}.w{grid-template-columns:1fr}.rk{font-size:2.2rem}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap">
+<a class="mark" href="#top">Pyro<em>Sage</em></a>
+<nav aria-label="Workflow"><button data-go="0">01 Environment</button><button data-go="1">02 Specimens</button><button data-go="2">03 Analyze</button><button data-go="3">04 Ranking</button></nav>
+<button class="ghost" id="th" aria-label="Switch light and dark theme">◐</button>
+</div></header>
+
+<main class="wrap" id="top">
+<section class="hero">
+<div>
+<p class="k">NASA PSI · microgravity combustion · fire safety</p>
+<h1>Read the <em>flame</em> that doesn't rise.</h1>
+<p class="lede">Input mission parameters or upload flame imagery, and PyroSage ranks fire hazards for lunar and Martian missions using decades of microgravity combustion data.</p>
+<div class="cta"><button class="btn" data-go="0" data-scroll>Open the bench →</button><p class="k">Decision support, not flight certification</p></div>
+</div>
+<figure class="core" aria-hidden="true"><svg viewBox="0 0 300 480">
+<circle cx="150" cy="140" r="60" fill="#B4411F" opacity=".9"/>
+<circle cx="150" cy="140" r="42" fill="#E5693F"/>
+<circle cx="150" cy="140" r="18" fill="#F2B84B"/>
+<line class="bh" x1="150" y1="40" x2="150" y2="240" stroke="#ECE6D8" stroke-width="1.3" stroke-dasharray="3 5"/>
+<path d="M60 300 Q150 280 240 300" stroke="var(--rule)" fill="none"/>
+<path d="M60 320 Q150 300 240 320" stroke="var(--rule)" fill="none"/>
+<g font-family="DM Mono,monospace" font-size="9" letter-spacing=".8" fill="var(--ink)"><text x="20" y="50">0g · SPHERICAL</text><text x="20" y="260">DIFFUSION</text><text x="20" y="340">MARANGONI</text></g>
+<g font-family="DM Mono,monospace" font-size="9" fill="var(--mute)"><text x="230" y="130">T∞</text><text x="230" y="150">500K</text></g>
+</svg></figure>
+</section>
+<ul class="facts">
+<li><b>36+ yrs</b><p class="k">NASA microgravity fire experiments (FLEX, SoFIE, CIR)</p></li>
+<li><b>0.17g / 0.38g</b><p class="k">Lunar / Martian gravity environments to model</p></li>
+<li><b>One image</b><p class="k">Flame photo that reveals its physics</p></li>
+</ul>
+
+<section id="bench">
+<div class="bh2"><h2>The bench</h2><p class="k" id="stp">Step 1 of 4</p></div>
+
+<!-- STEP 0: FICTION COMBUSTION -->
+<div class="panel" id="p0">
+<h2><small>01</small>Fiction <span>Combustion</span></h2>
+<p class="note">Test hypothetical fire scenarios. Adjust parameters to see how flames behave across gravity levels using NASA combustion physics.</p>
+<div class="g2"><div>
+<div class="ledger">
+<label><span>Gravity level<i>g</i></span><input id="gr" type="number" value="0" min="0" max="1" step="0.01"></label>
+<label><span>Oxygen concentration<i>%</i></span><input id="ox" type="range" min="15" max="40" value="21"></label>
+<label><span>Cabin pressure<i>kPa</i></span><input id="pr" type="number" value="101" min="10" max="200"></label>
+<label><span>Fuel flow rate<i>mm/s</i></span><input id="fl" type="number" value="2" min="0.1" max="20" step="any"></label>
+<label><span>Material type<i>PSI dataset</i></span><select id="mat"><option value="pmma">PMMA (Plexiglass)</option><option value="cotton">Cotton fabric</option><option value="heptane">Heptane liquid</option></select></label>
+</div>
+<dl class="read"><div><dt>Flame regime</dt><dd id="rg">Spherical</dd></div><div><dt>Spread risk</dt><dd id="rk">Low</dd></div><div><dt>Cool flame</dt><dd id="cf">Possible</dd></div></dl>
+</div>
+<figure class="chart"><svg id="fg" viewBox="0 0 600 320" role="img" aria-label="Flame geometry simulation"></svg><figcaption class="k" style="margin-top:.6rem">Predicted flame shape · symmetry analysis · fractal boundary</figcaption></figure>
+</div>
+<div class="row"><span class="k">Physics: buoyancy absent below 0.1g · Marangoni flow dominates</span><button class="btn" data-go="1">Specimens →</button></div>
+</div>
+
+<!-- STEP 1: SPECIMENS -->
+<div class="panel" id="p1" hidden>
+<h2><small>02</small>The <span>specimens</span></h2>
+<p class="note">Upload flame images from experiments or missions. Up to four. AI extracts geometric signatures (symmetry, fractal dimension, centroid jitter).</p>
+<div class="plates" id="plates"></div>
+<div class="row"><button class="btn" id="demo" style="background:none;color:var(--ink);border:1px solid var(--ink)">Load NASA samples</button><button class="btn" data-go="2">Analyze →</button></div>
+</div>
+
+<!-- STEP 2: ANALYSIS -->
+<div class="panel" id="p2" hidden>
+<h2><small>03</small>The <span>analysis</span></h2>
+<p class="note">SI engine applies computer vision and combustion physics to rank hazards.</p>
+<div class="g2"><div>
+<div class="big" id="cnt" aria-live="polite">00<small>/ 36 jobs</small></div>
+<div class="bar"><i id="bar"></i></div>
+<button class="btn" id="go">Begin screening</button>
+</div><div>
+<ol class="stages" id="stg"><li>Plan the screening matrix</li><li>Read the benchmark gate</li><li>Binding energies, arsenate to silicate</li><li>Score, grade, apply gates</li><li>Draft the jar-test protocol</li></ol>
+<div class="log" id="log" aria-hidden="true"></div>
+</div></div>
+<div class="row"><span></span><button class="btn" id="toR" data-go="3" disabled>Ranking →</button></div>
+</div>
+
+<!-- STEP 3: RANKING -->
+<div class="panel" id="p3" hidden>
+<h2><small>04</small>The <span>ranking</span></h2>
+<div class="gate"><b>Gate: provisional</b><span class="note" style="margin:0">Illustrative values for layout only. Real runs stamp their own benchmark state on every card.</span></div>
+<div class="w"><div><label for="w0">Binding strength</label><input id="w0" type="range" min="0" max="100" value="50"></div><div><label for="w1">Selectivity</label><input id="w1" type="range" min="0" max="100" value="30"></div><div><label for="w2">Local practicality</label><input id="w2" type="range" min="0" max="100" value="20"></div></div>
+<ol id="rank"></ol>
+<details><summary>Mission safety protocol for top three</summary>
+<table><tr><th>Suppression</th><td>N₂ purge · water mist · CO₂ (gravity-dependent)</td></tr><tr><th>Detection</th><td>IR thermography · UV flame sensors · smoke opacity</td></tr><tr><th>Replicates</th><td>3, plus a positive and a negative control</td></tr><tr><th>Prediction</th><td>Order of removal follows the ranking. A reversed order falsifies it.</td></tr></table>
+<p class="note">Treat spent media as arsenic-bearing waste. Do not drink treated water until an accredited laboratory has verified it.</p></details>
+</div>
+</section>
+</main>
+<footer class="wrap"><p class="k">PyroSage · prepared for NASA Space Apps</p><p class="k">Decision support, not a flight-safety certificate</p></footer>
+
+<script>
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const panels=$$('.panel'),navb=$$('nav button');
+function go(n,sc){panels.forEach((p,i)=>p.hidden=i!==n);navb.forEach((b,i)=>b.setAttribute('aria-current',i===n?'step':'false'));$('#stp').textContent='Step '+(n+1)+' of 4';if(n===3)rank();if(sc!==false)$('#bench').scrollIntoView({behavior:matchMedia('(prefers-reduced-motion:reduce)').matches?'auto':'smooth'})}
+$$('[data-go]').forEach(b=>b.addEventListener('click',()=>{if(!b.disabled)go(+b.dataset.go)}));go(0,false);
+$('#th').onclick=()=>{const r=document.documentElement,d=r.dataset.theme?r.dataset.theme==='dark':matchMedia('(prefers-color-scheme:dark)').matches;r.dataset.theme=d?'light':'dark'};
+
+// FICTION COMBUSTION SIMULATOR
+function drawFlame(){
+const g=+$('#gr').value,ox=+$('#ox').value,pr=+$('#pr').value,fl=+$('#fl').value,mat=$('#mat').value;
+const W=600,H=320,cx=300,cy=160;
+let h=80*(1+ox/50)*(pr/101)*(fl/2),w=60*(1-g*0.7);
+if(g<0.05){w=h*0.9}else if(g<0.3){w=h*0.6}else{w=h*0.3}
+let path='';
+if(g<0.1){path=`M${cx} ${cy-h} Q${cx+w} ${cy} ${cx} ${cy+h} Q${cx-w} ${cy} ${cx} ${cy-h}`}
+else{path=`M${cx-w/2} ${cy+h/2} Q${cx-w*0.3} ${cy-h*0.3} ${cx} ${cy-h} Q${cx+w*0.3} ${cy-h*0.3} ${cx+w/2} ${cy+h/2} Q${cx} ${cy+h*0.7} ${cx-w/2} ${cy+h/2}`}
+$('#fg').innerHTML=`<path d="${path}" fill="#B4411F" opacity=".3"/><path d="${path}" fill="none" stroke="var(--acc)" stroke-width="2"/><circle cx="${cx}" cy="${cy}" r="4" fill="var(--ink)"/><text x="${cx+10}" y="${cy-10}" font-family="DM Mono" font-size="10">T∞ ${500+ox*10}K</text><text x="20" y="30" font-family="DM Mono" font-size="11">g=${g} · ${ox}% O₂ · ${pr}kPa</text>`;
+$('#rg').textContent=g<0.05?'Spherical':g<0.3?'Ellipsoidal':'Teardrop';
+$('#rk').textContent=(ox>30&&mat==='cotton')?'High':(g>0.2?'Medium':'Low');
+$('#cf').textContent=(mat==='heptane'&&ox<25)?'Likely':'Possible';
+}
+['gr','ox','pr','fl','mat'].forEach(i=>$('#'+i).addEventListener('input',drawFlame));drawFlame();
+
+// SPECIMENS
+const defs=[['FLEX-2 Flame','#B4411F',1],['ISS Candle','#E5693F',2],['Drop Tower','#1F4D45',3],['SoFIE Test','#B98A2E',4]];
+const tex=(c,sd)=>`url("data:image/svg+xml,${encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' width='300' height='375'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' seed='${sd}'/><feColorMatrix values='0 0 0 0 .1 0 0 0 0 .06 0 0 0 0 .04 0 0 0 1.1 -.35'/></filter><rect width='300' height='375' fill='${c}'/><rect width='300' height='375' filter='url(#n)'/><circle cx='232' cy='72' r='25' fill='#CFC8B8' stroke='#8A8372' stroke-width='3'/></svg>`)}")`;
+$('#plates').innerHTML=[0,1,2,3].map(i=>`<article><label class="plate" id="pl${i}"><input type="file" accept="image/*" aria-label="Photo for specimen ${i+1}"><b>S${i+1}</b><span>Add photo</span></label><input class="nm" id="nm${i}" placeholder="Experiment name" aria-label="Name of specimen ${i+1}"><div class="seg" role="group" aria-label="Gravity of specimen ${i+1}">${['0g','lunar','martian'].map((t,j)=>`<button aria-pressed="${j===0}">${t}</button>`).join('')}</div></article>`).join('');
+$$('.plate input').forEach((f,i)=>f.addEventListener('change',()=>{const fl=f.files[0];if(!fl)return;const p=$('#pl'+i);p.style.backgroundImage=`url(${URL.createObjectURL(fl)})`;p.classList.add('has');p.querySelector('span').textContent='Photo added'}));
+$$('.seg').forEach(g=>g.addEventListener('click',e=>{if(e.target.tagName!=='BUTTON')return;[...g.children].forEach(b=>b.setAttribute('aria-pressed',b===e.target))}));
+$('#demo').onclick=()=>defs.forEach(([n,c,sd],i)=>{const p=$('#pl'+i);p.style.backgroundImage=tex(c,sd);p.classList.add('has');p.querySelector('span').textContent='Sample image';$('#nm'+i).value=n});
+
+// ANALYSIS
+const T=36,stg=$$('#stg li'),ph=['goethite','hematite','gibbsite','kaolinite','quartz'],ad=['arsenate','arsenite','phosphate','silicate'];let tm;
+$('#go').onclick=function(){const b=this;b.disabled=true;let n=0;$('#log').innerHTML='';$('#toR').disabled=true;clearInterval(tm);
+tm=setInterval(()=>{n++;$('#cnt').innerHTML=String(n).padStart(2,'0')+'<small>/ 36 jobs</small>';$('#bar').style.width=n/T*100+'%';
+const s=n<3?0:n<6?1:n<33?2:n<35?3:4;stg.forEach((l,i)=>l.className=i<s?'done':i===s?'now':'');
+if(n>5&&n<33)$('#log').insertAdjacentHTML('beforeend',`job ${String(n).padStart(2,'0')} · ${ph[n%5]} · ${ad[n%4]} · ${n%2?'mono':'bi'}dentate<br>`),$('#log').scrollTop=1e5;
+if(n>=T){clearInterval(tm);stg.forEach(l=>l.className='done');$('#toR').disabled=false;b.textContent='Run again';b.disabled=false}},110)};
+
+// RANKING
+const base=[[.86,.62,.55,'Needs leaching test'],[.78,.66,.7,'Low coverage'],[.71,.48,.82,'Needs leaching test'],[.36,.4,.74,'Low coverage · alkaline']];
+function rank(){
+const w=[0,1,2].map(i=>+$('#w'+i).value),t=w.reduce((a,b)=>a+b,0)||1;
+const items=defs.map((d,i)=>{const nm=$('#nm'+i).value.trim()||d[0],b=base[i];return{nm,sc:100*(w[0]*b[0]+w[1]*b[1]+w[2]*b[2])/t,fl:b[3]}}).sort((a,b)=>b.sc-a.sc);
+$('#rank').innerHTML=items.map((x,i)=>`<li><span class="rk">${i+1}</span><div><h3>${x.nm}</h3><p class="k">${x.fl}</p></div><div class="meter"><i style="width:${x.sc}%"></i></div><b class="sc">${Math.round(x.sc)}</b><span class="gr" title="Confidence grade">${x.sc>=68?'B':x.sc>=52?'C':'D'}</span></li>`).join('')}
+[0,1,2].forEach(i=>$('#w'+i).addEventListener('input',rank));rank();
+</script>
+</body>
+</html>
