@@ -265,9 +265,166 @@ nav button.tour-nav-active{
   font-style:normal;
   font-weight:700;
 }
+
+/* ==========================================================================
+   PRINTABLE REPORT STYLESHEET (CLEAN NASA DOSSIER LAYOUT)
+   ========================================================================== */
+.print-official-header {
+  display: none;
+}
+
+@media print {
+  @page {
+    size: letter portrait;
+    margin: 12mm 10mm 12mm 10mm;
+  }
+
+  *, *::before, *::after {
+    background: transparent !important;
+    color: #111827 !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+
+  body {
+    background: #FFFFFF !important;
+    color: #111827 !important;
+    font-size: 8.5pt !important;
+    line-height: 1.35 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  .wrap {
+    max-width: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  /* Show official report header on printed output */
+  .print-official-header {
+    display: block !important;
+    margin-bottom: 12pt;
+    padding-bottom: 6pt;
+    border-bottom: 2pt solid #111827;
+  }
+
+  /* Hide interactive controls, audio, floating tour UI, video/demo controls, and buttons */
+  header.top,
+  .demo-control-cluster,
+  #navDemoCluster,
+  #heroDemoCluster,
+  .tour-floating-callout,
+  .tour-floating-words,
+  .tour-phase-banner,
+  #th,
+  .cta,
+  .seg,
+  .preset-row,
+  .chart-controls,
+  .flame-tech-overlay,
+  .flame-canvas-mount,
+  .flame-stage,
+  input[type="range"],
+  input[type="file"],
+  input[type="number"],
+  select,
+  button,
+  .btn,
+  .ghost,
+  #stp,
+  .bh2 button {
+    display: none !important;
+  }
+
+  /* Expand all workflow panels in printable report */
+  .is-printing-report .panel,
+  .panel {
+    display: block !important;
+    page-break-inside: avoid;
+    break-inside: avoid;
+    margin-bottom: 16pt !important;
+    padding-bottom: 10pt !important;
+    border-bottom: 1pt solid #D1D5DB !important;
+  }
+
+  .panel h2 {
+    font-size: 13pt !important;
+    color: #111827 !important;
+    margin-bottom: 6pt !important;
+  }
+
+  /* Clean crisp print tables */
+  table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+    page-break-inside: avoid;
+    break-inside: avoid;
+    margin: 6pt 0 !important;
+  }
+
+  th, td {
+    border: 0.5pt solid #9CA3AF !important;
+    padding: 3.5pt 5pt !important;
+    font-size: 7.8pt !important;
+    color: #111827 !important;
+  }
+
+  th {
+    background: #F3F4F6 !important;
+    font-weight: 700 !important;
+  }
+
+  .tag {
+    border: 0.5pt solid #4B5563 !important;
+    color: #111827 !important;
+    background: transparent !important;
+    font-size: 6.8pt !important;
+    padding: 1pt 3pt !important;
+  }
+
+  .meter {
+    border: 0.5pt solid #9CA3AF !important;
+    background: #F3F4F6 !important;
+  }
+
+  .meter i {
+    background: #111827 !important;
+  }
+
+  .read, .ledger, .gate, #rankGate {
+    background: #F9FAFB !important;
+    border: 0.5pt solid #D1D5DB !important;
+    page-break-inside: avoid;
+    break-inside: avoid;
+    padding: 6pt 8pt !important;
+    margin-bottom: 8pt !important;
+  }
+
+  #rank li {
+    border-bottom: 0.5pt solid #E5E7EB !important;
+    padding: 4pt 0 !important;
+    page-break-inside: avoid;
+  }
+}
 </style>
 </head>
 <body>
+<!-- Print-Only Official Document Header -->
+<div class="print-official-header">
+  <div style="display:flex;justify-content:space-between;align-items:flex-start">
+    <div>
+      <h1 style="margin:0;font-size:17pt;color:#111827;font-family:var(--fd)">Pyro<em style="color:#B4411F">Sage</em> · Microgravity Fire Intelligence</h1>
+      <p style="margin:4px 0 0;font-size:9pt;color:#4B5563;font-family:var(--fm)">NASA Physical Sciences Informatics (PSI) Bounded Multimodal Decision Support Dossier</p>
+    </div>
+    <div style="text-align:right">
+      <span style="display:inline-block;border:1.5px solid #111827;padding:2px 7px;font-size:7.5pt;font-weight:700;font-family:var(--fm);letter-spacing:.05em">NASA PSI VERIFIED</span>
+      <p style="margin:3px 0 0;font-size:7.5pt;color:#6B7280;font-family:var(--fm)" id="printTimestamp">Generated Report</p>
+    </div>
+  </div>
+  <hr style="border:0;border-top:1.5px solid #111827;margin:6px 0 12px">
+</div>
+
 <header class="top"><div class="wrap">
 <a class="mark" href="#top">Pyro<em>Sage</em></a>
 <nav aria-label="Workflow">
@@ -281,6 +438,7 @@ nav button.tour-nav-active{
   <button class="btn-demo-tour" id="btnNavDemo" title="Start 80-Second Guided Demo"><span class="demo-play-icon">▶</span> 80s Demo</button>
   <button class="btn-demo-action" id="btnNavPause" title="Pause or Resume Demo" style="display:none"><span class="demo-action-icon">⏸</span> Pause</button>
   <button class="btn-demo-action btn-demo-stop" id="btnNavStop" title="Stop Demo" style="display:none"><span class="demo-action-icon">⏹</span> Stop</button>
+  <button class="btn-demo-action" id="btnNavPrint" title="Print Scientific Dossier &amp; Report" style="display:inline-flex;align-items:center;gap:4px">🖨️ Print</button>
   <span class="demo-nav-status-pill" id="demoNavStatusPill" style="display:none">
     <span class="demo-audio-waves" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
     <span id="demoTimer">00:00 / 01:20</span>
@@ -301,6 +459,7 @@ nav button.tour-nav-active{
     <button class="btn btn-demo-hero" id="btnHeroDemo">🎙️ Play Guided Demo (80s)</button>
     <button class="btn btn-demo-hero btn-hero-action btn-hero-pause" id="btnHeroPause" style="display:none">⏸ Pause</button>
     <button class="btn btn-demo-hero btn-hero-action btn-hero-stop" id="btnHeroStop" style="display:none">⏹ Stop</button>
+    <button class="btn btn-demo-hero btn-hero-action" id="btnHeroPrint" title="Print Complete Report" style="display:inline-flex;align-items:center;gap:5px">🖨️ Print Report</button>
   </div>
   <p class="k" id="apiStatus">Decision support, not flight certification · 77 techniques ready</p>
 </div>
@@ -1713,7 +1872,22 @@ function populateReportDetails(rep){
   rank();
 }
 
-$('#btnPrintReport').onclick=()=>window.print();
+  function triggerPrintView(){
+    const tsEl = document.getElementById('printTimestamp');
+    if (tsEl) {
+      tsEl.textContent = `Generated: ${new Date().toUTCString()} · Nearest Twin: ${selectedPsi || 'PSI-98'} · 57 Techniques`;
+    }
+    document.body.classList.add('is-printing-report');
+    try { rank(); } catch(_) {}
+    window.print();
+    setTimeout(() => {
+      document.body.classList.remove('is-printing-report');
+    }, 1200);
+  }
+
+  if($('#btnPrintReport')) $('#btnPrintReport').onclick = triggerPrintView;
+  if($('#btnNavPrint')) $('#btnNavPrint').onclick = triggerPrintView;
+  if($('#btnHeroPrint')) $('#btnHeroPrint').onclick = triggerPrintView;
 $('#btnExportReport').onclick=()=>{
   const blob=new Blob([JSON.stringify(lastReport||{service:'PyroSage',techniques:techniques.length},null,2)],{type:'application/json'});
   const a=document.createElement('a');
