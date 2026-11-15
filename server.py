@@ -6,6 +6,7 @@ import base64
 import csv
 import io
 import json
+import logging
 import math
 import os
 import re
@@ -22,7 +23,10 @@ import cv2
 import httpx
 import numpy as np
 import openpyxl
-import pymupdf as fitz
+try:
+    import pymupdf as fitz
+except ImportError:
+    fitz = None
 from bs4 import BeautifulSoup
 from docx import Document as DocxDocument
 from dotenv import load_dotenv
@@ -33,6 +37,7 @@ from fastapi.staticfiles import StaticFiles
 from pypdf import PdfReader
 
 load_dotenv()
+logger = logging.getLogger("pyrosage")
 
 ROOT_DIR = Path(__file__).resolve().parent
 STATIC_DIR = ROOT_DIR / "static"
@@ -326,56 +331,89 @@ def get_db_path() -> Path:
     custom = os.getenv("PYROSAGE_DB_PATH", "").strip()
     if custom:
         path = Path(custom)
-        path.parent.mkdir(parents=True, exist_ok=True)
-        return path
-    DATA_DIR.mkdir(parents=True, exist_ok=True)
-    return DATA_DIR / "pyrosage.sqlite3"
+        try:
+            path.parent.mkdir(parents=True, exist_ok=True)
+            return path
+        except OSError:
+            pass
+
+    # In serverless environments (e.g. Vercel, AWS Lambda), root filesystem is read-only.
+    # Fall back to temp directory which is guaranteed writable.
+    is_serverless = bool(
+        os.getenv("VERCEL")
+        or os.getenv("AWS_LAMBDA_FUNCTION_NAME")
+        or os.getenv("LAMBDA_TASK_ROOT")
+    )
+    if is_serverless:
+        tmp_dir = Path(tempfile.gettempdir()) / "pyrosage_data"
+        try:
+            tmp_dir.mkdir(parents=True, exist_ok=True)
+            return tmp_dir / "pyrosage.sqlite3"
+        except OSError:
+            return Path(tempfile.gettempdir()) / "pyrosage.sqlite3"
+
+    try:
+        DATA_DIR.mkdir(parents=True, exist_ok=True)
+        return DATA_DIR / "pyrosage.sqlite3"
+    except OSError:
+        tmp_dir = Path(tempfile.gettempdir()) / "pyrosage_data"
+        try:
+            tmp_dir.mkdir(parents=True, exist_ok=True)
+            return tmp_dir / "pyrosage.sqlite3"
+        except OSError:
+            return Path(tempfile.gettempdir()) / "pyrosage.sqlite3"
 
 
 def get_db_connection() -> sqlite3.Connection:
-    conn = sqlite3.connect(str(get_db_path()))
+    try:
+        conn = sqlite3.connect(str(get_db_path()))
+    except (sqlite3.OperationalError, OSError):
+        conn = sqlite3.connect(":memory:")
     conn.row_factory = sqlite3.Row
     return conn
 
 
 def init_db() -> None:
     """Initialize SQLite schema. The local experiment catalogue starts empty by design."""
-    with get_db_connection() as conn:
-        conn.execute(
-            """
-            CREATE TABLE IF NOT EXISTS catalog (
-                experiment_id TEXT PRIMARY KEY,
-                name TEXT NOT NULL,
-                mission TEXT NOT NULL DEFAULT '',
-                platform TEXT NOT NULL DEFAULT '',
-                gravity_g REAL,
-                fuel_material TEXT NOT NULL DEFAULT '',
-                oxygen_pct REAL,
-                pressure_kpa REAL,
-                temperature_k REAL,
-                techniques TEXT NOT NULL DEFAULT '',
-                summary TEXT NOT NULL DEFAULT '',
-                tags TEXT NOT NULL DEFAULT '',
-                source_ref TEXT NOT NULL DEFAULT '',
-                data_uri TEXT NOT NULL DEFAULT '',
-                raw_json TEXT NOT NULL DEFAULT '{}',
-                imported_at TEXT NOT NULL
+    try:
+        with get_db_connection() as conn:
+            conn.execute(
+                """
+                CREATE TABLE IF NOT EXISTS catalog (
+                    experiment_id TEXT PRIMARY KEY,
+                    name TEXT NOT NULL,
+                    mission TEXT NOT NULL DEFAULT '',
+                    platform TEXT NOT NULL DEFAULT '',
+                    gravity_g REAL,
+                    fuel_material TEXT NOT NULL DEFAULT '',
+                    oxygen_pct REAL,
+                    pressure_kpa REAL,
+                    temperature_k REAL,
+                    techniques TEXT NOT NULL DEFAULT '',
+                    summary TEXT NOT NULL DEFAULT '',
+                    tags TEXT NOT NULL DEFAULT '',
+                    source_ref TEXT NOT NULL DEFAULT '',
+                    data_uri TEXT NOT NULL DEFAULT '',
+                    raw_json TEXT NOT NULL DEFAULT '{}',
+                    imported_at TEXT NOT NULL
+                )
+                """
             )
-            """
-        )
-        conn.execute(
-            """
-            CREATE TABLE IF NOT EXISTS reports (
-                report_id TEXT PRIMARY KEY,
-                created_at TEXT NOT NULL,
-                workflow_mode TEXT NOT NULL,
-                provider TEXT NOT NULL,
-                model TEXT NOT NULL,
-                report_json TEXT NOT NULL
+            conn.execute(
+                """
+                CREATE TABLE IF NOT EXISTS reports (
+                    report_id TEXT PRIMARY KEY,
+                    created_at TEXT NOT NULL,
+                    workflow_mode TEXT NOT NULL,
+                    provider TEXT NOT NULL,
+                    model TEXT NOT NULL,
+                    report_json TEXT NOT NULL
+                )
+                """
             )
-            """
-        )
-        conn.commit()
+            conn.commit()
+    except Exception as exc:
+        logger.warning("Could not initialize local SQLite catalog: %s", exc)
 
 
 def load_techniques() -> list[dict[str, Any]]:
@@ -2370,7 +2408,10 @@ def create_synthetic_sample_image(kind: str = "0g_spherical") -> bytes:
 
 @asynccontextmanager
 async def _lifespan(_app: FastAPI):
-    init_db()
+    try:
+        init_db()
+    except Exception as exc:
+        logger.warning("Database init failed during lifespan startup: %s", exc)
     yield
 
 
@@ -2399,6 +2440,9 @@ def serve_dashboard() -> Response:
     index_file = STATIC_DIR / "index.html"
     if index_file.exists():
         return FileResponse(str(index_file), media_type="text/html")
+    root_index = ROOT_DIR / "index.html"
+    if root_index.exists():
+        return FileResponse(str(root_index), media_type="text/html")
     if PROTOTYPE_PATH.exists():
         return FileResponse(str(PROTOTYPE_PATH), media_type="text/html")
     return HTMLResponse("<h1>PyroSage API is running</h1>")
