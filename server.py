@@ -2756,6 +2756,18 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
+@app.middleware("http")
+async def _normalize_serverless_paths(request: Request, call_next):
+    scope = request.scope
+    if scope.get("type") == "http":
+        path = scope.get("path", "")
+        if path.startswith("/api/index.py"):
+            sub = path[len("/api/index.py"):]
+            scope["path"] = "/api" + (sub if sub.startswith("/") else "/" + sub)
+    return await call_next(request)
+
+
 if STATIC_DIR.exists():
     app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
 
@@ -2794,6 +2806,7 @@ def serve_reference_prototype() -> Response:
 
 
 @app.get("/api/health")
+@app.get("/health")
 def api_health() -> dict[str, Any]:
     init_db()
     techniques = load_techniques()
@@ -2824,6 +2837,7 @@ def api_health() -> dict[str, Any]:
 
 
 @app.get("/api/techniques")
+@app.get("/techniques")
 def api_techniques(
     group: str | None = Query(default=None),
     modality: str | None = Query(default=None),
@@ -2851,11 +2865,13 @@ def api_techniques(
 
 
 @app.get("/api/catalog")
+@app.get("/catalog")
 def api_get_catalog() -> dict[str, Any]:
     return list_catalog_records(limit=1000)
 
 
 @app.post("/api/catalog/import")
+@app.post("/catalog/import")
 async def api_import_catalog(
     request: Request,
     file: UploadFile | None = File(default=None),
@@ -2899,11 +2915,13 @@ async def api_import_catalog(
 
 
 @app.delete("/api/catalog")
+@app.delete("/catalog")
 def api_delete_catalog() -> dict[str, Any]:
     return clear_catalog_records()
 
 
 @app.get("/api/nasa-psi/search")
+@app.get("/nasa-psi/search")
 def api_nasa_psi_search(
     q: str = Query(default="combustion"),
     accession: str | None = Query(default=None),
@@ -2947,6 +2965,7 @@ def api_nasa_psi_search(
 
 
 @app.post("/api/nasa-psi/sync")
+@app.post("/nasa-psi/sync")
 async def api_nasa_psi_sync(request: Request) -> dict[str, Any]:
     try:
         payload = await request.json()
@@ -2986,6 +3005,7 @@ async def api_nasa_psi_sync(request: Request) -> dict[str, Any]:
 
 
 @app.get("/api/nasa-psi/experiments")
+@app.get("/nasa-psi/experiments")
 def api_nasa_psi_experiments() -> dict[str, Any]:
     cat = list_catalog_records()
     records = cat["records"] if cat["records"] else VERIFIED_PSI_RECORDS
@@ -2998,6 +3018,7 @@ def api_nasa_psi_experiments() -> dict[str, Any]:
 
 
 @app.post("/api/nasa-psi/analyze")
+@app.post("/nasa-psi/analyze")
 async def api_nasa_psi_analyze(request: Request) -> dict[str, Any]:
     init_db()
     body = await request.json()
@@ -3143,6 +3164,7 @@ async def api_nasa_psi_analyze(request: Request) -> dict[str, Any]:
 
 
 @app.get("/api/sample-specimen/{preset}")
+@app.get("/sample-specimen/{preset}")
 def api_sample_specimen(preset: str) -> dict[str, Any]:
     """Generate a ready-to-test sample flame specimen image + extracted descriptors + nearest NASA PSI twin."""
     preset_map = {
@@ -3171,6 +3193,7 @@ def api_sample_specimen(preset: str) -> dict[str, Any]:
 
 
 @app.post("/api/analyze")
+@app.post("/analyze")
 async def api_analyze(
     request: Request,
     files: list[UploadFile] | None = File(default=None),
@@ -3441,6 +3464,7 @@ async def api_analyze(
 
 
 @app.get("/api/report/{report_id}")
+@app.get("/report/{report_id}")
 def api_get_report(report_id: str) -> dict[str, Any]:
     init_db()
     with get_db_connection() as conn:

@@ -4,12 +4,27 @@ from __future__ import annotations
 
 import io
 import json
+import os
+import sys
 from pathlib import Path
 
-import cv2
+ROOT_DIR = Path(__file__).resolve().parent.parent
+if str(ROOT_DIR) not in sys.path:
+    sys.path.insert(0, str(ROOT_DIR))
+
+try:
+    import cv2
+except Exception:
+    cv2 = None
+
 import numpy as np
 import openpyxl
-import pymupdf as fitz
+
+try:
+    import pymupdf as fitz
+except Exception:
+    fitz = None
+
 import pytest
 from docx import Document as DocxDocument
 from fastapi.testclient import TestClient
