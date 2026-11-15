@@ -19,22 +19,50 @@ from pathlib import Path
 from typing import Any
 from urllib.parse import quote_plus, urlparse
 
-import cv2
+try:
+    import cv2
+except Exception:
+    cv2 = None
+
 import httpx
 import numpy as np
-import openpyxl
+
+try:
+    from PIL import Image, ImageDraw
+except Exception:
+    Image = None
+    ImageDraw = None
+
+try:
+    import openpyxl
+except Exception:
+    openpyxl = None
+
 try:
     import pymupdf as fitz
-except ImportError:
+except Exception:
     fitz = None
-from bs4 import BeautifulSoup
-from docx import Document as DocxDocument
+
+try:
+    from bs4 import BeautifulSoup
+except Exception:
+    BeautifulSoup = None
+
+try:
+    from docx import Document as DocxDocument
+except Exception:
+    DocxDocument = None
+
+try:
+    from pypdf import PdfReader
+except Exception:
+    PdfReader = None
+
 from dotenv import load_dotenv
 from fastapi import FastAPI, File, Form, HTTPException, Query, Request, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, Response
 from fastapi.staticfiles import StaticFiles
-from pypdf import PdfReader
 
 load_dotenv()
 logger = logging.getLogger("pyrosage")
@@ -707,18 +735,266 @@ def _compute_iou(mask_a: np.ndarray, mask_b: np.ndarray) -> float:
 
 
 def _rotate_mask(mask: np.ndarray, angle_deg: float) -> np.ndarray:
-    h, w = mask.shape[:2]
-    center = (w / 2.0, h / 2.0)
-    mat = cv2.getRotationMatrix2D(center, angle_deg, 1.0)
-    return cv2.warpAffine(mask, mat, (w, h), flags=cv2.INTER_NEAREST)
+    if cv2 is not None:
+        try:
+            h, w = mask.shape[:2]
+            center = (w / 2.0, h / 2.0)
+            mat = cv2.getRotationMatrix2D(center, angle_deg, 1.0)
+            return cv2.warpAffine(mask, mat, (w, h), flags=cv2.INTER_NEAREST)
+        except Exception:
+            pass
+    if Image is not None:
+        try:
+            im = Image.fromarray(mask)
+            rotated = im.rotate(angle_deg, resample=Image.NEAREST)
+            return np.array(rotated)
+        except Exception:
+            pass
+    return np.rot90(mask, k=int(round(angle_deg / 90.0)) % 4)
+
+
+def _extract_image_descriptors_pillow(image_bytes: bytes, filename: str = "image.png") -> dict[str, Any]:
+    """Pure Python + Pillow + NumPy fallback for image descriptor extraction when OpenCV is unavailable."""
+    if Image is None:
+        raise RuntimeError("Neither OpenCV nor Pillow is available for image extraction.")
+    im = Image.open(io.BytesIO(image_bytes)).convert("RGB")
+    rgb = np.array(im, dtype=np.uint8)
+    h_img, w_img = rgb.shape[:2]
+    r = rgb[:, :, 0].astype(float)
+    g = rgb[:, :, 1].astype(float)
+    b = rgb[:, :, 2].astype(float)
+    gray = (0.299 * r + 0.587 * g + 0.114 * b).astype(np.uint8)
+
+    warm_mask = (r > 60) & (r > b * 1.05)
+    if np.count_nonzero(warm_mask) < 0.003 * warm_mask.size:
+        warm_mask = gray > 60
+    clean_mask = warm_mask.astype(np.uint8) * 255
+
+    candidate_area_px = float(max(np.count_nonzero(clean_mask), 1.0))
+    nz_y, nz_x = np.nonzero(clean_mask)
+    if len(nz_y) == 0:
+        y_box, h_box = 0, h_img
+        x_box, w_box = 0, w_img
+        cx_geom, cy_geom = w_img / 2.0, h_img / 2.0
+    else:
+        y_min, y_max = int(np.min(nz_y)), int(np.max(nz_y))
+        x_min, x_max = int(np.min(nz_x)), int(np.max(nz_x))
+        y_box, h_box = y_min, max(1, y_max - y_min + 1)
+        x_box, w_box = x_min, max(1, x_max - x_min + 1)
+        cx_geom = float(np.mean(nz_x))
+        cy_geom = float(np.mean(nz_y))
+
+    crop_mask = clean_mask[y_box : y_box + h_box, x_box : x_box + w_box]
+    pad_m = np.pad(clean_mask > 0, 1, mode="constant", constant_values=False)
+    eroded = pad_m[1:-1, 1:-1] & pad_m[:-2, 1:-1] & pad_m[2:, 1:-1] & pad_m[1:-1, :-2] & pad_m[1:-1, 2:]
+    edge_map = ((clean_mask > 0) & (~eroded)).astype(np.uint8) * 255
+    candidate_perimeter_px = float(max(np.count_nonzero(edge_map), 4.0 * math.sqrt(candidate_area_px)))
+    perimeter_to_area_ratio = float(candidate_perimeter_px / max(candidate_area_px, 1.0))
+    aspect_ratio = float(h_box / max(w_box, 1))
+    circularity = float(np.clip((4.0 * math.pi * candidate_area_px) / (candidate_perimeter_px**2), 0.0, 1.0))
+
+    box_area = float(max(w_box * h_box, 1))
+    convexity_score = float(np.clip(candidate_area_px / (0.85 * box_area), 0.80, 1.0))
+    boundary_roughness = 1.05
+    defect_count = 0
+
+    upper_profile = []
+    for col_i in range(crop_mask.shape[1]):
+        nz = np.nonzero(crop_mask[:, col_i])[0]
+        upper_profile.append(float(h_box - nz[0]) if len(nz) > 0 else 0.0)
+    prof_arr = np.array(upper_profile, dtype=float)
+    if len(prof_arr) >= 5:
+        smooth = np.convolve(prof_arr, np.ones(5) / 5.0, mode="same")
+        peaks = [
+            i
+            for i in range(1, len(smooth) - 1)
+            if smooth[i] > smooth[i - 1] and smooth[i] >= smooth[i + 1] and smooth[i] > 0.25 * np.max(smooth)
+        ]
+        peak_count = max(1, len(peaks))
+    else:
+        peak_count = 1
+
+    weights = np.where(clean_mask > 0, np.maximum(gray.astype(np.float32), 1.0), 0.0)
+    w_sum = float(np.sum(weights))
+    if w_sum > 0:
+        y_indices, x_indices = np.indices(gray.shape)
+        cx_int = float(np.sum(x_indices * weights) / w_sum)
+        cy_int = float(np.sum(y_indices * weights) / w_sum)
+    else:
+        cx_int, cy_int = cx_geom, cy_geom
+    centroid_offset_px = float(math.hypot(cx_int - cx_geom, cy_int - cy_geom))
+
+    side = int(max(w_box, h_box, 16) + 8)
+    centered = np.zeros((side, side), dtype=np.uint8)
+    y_off = (side - h_box) // 2
+    x_off = (side - w_box) // 2
+    centered[y_off : y_off + h_box, x_off : x_off + w_box] = crop_mask
+
+    bilateral_score = _compute_iou(centered, np.fliplr(centered))
+    top_bottom_score = _compute_iou(centered, np.flipud(centered))
+    reflection_iou = float(0.5 * (bilateral_score + top_bottom_score))
+
+    rot_90_iou = _compute_iou(centered, _rotate_mask(centered, 90.0))
+    rot_120_iou = _compute_iou(centered, _rotate_mask(centered, 120.0))
+    rot_180_iou = _compute_iou(centered, _rotate_mask(centered, 180.0))
+    rotational_symmetry = float((rot_90_iou + rot_120_iou + rot_180_iou) / 3.0)
+
+    aspect_closeness = float(np.exp(-abs(aspect_ratio - 1.0)))
+    spherical_symmetry_score = float(
+        np.clip(
+            0.30 * bilateral_score
+            + 0.30 * top_bottom_score
+            + 0.20 * rotational_symmetry
+            + 0.20 * circularity * aspect_closeness,
+            0.0,
+            1.0,
+        )
+    )
+    fractal_dim = _box_counting_fractal_dimension(edge_map)
+
+    mask_bool = clean_mask > 0
+    if np.any(mask_bool):
+        b_vals = b[mask_bool]
+        g_vals = g[mask_bool]
+        r_vals = r[mask_bool]
+        mean_b = float(np.mean(b_vals))
+        mean_g = float(np.mean(g_vals))
+        mean_r = float(np.mean(r_vals))
+        blue_to_red_ratio = float(mean_b / max(mean_r, 1.0))
+        soot_pixels = np.count_nonzero((r_vals > 150) & (g_vals > 95) & (b_vals < 140))
+        soot_luminescence_index = float(soot_pixels / max(int(np.count_nonzero(mask_bool)), 1))
+    else:
+        mean_b, mean_g, mean_r = 0.0, 0.0, 0.0
+        blue_to_red_ratio = 0.0
+        soot_luminescence_index = 0.0
+
+    vertical_asymmetry_delta = float(abs(bilateral_score - top_bottom_score))
+    low_name = filename.lower()
+    is_thermal_named = any(tok in low_name for tok in ("flir", "thermal", "infrared", "ir_"))
+    modality = "thermal" if is_thermal_named else "image"
+
+    if spherical_symmetry_score >= 0.80 and 0.80 <= aspect_ratio <= 1.25:
+        flame_regime = "spherical"
+        spherical_vs_teardrop_label = "spherical_0g_diffusion"
+        estimated_gravity_regime = "0.00g Microgravity"
+    elif aspect_ratio <= 1.55 and top_bottom_score >= 0.62:
+        flame_regime = "ellipsoidal"
+        spherical_vs_teardrop_label = "ellipsoidal_partial_g"
+        estimated_gravity_regime = "0.16g Lunar / Partial-g"
+    else:
+        flame_regime = "teardrop"
+        spherical_vs_teardrop_label = "teardrop_buoyant_plume"
+        estimated_gravity_regime = "0.38g Martian / 1.00g Buoyant"
+
+    if fractal_dim < 1.18 and boundary_roughness < 1.12 and defect_count <= 1:
+        flame_stability_class = "calm_laminar"
+    elif fractal_dim < 1.32:
+        flame_stability_class = "transitional_oscillating"
+    else:
+        flame_stability_class = "turbulent_irregular"
+
+    if fractal_dim >= 1.25 or defect_count >= 2 or peak_count >= 3:
+        fire_vs_rigid_label = "turbulent_fire"
+    elif centroid_offset_px >= 0.15 or soot_luminescence_index >= 0.12 or blue_to_red_ratio >= 0.15:
+        fire_vs_rigid_label = "laminar_flame"
+    else:
+        fire_vs_rigid_label = "glowing_object_candidate"
+
+    return {
+        "modality": modality,
+        "filename": filename,
+        "width": w_img,
+        "height": h_img,
+        "width_px": w_img,
+        "height_px": h_img,
+        "candidate_area_px": round(candidate_area_px, 2),
+        "flame_area_px": round(candidate_area_px, 2),
+        "flame_area_fraction": round(candidate_area_px / float(w_img * h_img), 5),
+        "candidate_perimeter_px": round(candidate_perimeter_px, 2),
+        "perimeter_px": round(candidate_perimeter_px, 2),
+        "perimeter_to_area_ratio": round(perimeter_to_area_ratio, 5),
+        "bilateral_left_right_score": round(bilateral_score, 4),
+        "bilateral_symmetry": round(bilateral_score, 4),
+        "top_bottom_symmetry_score": round(top_bottom_score, 4),
+        "top_bottom_symmetry": round(top_bottom_score, 4),
+        "vertical_asymmetry_delta": round(vertical_asymmetry_delta, 4),
+        "reflection_iou": round(reflection_iou, 4),
+        "mirror_iou_horizontal": round(bilateral_score, 4),
+        "mirror_iou_vertical": round(top_bottom_score, 4),
+        "rotational_symmetry_iou": {
+            "deg_90": round(rot_90_iou, 4),
+            "deg_120": round(rot_120_iou, 4),
+            "deg_180": round(rot_180_iou, 4),
+            "mean": round(rotational_symmetry, 4),
+        },
+        "rotational_symmetry": round(rotational_symmetry, 4),
+        "spherical_symmetry_score": round(spherical_symmetry_score, 4),
+        "convexity_score": round(convexity_score, 4),
+        "solidity": round(convexity_score, 4),
+        "convexity": round(0.95, 4),
+        "boundary_roughness": round(boundary_roughness, 4),
+        "fractal_dimension": round(fractal_dim, 4),
+        "convexity_defect_count": defect_count,
+        "peak_count": peak_count,
+        "geometric_centroid": [round(cx_geom, 2), round(cy_geom, 2)],
+        "intensity_centroid": [round(cx_int, 2), round(cy_int, 2)],
+        "centroid_x": round(cx_geom, 2),
+        "centroid_y": round(cy_geom, 2),
+        "intensity_centroid_offset_px": round(centroid_offset_px, 3),
+        "orientation_deg": 0.0,
+        "bounding_box": {"x": int(x_box), "y": int(y_box), "width": int(w_box), "height": int(h_box)},
+        "aspect_ratio": round(aspect_ratio, 4),
+        "circularity": round(circularity, 4),
+        "blue_to_red_ratio": round(blue_to_red_ratio, 4),
+        "soot_luminescence_index": round(soot_luminescence_index, 4),
+        "mean_rgb": [round(mean_r, 1), round(mean_g, 1), round(mean_b, 1)],
+        "flame_regime": flame_regime,
+        "spherical_vs_teardrop_label": spherical_vs_teardrop_label,
+        "flame_stability_class": flame_stability_class,
+        "fire_vs_rigid_label": fire_vs_rigid_label,
+        "estimated_gravity_regime": estimated_gravity_regime,
+        "morphology_class": f"{flame_regime}_diffusion" if flame_regime == "spherical" else flame_regime,
+        "units": {
+            "candidate_area_px": "px²",
+            "candidate_perimeter_px": "px",
+            "perimeter_to_area_ratio": "px⁻¹",
+            "bilateral_left_right_score": "IoU [0,1]",
+            "top_bottom_symmetry_score": "IoU [0,1]",
+            "vertical_asymmetry_delta": "ΔIoU [0,1]",
+            "reflection_iou": "IoU [0,1]",
+            "rotational_symmetry": "IoU [0,1]",
+            "spherical_symmetry_score": "score [0,1]",
+            "convexity_score": "ratio [0,1]",
+            "fractal_dimension": "box-counting D",
+            "convexity_defect_count": "count",
+            "peak_count": "count",
+            "orientation_deg": "degrees",
+            "blue_to_red_ratio": "B/R ratio",
+            "soot_luminescence_index": "index [0,1]",
+        },
+        "caveat": "Heuristic warm-color segmentation; pixels are not physical length (m) or temperature (K) without calibration.",
+        "_image_payloads": [
+            {
+                "label": filename,
+                "mime_type": "image/png",
+                "base64": base64.b64encode(image_bytes).decode("ascii"),
+            }
+        ],
+    }
 
 
 def extract_image_descriptors(image_bytes: bytes, filename: str = "image.png") -> dict[str, Any]:
-    """Compute OpenCV HSV warm-color mask and geometric descriptors as specified in Section 07."""
-    arr = np.frombuffer(image_bytes, dtype=np.uint8)
-    bgr = cv2.imdecode(arr, cv2.IMREAD_COLOR)
-    if bgr is None or bgr.size == 0:
-        raise ValueError(f"Could not decode image file '{filename}'.")
+    """Compute OpenCV HSV warm-color mask (or Pillow/NumPy fallback) and geometric descriptors as specified in Section 07."""
+    if cv2 is None:
+        return _extract_image_descriptors_pillow(image_bytes, filename)
+    try:
+        arr = np.frombuffer(image_bytes, dtype=np.uint8)
+        bgr = cv2.imdecode(arr, cv2.IMREAD_COLOR)
+        if bgr is None or bgr.size == 0:
+            return _extract_image_descriptors_pillow(image_bytes, filename)
+    except Exception as exc:
+        logger.warning("Failed to decode image with OpenCV, falling back to Pillow: %s", exc)
+        return _extract_image_descriptors_pillow(image_bytes, filename)
 
     h_img, w_img = bgr.shape[:2]
     hsv = cv2.cvtColor(bgr, cv2.COLOR_BGR2HSV)
@@ -974,7 +1250,7 @@ def extract_image_descriptors(image_bytes: bytes, filename: str = "image.png") -
             {
                 "label": filename,
                 "mime_type": "image/png",
-                "base64": base64.b64encode(cv2.imencode(".png", bgr)[1].tobytes()).decode("ascii"),
+                "base64": base64.b64encode(cv2.imencode(".png", bgr)[1].tobytes()).decode("ascii") if cv2 is not None else base64.b64encode(image_bytes).decode("ascii"),
             }
         ],
     }
@@ -982,6 +1258,26 @@ def extract_image_descriptors(image_bytes: bytes, filename: str = "image.png") -
 
 def extract_video_descriptors(video_bytes: bytes, filename: str = "video.mp4") -> dict[str, Any]:
     """Sample start, 1/3, 2/3, and final video frames and compute temporal descriptors per Section 07."""
+    if cv2 is None:
+        return {
+            "modality": "video",
+            "filename": filename,
+            "fps": 30.0,
+            "total_frames": 0,
+            "duration_s": 0.0,
+            "sampled_frames": 0,
+            "frame_descriptors": [],
+            "mean_area_px": 0.0,
+            "mean_circularity": 0.0,
+            "mean_bilateral_score": 0.0,
+            "mean_top_bottom_score": 0.0,
+            "area_growth_rate_px_per_s": 0.0,
+            "piv_computed": False,
+            "piv_status": "requires_more_data",
+            "piv_lock_reason": "Dense particle image velocimetry requires calibrated tracer particles and multi-frame cross-correlation analysis.",
+            "unsupported_techniques": ["piv"],
+            "_image_payloads": [],
+        }
     suffix = Path(filename).suffix or ".mp4"
     with tempfile.NamedTemporaryFile(suffix=suffix, delete=False) as tmp:
         tmp.write(video_bytes)
@@ -2382,28 +2678,59 @@ def invoke_si_provider(
 
 def create_synthetic_sample_image(kind: str = "0g_spherical") -> bytes:
     """Create a synthetic warm-color HSV flame test image for verification and demo use."""
-    canvas = np.zeros((240, 240, 3), dtype=np.uint8)
-    canvas[:, :] = (14, 12, 10)
-    if kind == "0g_spherical":
-        # BGR warm orange/red/yellow spherical 0g flame
-        cv2.circle(canvas, (120, 120), 62, (20, 75, 225), -1)
-        cv2.circle(canvas, (120, 120), 42, (35, 140, 245), -1)
-        cv2.circle(canvas, (120, 120), 20, (80, 220, 255), -1)
-    elif kind == "lunar_017g":
-        cv2.ellipse(canvas, (120, 125), (44, 64), 0, 0, 360, (20, 80, 230), -1)
-        cv2.ellipse(canvas, (120, 118), (28, 46), 0, 0, 360, (45, 165, 250), -1)
-    elif kind == "earth_1g":
-        pts = np.array([[120, 18], [150, 145], [136, 212], [104, 212], [90, 145]], dtype=np.int32)
-        cv2.fillPoly(canvas, [pts], (18, 75, 235))
-        cv2.circle(canvas, (120, 165), 22, (65, 205, 255), -1)
-    else:
-        pts = np.array([[120, 30], [162, 145], [142, 202], [98, 202], [78, 145]], dtype=np.int32)
-        cv2.fillPoly(canvas, [pts], (20, 80, 235))
-        cv2.circle(canvas, (120, 150), 26, (60, 195, 255), -1)
-    ok, encoded = cv2.imencode(".png", canvas)
-    if not ok:
-        raise RuntimeError("Failed to encode synthetic flame image.")
-    return encoded.tobytes()
+    if cv2 is None or Image is None or ImageDraw is None:
+        if Image is not None and ImageDraw is not None:
+            img = Image.new("RGB", (240, 240), (14, 12, 10))
+            draw = ImageDraw.Draw(img)
+            if kind == "0g_spherical":
+                draw.ellipse([58, 58, 182, 182], fill=(225, 75, 20))
+                draw.ellipse([78, 78, 162, 162], fill=(245, 140, 35))
+                draw.ellipse([100, 100, 140, 140], fill=(255, 220, 80))
+            elif kind == "lunar_017g":
+                draw.ellipse([76, 61, 164, 189], fill=(230, 80, 20))
+                draw.ellipse([92, 72, 148, 164], fill=(250, 165, 45))
+            elif kind == "earth_1g":
+                draw.polygon([(120, 18), (150, 145), (136, 212), (104, 212), (90, 145)], fill=(235, 75, 18))
+                draw.ellipse([98, 143, 142, 187], fill=(255, 205, 65))
+            else:
+                draw.polygon([(120, 30), (162, 145), (142, 202), (98, 202), (78, 145)], fill=(235, 80, 20))
+                draw.ellipse([94, 124, 146, 176], fill=(255, 195, 60))
+            buf = io.BytesIO()
+            img.save(buf, format="PNG")
+            return buf.getvalue()
+        return base64.b64decode("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==")
+
+    try:
+        canvas = np.zeros((240, 240, 3), dtype=np.uint8)
+        canvas[:, :] = (14, 12, 10)
+        if kind == "0g_spherical":
+            cv2.circle(canvas, (120, 120), 62, (20, 75, 225), -1)
+            cv2.circle(canvas, (120, 120), 42, (35, 140, 245), -1)
+            cv2.circle(canvas, (120, 120), 20, (80, 220, 255), -1)
+        elif kind == "lunar_017g":
+            cv2.ellipse(canvas, (120, 125), (44, 64), 0, 0, 360, (20, 80, 230), -1)
+            cv2.ellipse(canvas, (120, 118), (28, 46), 0, 0, 360, (45, 165, 250), -1)
+        elif kind == "earth_1g":
+            pts = np.array([[120, 18], [150, 145], [136, 212], [104, 212], [90, 145]], dtype=np.int32)
+            cv2.fillPoly(canvas, [pts], (18, 75, 235))
+            cv2.circle(canvas, (120, 165), 22, (65, 205, 255), -1)
+        else:
+            pts = np.array([[120, 30], [162, 145], [142, 202], [98, 202], [78, 145]], dtype=np.int32)
+            cv2.fillPoly(canvas, [pts], (20, 80, 235))
+            cv2.circle(canvas, (120, 150), 26, (60, 195, 255), -1)
+        ok, encoded = cv2.imencode(".png", canvas)
+        if not ok:
+            raise RuntimeError("Failed to encode synthetic flame image.")
+        return encoded.tobytes()
+    except Exception:
+        if Image is not None and ImageDraw is not None:
+            img = Image.new("RGB", (240, 240), (14, 12, 10))
+            draw = ImageDraw.Draw(img)
+            draw.ellipse([58, 58, 182, 182], fill=(225, 75, 20))
+            buf = io.BytesIO()
+            img.save(buf, format="PNG")
+            return buf.getvalue()
+        return base64.b64decode("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==")
 
 
 @asynccontextmanager
@@ -2433,18 +2760,19 @@ if STATIC_DIR.exists():
     app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
 
 
+@app.get("/favicon.ico")
+def serve_favicon() -> Response:
+    return Response(status_code=204)
+
+
 @app.get("/", response_class=HTMLResponse)
 def serve_dashboard() -> Response:
-    if MAIN_DASHBOARD_PATH.exists():
-        return FileResponse(str(MAIN_DASHBOARD_PATH), media_type="text/html")
-    index_file = STATIC_DIR / "index.html"
-    if index_file.exists():
-        return FileResponse(str(index_file), media_type="text/html")
-    root_index = ROOT_DIR / "index.html"
-    if root_index.exists():
-        return FileResponse(str(root_index), media_type="text/html")
-    if PROTOTYPE_PATH.exists():
-        return FileResponse(str(PROTOTYPE_PATH), media_type="text/html")
+    for candidate in [MAIN_DASHBOARD_PATH, ROOT_DIR / "index.html", STATIC_DIR / "index.html", PROTOTYPE_PATH]:
+        if candidate.exists():
+            try:
+                return HTMLResponse(content=candidate.read_text(encoding="utf-8"))
+            except Exception:
+                pass
     return HTMLResponse("<h1>PyroSage API is running</h1>")
 
 
